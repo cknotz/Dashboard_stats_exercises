@@ -2,7 +2,7 @@
 # Sandbox for Stats Exercises Dashboard
 #######################################
 
-# Carlo Knotz
+# Carlo Knotz, UiS
 # Start date: Feb 22, 2021
 
 library(MASS)
