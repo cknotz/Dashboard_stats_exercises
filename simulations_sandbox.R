@@ -8,8 +8,7 @@
 library(MASS)
   library(shiny)
   library(shinyjs)
-
-cor(data$V1,data$V2)
+  library(ggplot2)
 
 ui <- fluidPage(
   shinyjs::useShinyjs(),
@@ -19,10 +18,12 @@ ui <- fluidPage(
         actionButton(inputId = "sim",
                      label = "Gimme some numbers!"),
         disabled(actionButton(inputId = "solution",
-                     label = "What's the solution?"))
+                     label = "Gimme the solution!"))
       ),
       mainPanel(
-        tableOutput(outputId = "tab"),
+        fluidRow(
+        column(3,tableOutput(outputId = "tab")),
+        column(9,plotOutput(outputId = "plot"))),
         textOutput(outputId = "result")
       )
     )
@@ -48,6 +49,12 @@ observeEvent(input$sim, {
   output$tab <- renderTable(vals$data[,c("X","Y")],
                             digits = 0)
   enable("solution")
+  
+  output$plot <- renderPlot({
+    ggplot(vals$data,aes(x=X,y=Y)) +
+      geom_point() +
+      geom_smooth(method='lm',se=F,color="gray")
+  })
  
 })
   
