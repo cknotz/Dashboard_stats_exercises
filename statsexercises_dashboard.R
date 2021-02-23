@@ -100,7 +100,7 @@ observeEvent(input$sim, {
   output$plot <- renderPlot({
     ggplot(vals$data,aes(x=X,y=Y)) +
       geom_point() +
-      geom_smooth(method='lm',se=F,color="gray")
+      geom_smooth(method='lm',se=F,color="gray",linetype="dashed")
   })
  
 })
