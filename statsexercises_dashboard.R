@@ -74,21 +74,6 @@ ui <- dashboardPage(
               )
     )
   )
-    # #titlePanel("What is the correlation coefficient?"),
-    # sidebarLayout(
-    #   sidebarPanel(
-    #     actionButton(inputId = "sim",
-    #                  label = "Gimme some numbers!"),
-    #     disabled(actionButton(inputId = "solution",
-    #                  label = "Gimme the solution!"))
-    #   ),
-    #   mainPanel(
-    #     fluidRow(
-    #     column(3,tableOutput(outputId = "tab")),
-    #     column(9,plotOutput(outputId = "plot"))),
-    #     textOutput(outputId = "result")
-    #   )
-    # )
 ))
 
 server <- function(input,output,session){
