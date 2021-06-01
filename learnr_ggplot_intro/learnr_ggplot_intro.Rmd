@@ -72,7 +72,7 @@ You also see that we now added our 'geoms' to the graph --- now we have our dots
 * `geom_text()` for little pieces of text
 * ... (see the [ggplot-website](https://ggplot2.tidyverse.org/reference/) for an overview)
 
-OK --- we have a bare-bones statistical graph! Now let's pretty it up a bit by adding more informative titles to the axes. Can you add titles for the x- and y-axis by using code from above (also, don't copy and paste --- you'll learn more that way)
+OK --- we have a bare-bones statistical graph! Now let's pretty it up a bit by adding more informative titles to the axes. Can you add titles for the x- and y-axis by using code from above? (Also, don't copy and paste --- you'll learn more that way!)
 
 ```{r titles, exercise=T}
 ggplot(data = mtcars, aes(x=wt,y=mpg)) +
@@ -97,7 +97,7 @@ ggplot(data = mtcars, aes(x=wt,y=mpg)) +
 
 ### Adding a third variable: Different sizes for the dots
 
-So far, the main dimensions or aesthetics of our graphs that we have defined are the two axes. We have placed one variable on the x-axis and one on the y-axis. But sometimes we want to add a third variable to some some more complicated relationships. One way of doing this is to change the sizes of the points according to the values of another variable. 
+So far, the main dimensions or aesthetics of our graphs that we have defined are the two axes. We have placed one variable on the x-axis and one on the y-axis. But sometimes we want to add a third variable to show some some more complicated relationships. One way of doing this is to change the sizes of the points according to the values of another variable. 
 
 We can do this by adding a third main dimension --- or 'aesthetic' --- to our graph. In our case, we want our points to change in size depending on a different variable. Let's take the number of cylinders in the cars' engine. Run the code below! 
 
