@@ -1,0 +1,118 @@
+---
+title: "Tutorial"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+library(ggplot2)
+knitr::opts_chunk$set(echo = FALSE)
+
+mtcars <- mtcars
+
+```
+
+
+# Visualizing data with ggplot2
+
+## Introduction
+
+In this interactive tutorial, you will learn the basics of visualizing data with ggplot2. ggplot2 is one of the various packages for R, and the most widely used package for graphs. It is also a part of the tidyverse.
+
+Let's jump right into it! Below you see a graph that has been created with ggplot2 and which shows data from the (in-)famous [mtcars-dataset](https://stat.ethz.ch/R-manual/R-patched/library/datasets/html/mtcars.html). The mtcars dataset contains information about 10 different automobile models (their weight, miles per gallon,...) from a 1974 issue of the US Motor Trends magazine. This dataset is not particular interesting as such but it comes pre-cleaned with R so we'll use it for this demonstration.
+
+```{r intrograph, exercise=F}
+
+ggplot(data = mtcars, aes(x=wt,y=mpg)) +
+    geom_point() +
+    ylab("Miles per gallon") +
+    xlab("Weight ('000 lbs)")
+
+```
+
+This graph is a so-called *scatterplot*. Each of the black dots is a single observation in the dataset (a car model) and they are arranged according to their weight (the horizontal or x-axis) and miles-per-gallon fuel efficiency (the vertical or y-axis). Scatterplots are ideal when we want to show how two *metric* (a.k.a. continuous, linear) variables are related to each other. This graph shows that heavier cars are less fuel-efficient, i.e. can drive fewer miles for each gallon of fuel (not very surprising).
+
+So how was this graph created? Below you see the code behind the graph:
+```{r eval=F,echo=T}
+ggplot(data = mtcars, aes(x=wt,y=mpg)) +
+    geom_point() +
+    ylab("Miles per gallon") +
+    xlab("Weight ('000 lbs)")
+```
+
+You can probably already see what is going on here (and that this isn't rocket science!). The first line starts with the main `ggplot()` function --- in essence, we tell R that we want to make a graph with ggplot. Inside the parentheses, we specify the most important information (or 'arguments', in the R-lingo) we need for the graph: a) what dataset we want to use; b) which variables from that dataset we want to use; and c) where the variables should go. 
+
+With `data = mtcars`, we tell R that we want to use the mtcars-dataset. The next part, after the comma, specifies the main dimensions (or 'aesthetics') of the graph: `aes(x=wt,y=mpg)`. You can see directly that we use this to tell R which variables we want to use and which should go on the x- and the y-axis. The two variables we want to use are the weight-variable (saved as `wt` in the dataset) and the miles-per-gallon (`mpg`) variable. And we want the weight-variable on the x-axis and miles-per-gallon on the y-axis.
+
+### Re-create the graph yourself
+
+Now over to you! Below you see the code we just described --- run it and see what happens!
+
+```{r bare, exercise = T}
+ggplot(data = mtcars, aes(x=wt,y=mpg))
+```
+
+Great, now we have a graph --- but the *content* is lacking (disappointing, I know...). This shows you an important logic of ggplot: The first step is to define the main aspects of the graph --- the dataset, the variables and their locations. Once we have this, we add the content. In ggplot, the content --- the dots in a scatterplot, the bars in a bar graph, the lines in a line graph --- are referred to as 'geometric objects' or 'geoms'. This may sound a bit overly complicated but makes sense --- a dot or a line is a geometric object! 
+
+We add these geometric objects as a second 'layer' to the graph we just created as shown below. Go ahead, run the code!
+```{r geoms, exercise=T}
+ggplot(data = mtcars, aes(x=wt,y=mpg)) +
+    geom_point()
+```
+
+Notice the little `+` symbol at the end of the first line? This plus-symbol tells R to take the code goes before it to make the first layer of a graph, and add (`+`) the code on the following line to it as a second layer. *The plus-symbol is important in ggplot!* We use it to add extra layers to our graphs.
+
+You also see that we now added our 'geoms' to the graph --- now we have our dots! In ggplot, we add dots via `geom_point()` (dot - point, tomayto - tomahto). For other types of graphs, we use other 'geoms', for instance:
+
+* `geom_line()` for lines
+* `geom_bar()` for bars
+* `geom_text()` for little pieces of text
+* ... (see the [ggplot-website](https://ggplot2.tidyverse.org/reference/) for an overview)
+
+OK --- we have a bare-bones statistical graph! Now let's pretty it up a bit by adding more informative titles to the axes. Can you add titles for the x- and y-axis by using code from above (also, don't copy and paste --- you'll learn more that way)
+
+```{r titles, exercise=T}
+ggplot(data = mtcars, aes(x=wt,y=mpg)) +
+    geom_point()
+```
+
+### Change one of the variables
+
+Happy with your graph? Now let's go a step further: Change one of the variables in the graph. Included in the mtcars-dataset is also the variable horsepower (`hp`), which as the name suggests measures the horsepower of the different car models --- how strong their engines are. Let's see how the horsepower of a car's engine is related to its fuel efficiency.
+
+Take the code below and:
+* Take out the `wt` variable and put in the `hp` variable instead
+* Adapt the title of the x-axis accordingly
+
+```{r prob1, exercise=T}
+ggplot(data = mtcars, aes(x=wt,y=mpg)) +
+    geom_point() +
+    ylab("Miles per gallon") +
+    xlab("Weight ('000 lbs)")
+```
+
+Great job! You just learned how to create a basic statistical graph in ggplot! Continue on to the next lesson to learn how to do this entirely by yourself.
+
+## Doing it yourself
+
+### Prep work - Loading packages and data
+
+If you were doing all this by yourself, the first step would be to load the ggplot2 package. Remember: R itself only offers some basic functionality and we use packages for 
+more advanced things (or, often, to make our lives a bit easier...). Packages such as ggplot2 need to be installed and loaded. Below you see the code to install the ggplot2 package from the internet, fully automatically:
+
+```{r eval=F,echo=T}
+install.packages("ggplot2")
+```
+
+If you like, you can run this code in RStudio on your computer later. For now, we have installed the package and will now load it so that we can use it:
+```{r eval=F,echo=T}
+library(ggplot2)
+```
+
+The library-function is used to load packages. The prep-work is almost done - now we only have to load the dataset:
+```{r eval=F,echo=T}
+mtcars <- mtcars
+```
+As mentioned, the mtcars dataset comes with R, so this is easy. Remember the arrow --- the 'assignment operator' --- from the lecture? Here we use it to take the mtcars-dataset that is stored somewhere deep in the R program files and 'assign' it to the object 'mtcars'.
