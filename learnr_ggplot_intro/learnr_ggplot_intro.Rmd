@@ -11,6 +11,7 @@ library(ggplot2)
 knitr::opts_chunk$set(echo = FALSE)
 
 mtcars <- mtcars
+mtcars$name <- rownames(mtcars)
 
 ```
 
@@ -94,7 +95,53 @@ ggplot(data = mtcars, aes(x=wt,y=mpg)) +
     xlab("Weight ('000 lbs)")
 ```
 
-Great job! You just learned how to create a basic statistical graph in ggplot! Continue on to the next lesson to learn how to do this entirely by yourself.
+### Adding a third variable: Different sizes for the dots
+
+So far, the main dimensions or aesthetics of our graphs that we have defined are the two axes. We have placed one variable on the x-axis and one on the y-axis. But sometimes we want to add a third variable to some some more complicated relationships. One way of doing this is to change the sizes of the points according to the values of another variable. 
+
+We can do this by adding a third main dimension --- or 'aesthetic' --- to our graph. In our case, we want our points to change in size depending on a different variable. Let's take the number of cylinders in the cars' engine. Run the code below! 
+
+```{r aes1, exercise = T}
+ggplot(data = mtcars, aes(x=wt,y=mpg)) +
+    geom_point(aes(size=cyl)) +
+    ylab("Miles per gallon") +
+    xlab("Weight ('000 lbs)")
+```
+
+You see that most of the code is the same as above, but we have now added another aesthetic (`aes()`) to the `geom_point()` layer: We tell R that the size (`size`) of each of the points should depend on the `cyl` variable in the dataset (the number of cylinders). 
+
+*Important* We could also have added the size-aesthetic to the main `ggplot()` command like so:
+```{r aes2, exercise = T}
+ggplot(data = mtcars, aes(x=wt,y=mpg,size=cyl)) +
+    geom_point() +
+    ylab("Miles per gallon") +
+    xlab("Weight ('000 lbs)")
+```
+
+If you run the code, you see that the result is the same. But it does make sense to add it to the `geom_point()` layer below because this makes it clearer what is going on here. Our code gets easier to read, which is a good thing!
+
+Note also that ggplot automatically adds a legend on the right! Altogether, we can see now that heavier cars not only have a worse fuel efficiency, but they also tend to have larger engines with more cylinders. Makes sense, doesn't it?
+
+### Using labels instead of dots
+
+The graph as it is looks quite neat, but all we see now is a number of dots. It would surely be nicer if we could see what models of cars we're looking at here. Remember that one of the different 'geoms' was called `geom_text()`? We can use this to show us the name of the car model. The logic is the same as adding another variable to graph, which we did above. In essence, we add the name of the model as a variable to the graph. 
+
+I've prepared some code that does just this. Run the code first and let's then talk about what is going on here.
+
+```{r names1, exercise=T}
+ggplot(data = mtcars, aes(x=wt,y=mpg)) +
+    geom_text(aes(label = name)) +
+    ylab("Miles per gallon") +
+    xlab("Weight ('000 lbs)")
+```
+
+You notice that most of the code is still the same as it was before: We create the base layer of the graph with the `ggplot()` function and then add different layers to it via the `+` symbol and the code that follows.
+
+You also see that the `geom_point()` command is now replaced by `geom_text()`. Obviously, `geom_text` tells R that we want a piece of text here --- this isn't too difficult, is it? But now there is again code to specify some aesthetics (`aes()`) of the graph --- what is going on here? 
+
+With `geom_text()`, we tell R that we want some text added to the graph. But then we also need to tell R which *particular* piece of text it should use. In our case, we want the graph to show the names of car models, which are saved in the `name` variable in our dataset. We tell R that we want to label our individual data points with the contents of the `name` variable with `label = name`. And then we have to designate this as another aesthetic (`aes()`). This is similar to above, where we let the points vary in size --- only here we let the name vary between the different observations.
+
+All clear (more or less)? Well, great job! You just learned how to create a basic statistical graph in ggplot! Continue on to the next lesson to learn how to do this entirely by yourself.
 
 ## Doing it yourself
 
