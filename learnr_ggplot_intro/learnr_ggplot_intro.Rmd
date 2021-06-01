@@ -1,5 +1,5 @@
 ---
-title: "Tutorial"
+title: "Visualize data with ggplot"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
@@ -83,6 +83,7 @@ ggplot(data = mtcars, aes(x=wt,y=mpg)) +
 Happy with your graph? Now let's go a step further: Change one of the variables in the graph. Included in the mtcars-dataset is also the variable horsepower (`hp`), which as the name suggests measures the horsepower of the different car models --- how strong their engines are. Let's see how the horsepower of a car's engine is related to its fuel efficiency.
 
 Take the code below and:
+
 * Take out the `wt` variable and put in the `hp` variable instead
 * Adapt the title of the x-axis accordingly
 
