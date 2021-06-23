@@ -218,18 +218,138 @@ Notice also that there are some `NA`s in our dataset. These are observations whe
 
 Ready to start building a graph?
 
+### Which countries have more women in parliament?
+
+Since we have already learned how to make a bar graph, let us use that skill to graph some real-world data. One interesting question we can look at with the CPDS data is which countries are better at including women in political processes. 
+
+So, let's create the graph! I have created the *first piece* of the code necessary to create this graph for you: 
+
+* You see that the dataset is saved as `cpds` (short for Comparative Political Dataset). 
+* The `country`-variable is placed on the x-axis because in a bar graph 
+* The `womenpar`-variable goes on the y-axis
+
+Now you still need to add the correct 'geom' for a bar graph: `geom_col()`. Go ahead, add it to the code below --- and don't forget the `+`-symbol at the end of the first line!
+
+```{r femrep1, exercise=T}
+ggplot(data=cpds, aes(x=country,y=womenpar))
+
+```
+
+###
+
+```{r femrep1a, exercise=F, echo=T}
+ggplot(data=cpds, aes(x=country,y=womenpar)) +
+  geom_col()
+
+```
+
+We have a graph -- but it certainly doesn't look very nice yet. Not only do we not have labelled axes and a clean theme, but we cannot even read the country names.
+
+Let's work on the last problem.
+
+###
+
+One solution to the problem of overlapping country names is simply to flip the graph and make it horizontal so the bars go sideways instead of up. We can do this with `coord_flip()`. Can you add `coord_flip()` to the code below?
+
+```{r femrep2, exercise=T}
+ggplot(data=cpds, aes(x=country,y=womenpar)) +
+  geom_col()
+
+```
+
+###
+
+This is how the result should look like:
+```{r femrep2a, exercise=F, echo=T}
+ggplot(data=cpds, aes(x=country,y=womenpar)) +
+  geom_col() +
+  coord_flip()
+```
+
+Much better, isn't it?
+
+###
+
+Let's also add axis labels and adapt the theme. Can you add axis labels (with `xlab()` & `ylab()`) to the graph and adjust the theme (with `theme_bw()`)?
+```{r femrep3, exercise=T}
+ggplot(data=cpds, aes(x=country,y=womenpar)) +
+  geom_col() +
+  coord_flip()
+```
+
+###
+
+This would be a solution:
+```{r femrep3a, exercise=F, echo=T}
+ggplot(data=cpds, aes(x=country,y=womenpar)) +
+  geom_col() +
+  coord_flip() +
+  ylab("Share of women in parliament (%)") +
+  xlab("Country") +
+  theme_bw()
+```
+
+*Notice* that we still specify our axis labels as if the graph was not flipped!
+
+### Sorting the bars
+
+In the graph as it is now, the countries are still ordered alphabetically: Australia, Austria, Belgium, and so on. This is not bad, but it would be nicer if we could order everything by the share of women in parliament. That way we could easier see which countries do best and which do worst and representing women.
+
+In 'ggplot', we can do that in the main `aes()`-command (the first line!), by specifying that we want the x-variable ordered by some other variable. You can see below how you do that. 
+
+Take a look at the code, then run it to see the result:
+```{r femrep4, exercise=T}
+ggplot(data=cpds, aes(x=reorder(country, womenpar),y=womenpar)) +
+  geom_col() +
+  coord_flip() +
+  ylab("Share of women in parliament (%)") +
+  xlab("Country") +
+  theme_bw()
+```
+
+###
+
+```{r femrep4a, exercise=F, echo=T}
+ggplot(data=cpds, aes(x=reorder(country, womenpar),y=womenpar)) +
+  geom_col() +
+  coord_flip() +
+  ylab("Share of women in parliament (%)") +
+  xlab("Country") +
+  theme_bw()
+```
+
+So, what have we done? Note that we have added a `reorder()`-command to the main `aes()`-command. Within the `reorder()`-command, we first name the `country`-variable and then, after a comma, the `womenpar`-variable.
+
+This tells R the following:
+
+1. Take the `country`-variable
+2. Order it by `womenpar`
+3. Put the result on the x-axis
+
+###
+
+Note that we could also have ordered the order way around by adding a `-` like so: `reorder(country, -womenpar)`. Do you want to add the `-` and run the code:
+```{r femrep4b, exercise=T}
+ggplot(data=cpds, aes(x=reorder(country, womenpar),y=womenpar)) +
+  geom_col() +
+  coord_flip() +
+  ylab("Share of women in parliament (%)") +
+  xlab("Country") +
+  theme_bw()
+```
+
 ### Women's political power and the welfare state
+
+We have learned that countries differ in how well its female citizens are represented in parliament. The next question is: Do more women in parliament have effects on policy-making?
 
 Let's say we are interested in whether the share of female members of parliament in a country is related to the amount that country spends on childcare. Influential theories say that women should have a strong interest in well-developed childcare services [(Iversen & Rosenbluth 2010)](https://yalebooks.yale.edu/book/9780300171341/women-work-and-politics), and it is  possible that a larger share of female parliamentarians can push more forcefully for increased spending on these services.
 
 To find out, we need to relate the `womenpar`-variable to the `childcare`-variable. The way we do this is with a _scatterplot_. A scatterplot is ideal if we want to show a relationship between two continuous (or metric, numerical) variables --- and, as we have seen, both of the variables are indeed continuous.
 
-Below, you find the *first piece* of the code necessary to create a scatterplot of these two variables. Run it to see what happens:
+Below, you find again the *first piece* of the code necessary to create a scatterplot of these two variables. Run it to see what happens:
 
 ```{r cpds1, exercise=T}
 ggplot(data = cpds, aes(x=womenpar,y=childcare))
-
-# Note that the dataset is saved as 'cpds' -- short for Comparative Political Data Set
 
 ```
 
