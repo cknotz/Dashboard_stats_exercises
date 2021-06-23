@@ -520,10 +520,10 @@ Many conservative or liberal politicians (and many academics) argue that strict 
 With the CPDS data, we can find out if that is true! But now you have to do it yourself!
 
 I have prepared a piece of code that you can start with --- *but you have to complete it for it to work!*
+
 ```{r neo1, exercise=T, warning=F}
 ggplot(data=cpds,aes(x=,y=))
 ```
-
 You need to:
 
 1. Define which variables go on which axis (the relevant variables are called `unemp` & `emprot_reg`)
