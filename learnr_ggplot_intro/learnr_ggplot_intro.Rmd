@@ -225,7 +225,7 @@ Since we have already learned how to make a bar graph, let us use that skill to 
 So, let's create the graph! I have created the *first piece* of the code necessary to create this graph for you: 
 
 * You see that the dataset is saved as `cpds` (short for Comparative Political Dataset). 
-* The `country`-variable is placed on the x-axis because in a bar graph 
+* The `country`-variable is placed on the x-axis
 * The `womenpar`-variable goes on the y-axis
 
 Now you still need to add the correct 'geom' for a bar graph: `geom_col()`. Go ahead, add it to the code below --- and don't forget the `+`-symbol at the end of the first line!
