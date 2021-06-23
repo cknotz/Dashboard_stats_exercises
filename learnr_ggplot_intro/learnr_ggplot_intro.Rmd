@@ -1,8 +1,6 @@
 ---
 title: "Visualizing data with ggplot2"
-output: 
-    learnr::tutorial:
-    progressive: true
+output: learnr::tutorial
 runtime: shiny_prerendered
 ---
 
@@ -215,8 +213,6 @@ You can see that the dataset includes the following information:
 * `emprot_reg`: This is an index that measures how difficult it is for employers to dismiss ('fire') workers with a regular employment contract. This 'Employment Protection Index' has been created by the OECD. Higher scores mean it is more difficult to fire workers.
 
 Notice also that there are some `NA`s in our dataset. These are observations where we have missing information ('Not Available').
-
-Ready to start building a graph?
 
 ### Which countries have more women in parliament?
 
@@ -522,7 +518,7 @@ print.data.frame(cpds)
 * `womenpar`: The share of female members of parliament
 * `childcare`: How much each country spends on childcare, as a percentage of the size of its economy (its gross domestic product, or GDP)
 * `unemp`: The country's unemployment rate
-* `emprot_reg`: This is an index that measures how difficult it is for employers to dismiss ('fire') workers with a regular employment contract. This 'Employment Protection Index' has been created by the OECD. Higher scores mean it is more difficult to fire workers.
+* `emprot_reg`: The index that measures how difficult it is for employers to dismiss ('fire') workers with a regular employment contract. Higher scores mean it is more difficult to fire workers.
 
 Ready to move on?
 
