@@ -473,9 +473,22 @@ theme_bw()
 
 Now, what has changed? Obviously, we have replaced `geom_point()` with `geom_text()` --- but we also have added some more information within `geom_text()`: there is new code to specify some central aesthetics (`aes()`) of the graph.
 
-Let me explain: With `geom_text()`, we tell R that we want some text added to the graph. But then we also need to tell R which *particular* piece of text it should use for each *particular* observation. In our case, we want the graph to show the ISO abbreviations of country names, which are saved in the `iso` variable in our dataset. In other words, we want to 'map' the country abbreviations onto the graph. 
+Let me explain: `geom_point()` is happy with knowing only which variables go on the x- and y-axes, and it then only puts a black dot for each observation at the appropriate point. 
 
-This 'mapping' is done via an additional _aestethic_, i.e. `aes()`. And within it, we state that the labels should be based on the `iso`-variable with `label=iso`.
+`geom_text()`, on the other hand, is a bit more demanding: Like `geom_point()`, it needs to know the x- and y-variables, but it also needs to know how exactly each data point should be labeled. And we provide this information with an additional piece of _aesthetic_ (`aes()`) information. 
+
+In our case, we want the graph to show the ISO abbreviations of country names, which are saved in the `iso` variable in our dataset. In other words, we want to 'map' the country abbreviations onto the graph. Therefore, we specify `aes(label=iso)`.
+
+In this case, we added this extra `aes()` within `geom_text()` to make clear that this is specific to this 'geom'. We could, however, also have included it into the main `aes()`-function like this:
+```{r cpds6b, exercise=T, warning=FALSE}
+ggplot(data = cpds, aes(x=womenpar,y=childcare,label=iso)) +
+geom_text() +
+xlab("Share of women in parliament (%)") +
+ylab("Spending on childcare services (% GDP)") +
+theme_bw()
+```
+
+Run the code to see that it creates the same result.
 
 All clear (more or less)? Well, great job! You just learned how to create a basic statistical graph in ggplot! Continue on to the next lesson to learn how to do this entirely by yourself.
 
