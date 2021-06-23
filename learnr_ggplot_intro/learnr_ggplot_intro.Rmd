@@ -1,5 +1,5 @@
 ---
-title: "Visualizing data with ggplot"
+title: "Visualizing data with ggplot2"
 output: 
     learnr::tutorial:
     progressive: true
