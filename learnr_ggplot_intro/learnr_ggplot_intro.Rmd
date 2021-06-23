@@ -1,6 +1,8 @@
 ---
-title: "Visualize data with ggplot"
-output: learnr::tutorial
+title: "Visualizing data with ggplot"
+output: 
+    learnr::tutorial:
+    progressive: true
 runtime: shiny_prerendered
 ---
 
@@ -10,140 +12,355 @@ library(tidyverse)
 library(ggplot2)
 knitr::opts_chunk$set(echo = FALSE)
 
-mtcars <- mtcars
-mtcars$name <- rownames(mtcars)
+fruit <- data.frame(type = c("Apples","Oranges"),
+                    number = c(42,17))
+
+cpds <- haven::read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta") %>% 
+  filter(year==2015 & poco==0) %>% 
+  select(country,iso,year,womenpar,childcare_pmp,emprot_reg,unemp) %>% 
+  rename(childcare = childcare_pmp)
 
 ```
 
 
 # Visualizing data with ggplot2
 
-## Introduction
+## First steps {data-progressive=TRUE}
 
-In this interactive tutorial, you will learn the basics of visualizing data with ggplot2. ggplot2 is one of the various packages for R, and the most widely used package for graphs. It is also a part of the tidyverse.
+###
 
-Let's jump right into it! Below you see a graph that has been created with ggplot2 and which shows data from the (in-)famous [mtcars-dataset](https://stat.ethz.ch/R-manual/R-patched/library/datasets/html/mtcars.html). The mtcars dataset contains information about 10 different automobile models (their weight, miles per gallon,...) from a 1974 issue of the US Motor Trends magazine. This dataset is not particular interesting as such but it comes pre-cleaned with R so we'll use it for this demonstration.
+In this interactive tutorial, you will learn the basics of visualizing data with ggplot2. ggplot2 is one of the various packages for R, and is widely used to make graphs.
 
-```{r intrograph, exercise=F}
+Click 'continue' to begin.
 
-ggplot(data = mtcars, aes(x=wt,y=mpg)) +
-    geom_point() +
-    ylab("Miles per gallon") +
-    xlab("Weight ('000 lbs)")
+### Preparation
+
+The first thing we need is some data that we can graph. We start _very_ simple and use a tiny practice-dataset that is easy to handle. I've created this for you using the following code:
+
+```{r fruit, exercise=F, echo=T}
+fruit <- data.frame(type = c("Apples","Oranges"),
+                    number = c(42,17))
+
+```
+All this code does is to create a `data.frame` (this is what R calls datasets) and save it as 'fruit'. We'll go over this in more detail later.
+
+Here is how the fruit-dataset looks like:
+```{r fruittab, exercise=F}
+
+print.data.frame(data.frame(type = c("Apples","Oranges"),
+                    number = c(42,17)))
+```
+Our dataset tells us, basically, that we have 42 apples and 17 bananas. Not more complicated than that.
+
+Now that we have data, we can graph them! In `ggplot`, graphs are created step-by-step -- or, more accurately, layer by layer. We'll now go over each step.
+
+###
+
+If we want to create a graph with ggplot, we use the `ggplot()` command (or 'function'). This is the main and most important function --- everything else is built on and around it.
+
+Run the code below to see what happens when you use the `ggplot()` function:
+``` {r fruit0, exercise=T}
+ggplot()
 
 ```
 
-This graph is a so-called *scatterplot*. Each of the black dots is a single observation in the dataset (a car model) and they are arranged according to their weight (the horizontal or x-axis) and miles-per-gallon fuel efficiency (the vertical or y-axis). Scatterplots are ideal when we want to show how two *metric* (a.k.a. continuous, linear) variables are related to each other. This graph shows that heavier cars are less fuel-efficient, i.e. can drive fewer miles for each gallon of fuel (not very surprising).
+###
 
-So how was this graph created? Below you see the code behind the graph:
-```{r eval=F,echo=T}
-ggplot(data = mtcars, aes(x=wt,y=mpg)) +
-    geom_point() +
-    ylab("Miles per gallon") +
-    xlab("Weight ('000 lbs)")
+``` {r fruit0a, exercise=F,echo=T}
+ggplot()
+
 ```
 
-You can probably already see what is going on here (and that this isn't rocket science!). The first line starts with the main `ggplot()` function --- in essence, we tell R that we want to make a graph with ggplot. Inside the parentheses, we specify the most important information (or 'arguments', in the R-lingo) we need for the graph: a) what dataset we want to use; b) which variables from that dataset we want to use; and c) where the variables should go. 
+You may wonder why not much is going on here. But consider what all we have told R with this command is to make a graph. Period. Not more. 
 
-With `data = mtcars`, we tell R that we want to use the mtcars-dataset. The next part, after the comma, specifies the main dimensions (or 'aesthetics') of the graph: `aes(x=wt,y=mpg)`. You can see directly that we use this to tell R which variables we want to use and which should go on the x- and the y-axis. The two variables we want to use are the weight-variable (saved as `wt` in the dataset) and the miles-per-gallon (`mpg`) variable. And we want the weight-variable on the x-axis and miles-per-gallon on the y-axis.
+R does not yet know the most important things: which dataset it should use and what variable goes on which axis of the graph. Therefore, all R does is to open an empty graph window.
 
-### Re-create the graph yourself
+Let's add the missing information.
 
-Now over to you! Below you see the code we just described --- run it and see what happens!
+###
 
-```{r bare, exercise = T}
-ggplot(data = mtcars, aes(x=wt,y=mpg))
+We give R this key information by adding further specifications into the parentheses of the `ggplot()` function. Take a look at the code, and then run it to see what happens: 
+```{r fruit_s1, exercise=T}
+ggplot(data = fruit, aes(x = type, y = number))
+
 ```
 
-Great, now we have a graph --- but the *content* is lacking (disappointing, I know...). This shows you an important logic of ggplot: The first step is to define the main aspects of the graph --- the dataset, the variables and their locations. Once we have this, we add the content. In ggplot, the content --- the dots in a scatterplot, the bars in a bar graph, the lines in a line graph --- are referred to as 'geometric objects' or 'geoms'. This may sound a bit overly complicated but makes sense --- a dot or a line is a geometric object! 
+###
 
-We add these geometric objects as a second 'layer' to the graph we just created as shown below. Go ahead, run the code!
-```{r geoms, exercise=T}
-ggplot(data = mtcars, aes(x=wt,y=mpg)) +
-    geom_point()
+```{r fruit_s1a, exercise=F,echo=T}
+ggplot(data = fruit, aes(x = type, y = number))
+
 ```
 
-Notice the little `+` symbol at the end of the first line? This plus-symbol tells R to take the code goes before it to make the first layer of a graph, and add (`+`) the code on the following line to it as a second layer. *The plus-symbol is important in ggplot!* We use it to add extra layers to our graphs.
+Let's take a quick look at what the code chunk did:
 
-You also see that we now added our 'geoms' to the graph --- now we have our dots! In ggplot, we add dots via `geom_point()` (dot - point, tomayto - tomahto). For other types of graphs, we use other 'geoms', for instance:
+* As before, `ggplot()` tells R that we want to create a graph with ggplot.
+* Within the `ggplot()`-command, we first specify that we want to use the fruit-dataset with `data=fruit`.
+* The next part (`aes(...)`) specifies the main dimensions (or _aesthetics_) of our graph. You can probably guess that we told R to put the type-variable on the x-axis at the bottom and the number-variable on the vertical y-axis.
 
-* `geom_line()` for lines
-* `geom_bar()` for bars
-* `geom_text()` for little pieces of text
-* ... (see the [ggplot-website](https://ggplot2.tidyverse.org/reference/) for an overview)
+Now we have laid the foundation for our graph.
 
-OK --- we have a bare-bones statistical graph! Now let's pretty it up a bit by adding more informative titles to the axes. Can you add titles for the x- and y-axis by using code from above? (Also, don't copy and paste --- you'll learn more that way!)
+### Adding content
 
-```{r titles, exercise=T}
-ggplot(data = mtcars, aes(x=wt,y=mpg)) +
-    geom_point()
+Now that we have the foundation, we put the actual content on top of it. For this simple dataset, we use a simple bar (a.k.a. 'column') graph. As before, take a look at the code and then run it:
+
+```{r fruit2, exercise=T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col()
+
 ```
 
-### Change one of the variables
+###
 
-Happy with your graph? Now let's go a step further: Change one of the variables in the graph. Included in the mtcars-dataset is also the variable horsepower (`hp`), which as the name suggests measures the horsepower of the different car models --- how strong their engines are. Let's see how the horsepower of a car's engine is related to its fuel efficiency.
+```{r fruit2a, exercise=F,echo=T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col()
 
-Take the code below and:
-
-* Take out the `wt` variable and put in the `hp` variable instead
-* Adapt the title of the x-axis accordingly
-
-```{r prob1, exercise=T}
-ggplot(data = mtcars, aes(x=wt,y=mpg)) +
-    geom_point() +
-    ylab("Miles per gallon") +
-    xlab("Weight ('000 lbs)")
 ```
 
-### Adding a third variable: Different sizes for the dots
+Now we have a real graph! So, what happened? Note first that we have added an extra layer to our foundation with the `+` symbol. In `ggplot`, you always add layers with the `+` symbol.
 
-So far, the main dimensions or aesthetics of our graphs that we have defined are the two axes. We have placed one variable on the x-axis and one on the y-axis. But sometimes we want to add a third variable to show some some more complicated relationships. One way of doing this is to change the sizes of the points according to the values of another variable. 
+We have specified this new layer as `geom_col()`, and obviously it has added bars or _columns_ to our graph. But what does this 'geom'-thing mean?
 
-We can do this by adding a third main dimension --- or 'aesthetic' --- to our graph. In our case, we want our points to change in size depending on a different variable. Let's take the number of cylinders in the cars' engine. Run the code below! 
+In `ggplot`, the core contents of a graph --- the bars in a bar graph, the dots in a scatterplot, the lines in a line graph --- are referred to as 'geometric objects' or 'geoms'.
 
-```{r aes1, exercise = T}
-ggplot(data = mtcars, aes(x=wt,y=mpg)) +
-    geom_point(aes(size=cyl)) +
-    ylab("Miles per gallon") +
-    xlab("Weight ('000 lbs)")
+For a simple bar graph, we use `geom_col()` --- i.e. 'geometric object: column'. We could have also used `geom_bar()` --- this is the more sophisticated version of `geom_col()` that offers more possibilities to tweak and customize the output. We'll use this one later.
+
+There are also others:
+
+* For a line graph, we would use `geom_line()`
+* For a scatter plot, we would use `geom_point` (because a scatter plot shows, in essence, points or dots scattered over the graph)
+* ...and many, many more...
+
+This `geoms`-thing sounds perhaps a bit more complicated than necessary, but it does makes sense --- a bar, a dot or a line are all geometric objects! 
+
+### Polishing the graph
+
+Now that we have a first complete version of our graph, let's make it a bit prettier. The first thing we need to improve is the labels for the axes. As of now, it uses the 'raw' variable names. Before we can actually include this graph in a report, thesis, article, etc., we need to provide nicer-looking labels.
+
+We do this again by adding new layers. You know the drill:
+```{r fruit3, exercise=T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces")
 ```
 
-You see that most of the code is the same as above, but we have now added another aesthetic (`aes()`) to the `geom_point()` layer: We tell R that the size (`size`) of each of the points should depend on the `cyl` variable in the dataset (the number of cylinders). 
+###
 
-*Important* We could also have added the size-aesthetic to the main `ggplot()` command like so:
-```{r aes2, exercise = T}
-ggplot(data = mtcars, aes(x=wt,y=mpg,size=cyl)) +
-    geom_point() +
-    ylab("Miles per gallon") +
-    xlab("Weight ('000 lbs)")
+```{r fruit3a, exercise=F, echo=T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces")
 ```
 
-If you run the code, you see that the result is the same. But it does make sense to add it to the `geom_point()` layer below because this makes it clearer what is going on here. Our code gets easier to read, which is a good thing!
+It should not be difficult to see what happened here. We have added two new layers to our graph:
 
-Note also that ggplot automatically adds a legend on the right! Altogether, we can see now that heavier cars not only have a worse fuel efficiency, but they also tend to have larger engines with more cylinders. Makes sense, doesn't it?
+* `xlab()` specifies the label of our x-axis
+* `ylab` specifies the label of our y-axis
 
-### Using labels instead of dots
+*Important*: Because axis labels are _text_, we need to put it in quotation marks!
 
-The graph as it is looks quite neat, but all we see now is a number of dots. It would surely be nicer if we could see what models of cars we're looking at here. Remember that one of the different 'geoms' was called `geom_text()`? We can use this to show us the name of the car model. The logic is the same as adding another variable to graph, which we did above. In essence, we add the name of the model as a variable to the graph. 
+###
 
-I've prepared some code that does just this. Run the code first and let's then talk about what is going on here.
+As a last step, we change the overall look of the graph. The gray background is not ideal because it can sometimes make it more difficult to see smaller details in a graph and it also uses up more ink if we print it.
 
-```{r names1, exercise=T}
-ggplot(data = mtcars, aes(x=wt,y=mpg)) +
-    geom_text(aes(label = name)) +
-    ylab("Miles per gallon") +
-    xlab("Weight ('000 lbs)")
+Typically, we want a sleek and simple black-and-white background. We can change the overall look -- or _theme_ -- of the graph as follows:
+```{r fruit4, exercise=T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
 ```
 
-You notice that most of the code is still the same as it was before: We create the base layer of the graph with the `ggplot()` function and then add different layers to it via the `+` symbol and the code that follows.
+###
 
-You also see that the `geom_point()` command is now replaced by `geom_text()`. Obviously, `geom_text` tells R that we want a piece of text here --- this isn't too difficult, is it? But now there is again code to specify some aesthetics (`aes()`) of the graph --- what is going on here? 
+```{r fruit4a, exercise=F, echo=T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
 
-With `geom_text()`, we tell R that we want some text added to the graph. But then we also need to tell R which *particular* piece of text it should use. In our case, we want the graph to show the names of car models, which are saved in the `name` variable in our dataset. We tell R that we want to label our individual data points with the contents of the `name` variable with `label = name`. And then we have to designate this as another aesthetic (`aes()`). This is similar to above, where we let the points vary in size --- only here we let the name vary between the different observations.
+We have now changed the graph's theme by adding another new layer. Basically, the new layer `theme_bw()` overwrites the default gray theme and makes the graph black-and-white. There are a few other themes we could also have chosen: https://ggplot2.tidyverse.org/reference/ggtheme.html   
+
+So, graph done! Not bad for a first go. I hope you also see that all this coding-stuff is less scary than it might seem.
+
+Are you feeling ready to work on a real dataset? Then click 'continue'!
+
+## Using a real dataset {data-progressive=TRUE}
+
+In a real-life scenario, you would normally work with much larger datasets than the tiny fruit-dataset we used in the previous part. The workflow to create graphs with ggplot stays generally the same. This is one of the reasons why we use statistical software instead of Excel: Even very large and complex datasets can be handled without endless scrolling and cursor-dragging.
+
+In this part of this tutorial, we will use a part of the *Comparative Political Data Set* (https://www.cpds-data.org/). This dataset includes information on a range of political and socio-economic variables for the economically advanced democracies since the 1960s --- for example which parties are in government, how high the unemployment rate is, and how many workers are organized in trade unions. It is freely available and widely used by comparative sociologists and political scientists.
+
+I have created a subset of this dataset that includes only a few variables and covers only one year, 2015.
+
+You can see the dataset below:
+```{r cpds_tab, exercise=F, echo=F}
+print.data.frame(cpds)
+```
+
+You can see that the dataset includes the following information:
+
+* `country`: The name of the country for all 25 countries
+* `iso`: The ISO 3-digit abbreviation for the country name
+* `year`: The year, 2015
+* `womenpar`: The share of female members of parliament
+* `childcare`: How much each country spends on childcare, as a percentage of the size of its economy (its gross domestic product, or GDP)
+* `unemp`: The country's unemployment rate
+* `emprot_reg`: This is an index that measures how difficult it is for employers to dismiss ('fire') workers with a regular employment contract. This 'Employment Protection Index' has been created by the OECD. Higher scores mean it is more difficult to fire workers.
+
+Notice also that there are some `NA`s in our dataset. These are observations where we have missing information ('Not Available').
+
+Ready to start building a graph?
+
+### Women's political power and the welfare state
+
+Let's say we are interested in whether the share of female members of parliament in a country is related to the amount that country spends on childcare. Influential theories say that women should have a strong interest in well-developed childcare services [(Iversen & Rosenbluth 2010)](https://yalebooks.yale.edu/book/9780300171341/women-work-and-politics), and it is  possible that a larger share of female parliamentarians can push more forcefully for increased spending on these services.
+
+To find out, we need to relate the `womenpar`-variable to the `childcare`-variable. The way we do this is with a _scatterplot_. A scatterplot is ideal if we want to show a relationship between two continuous (or metric, numerical) variables --- and, as we have seen, both of the variables are indeed continuous.
+
+Below, you find the *first piece* of the code necessary to create a scatterplot of these two variables. Run it to see what happens:
+
+```{r cpds1, exercise=T}
+ggplot(data = cpds, aes(x=womenpar,y=childcare))
+
+# Note that the dataset is saved as 'cpds' -- short for Comparative Political Data Set
+
+```
+
+You probably remember: This code only creates the foundation for our graph. We still need to add the core element, the _geometric object_, or 'geom'. Let's go do that!
+
+###
+
+Remember the correct 'geom' for scatterplots?
+```{r q_geom, echo=F}
+question("Pick the correct 'geom' for a scatterplot",
+  answer("geom_bar()"),
+  answer("geom_line()"),
+  answer("geom_point()", correct = T),
+  answer("geom_text()"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
+###
+
+So, we have to add a `geom_point()` to the existing code. You probably remember that you add extra layers with a `+`. Why don't you try this yourself: 
+
+1. Add a `+` after the existing `ggplot()`-command;
+2. On a new line, `geom_point()`. 
+
+Then run the code.
+
+```{r cpds2, exercise=T, warning=FALSE}
+ggplot(data = cpds, aes(x=womenpar,y=childcare))
+```
+
+(Did you notice the auto-complete suggestions? Neat, right?)
+
+###
+
+Your code and graph should now look like this (if not, just scroll back up and klick 'start over'):
+```{r cpds2a, exercise=F, echo=T, warning=FALSE}
+ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
+geom_point()
+```
+
+The graph doesn't look too bad, and we can already learn something: There is indeed a positive relationship between the share of women in parliament and spending on childcare services.
+
+But, as before, the graph still looks a bit unpolished without proper axis labels and with the dull gray background. So let's go and polish this graph like we did with the previous one!
+
+###
+
+Do you remember how to add axis labels with `xlab()` and `ylab()`? Why don't you give it a try and add these to the graph --- don't forget to always use the `+` symbol to add new layers!
+
+```{r cpds3, exercise=T, warning=FALSE}
+ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
+geom_point()
+```
+
+###
+
+Your code and graph should now look like this (your axis labels might be different, but that is fine for now.):
+
+```{r cpds3a, exercise=F,echo=T, warning=FALSE}
+ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
+geom_point() +
+xlab("Share of women in parliament (%)") +
+ylab("Spending on childcare services (% GDP)")
+```
+
+Next we'll adapt the overall theme of the graph.
+
+###
+
+Can you change the graph theme to black-and-white (remember: `theme_bw()`):
+
+```{r cpds4, exercise=T, warning=FALSE}
+ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
+geom_point() +
+xlab("Share of women in parliament (%)") +
+ylab("Spending on childcare services (% GDP)")
+```
+
+###
+
+Here is again how the result should look like now:
+
+```{r cpds4a, exercise=F,echo=T, warning=FALSE}
+ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
+geom_point() +
+xlab("Share of women in parliament (%)") +
+ylab("Spending on childcare services (% GDP)") +
+theme_bw()
+```
+
+### Using text labels instead of dots
+
+Technically, we have a quite neat-looking graph now. But we can still make it more informative. As it is now, the individual observations are only shown as black points. If we were working with survey data, where all observations are anonymous persons, this would be fine. But in this case, we know that these are all different countries --- and we know, of course, what these countries are called!
+
+With 'ggplot', we can print the countries' names or the ISO abbreviations instead of the dots. Let's get going!
+
+###
+
+To use text labels, we need to use a different 'geom': `geom_text()`. So, to change the graph, we replace `geom_point()` with `geom_text()` --- but then there is some more!
+
+To get started, take a look at the code I have prepared, run it, and then let's talk about what the code does:
+
+```{r cpds6, exercise=T, warning=FALSE}
+ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
+geom_text(aes(label=iso)) +
+xlab("Share of women in parliament (%)") +
+ylab("Spending on childcare services (% GDP)") +
+theme_bw()
+```
+
+###
+
+```{r cpds6a, exercise=F, echo=T, warning=FALSE}
+ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
+geom_text(aes(label=iso)) +
+xlab("Share of women in parliament (%)") +
+ylab("Spending on childcare services (% GDP)") +
+theme_bw()
+```
+
+Now, what has changed? Obviously, we have replaced `geom_point()` with `geom_text()` --- but we also have added some more information within `geom_text()`: there is new code to specify some central aesthetics (`aes()`) of the graph.
+
+Let me explain: With `geom_text()`, we tell R that we want some text added to the graph. But then we also need to tell R which *particular* piece of text it should use for each *particular* observation. In our case, we want the graph to show the ISO abbreviations of country names, which are saved in the `iso` variable in our dataset. In other words, we want to 'map' the country abbreviations onto the graph. 
+
+This 'mapping' is done via an additional _aestethic_, i.e. `aes()`. And within it, we state that the labels should be based on the `iso`-variable with `label=iso`.
 
 All clear (more or less)? Well, great job! You just learned how to create a basic statistical graph in ggplot! Continue on to the next lesson to learn how to do this entirely by yourself.
 
-## Doing it yourself
+
+## Doing it all yourself {data-progressive=TRUE}
 
 ### Prep work - Loading packages and data
 
@@ -159,8 +376,53 @@ If you like, you can run this code in RStudio on your computer later. For now, w
 library(ggplot2)
 ```
 
-The library-function is used to load packages. The prep-work is almost done - now we only have to load the dataset:
-```{r eval=F,echo=T}
-mtcars <- mtcars
+The library-function is used to load packages.
+
+We have also already loaded our CPDS-dataset. Let me just print it out again so you remember what it contains:
+```{r cpds_tab2, exercise=F, echo=F}
+print.data.frame(cpds)
 ```
-As mentioned, the mtcars dataset comes with R, so this is easy. Remember the arrow --- the 'assignment operator' --- from the lecture? Here we use it to take the mtcars-dataset that is stored somewhere deep in the R program files and 'assign' it to the object 'mtcars'.
+
+* `country`: The name of the country for all 25 countries
+* `iso`: The ISO 3-digit abbreviation for the country name
+* `year`: The year, 2015
+* `womenpar`: The share of female members of parliament
+* `childcare`: How much each country spends on childcare, as a percentage of the size of its economy (its gross domestic product, or GDP)
+* `unemp`: The country's unemployment rate
+* `emprot_reg`: This is an index that measures how difficult it is for employers to dismiss ('fire') workers with a regular employment contract. This 'Employment Protection Index' has been created by the OECD. Higher scores mean it is more difficult to fire workers.
+
+Ready to move on?
+
+### Are 'neoliberals' right?
+
+Many conservative or liberal politicians (and many academics) argue that strict labor market regulation --- for instance making it difficult for employers to dismiss workers --- creates higher unemployment [(e.g. Siebert 1997)](https://www.aeaweb.org/articles?id=10.1257/jep.11.3.37).
+
+With the CPDS data, we can find out if that is true! But now you have to do it yourself!
+
+I have prepared a piece of code that you can start with --- *but you have to complete it for it to work!*
+```{r neo1, exercise=T, warning=F}
+ggplot(data=cpds,aes(x=,y=))
+```
+
+You need to:
+
+1. Define which variables go on which axis (the relevant variables are called `unemp` & `emprot_reg`)
+2. Add `geom_point()` to draw the scatterplot
+3. Alternatively: Use ISO labels with `geom_text()`
+4. Add informative axis labels with `xlab()` & `ylab()`
+5. Change the overall theme with `theme_bw()` --- or another one, if you have a different preference!
+
+### My solution
+
+Here is how I would have done it:
+```{r neo2, exercise=F, echo=T, warning=F}
+ggplot(data=cpds,aes(x=emprot_reg,y=unemp)) +
+  geom_text(aes(label=iso)) +
+  ylab("Unemployment rate (%)") +
+  xlab("Strictness of dismissal rules") +
+  theme_bw()
+```
+
+What do we learn? There is indeed a positive relationship: Countries with stricter labor market rules like Greece or Spain have higher unemployment rates than countries with lenient rules like the United States. But: The relationship is not particularly strong!
+
+Anyways, graph number 3 done --- and this time (mostly) yourself! Next step: Do it all yourself, without 'training wheels'! Bonne chance!
