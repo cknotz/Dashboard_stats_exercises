@@ -42,7 +42,7 @@ fruit <- data.frame(type = c("Apples","Oranges"),
                     number = c(42,17))
 
 ```
-All this code does is to create a `data.frame` (this is what R calls datasets) and save it as 'fruit'. We'll go over this in more detail later.
+All this code does is to create a `data.frame` (this is what R calls datasets) and save it as 'fruit'. (We'll go over this in more detail in a later tutorial.)
 
 Here is how the fruit-dataset looks like:
 ```{r fruittab, exercise=F}
@@ -50,7 +50,7 @@ Here is how the fruit-dataset looks like:
 print.data.frame(data.frame(type = c("Apples","Oranges"),
                     number = c(42,17)))
 ```
-Our dataset tells us, basically, that we have 42 apples and 17 bananas. Not more complicated than that.
+Our dataset contains two observations, one for oranges and one for apples. It tells us, basically, that we have 42 apples and 17 oranges. It's not more complicated than that.
 
 Now that we have data, we can graph them! In `ggplot`, graphs are created step-by-step -- or, more accurately, layer by layer. We'll now go over each step.
 
