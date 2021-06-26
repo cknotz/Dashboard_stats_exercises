@@ -22,6 +22,7 @@ ui <- dashboardPage(
       menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
+      menuItem("The Central Limit Theorrem", tabName = "clt"),
       menuItem("Chi-squared test",tabName = "chi"),
       menuItem("Difference of means test",tabName = "ttest"),
       menuItem("Correlation",tabName = "corr", selected = T),
