@@ -33,22 +33,13 @@ Click 'continue' to begin.
 
 ### Preparation
 
-The first thing we need is some data that we can graph. We start _very_ simple and use a tiny practice-dataset that is easy to handle. I've created this for you using the following code:
-
-```{r fruit, exercise=F, echo=T}
-fruit <- data.frame(type = c("Apples","Oranges"),
-                    number = c(42,17))
-
-```
-All this code does is to create a `data.frame` (this is what R calls datasets) and save it as 'fruit'. (We'll go over this in more detail in a later tutorial.)
-
-Here is how the fruit-dataset looks like:
+The first thing we need is some data that we can graph. We start _very_ simple and use a tiny practice-dataset that is easy to handle. I've created this for you --- here is how it looks like:
 ```{r fruittab, exercise=F}
 
 print.data.frame(data.frame(type = c("Apples","Oranges"),
                     number = c(42,17)))
 ```
-Our dataset contains two observations, one for oranges and one for apples. It tells us, basically, that we have 42 apples and 17 oranges. It's not more complicated than that.
+Our dataset contains two observations and two variables. Basically, our dataset tells us that we have 42 apples and 17 oranges. It's not more complicated than that.
 
 Now that we have data, we can graph them! In `ggplot`, graphs are created step-by-step -- or, more accurately, layer by layer. We'll now go over each step.
 
