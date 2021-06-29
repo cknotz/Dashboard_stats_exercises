@@ -545,4 +545,156 @@ ggplot(data=cpds,aes(x=emprot_reg,y=unemp)) +
 
 What do we learn? There is indeed a positive relationship: Countries with stricter labor market rules like Greece or Spain have higher unemployment rates than countries with lenient rules like the United States. But: The relationship is not particularly strong!
 
-Anyways, graph number 3 done --- and this time (mostly) yourself! Next step: Do it all yourself, without 'training wheels'! Bonne chance!
+Anyways, graph number 3 done --- and this time (mostly) yourself! 
+
+## De-bugging exercises {data-progressive=TRUE}
+
+So far, you have been given code examples that worked --- in the sense that they did not cause an error. If you were to do your own data analysis, you would of course eventually run into a problem and/or receive error messages. The exercises in this chapter prepare you for that.
+
+Specifically, this chapter should help you achieve the following:
+
+1) You get more practice working with the code examples from earlier, which will reinforce the skills you have acquired so far
+2) You get so see the most common causes of error messages ('bugs') --- and that they are usually easily fixable and less scary than they might seem at first
+3) You get used to dealing with problems when coding, and thus become a more confident user of R
+
+###
+
+### Exercise 1
+
+Below you see a set of code for a bar graph that does not work. Click 'run code' to see the error message (scary, right?). Then try to fix it. There is a hint, if you need it.
+```{r debug1, exercise = T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col( +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+<div id="debug1-hint">
+**Hint:** Check that all parentheses -- ( ) -- are closed.
+</div>
+
+### 
+
+You only needed to close the parenthesis for `geom_col`:
+```{r debug1a, eval=T, echo=T, exercise=F}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+
+
+### Exercise 2
+
+Here is one more code chunk that throws an error. Can you fix this one?
+```{r debug2, exercise = T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab(Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+<div id="debug2-hint">
+**Hint:** Check that all text is enclosed in quotation marks ("").
+</div>
+
+### 
+
+The solution was to add an opening quotation mark before "Type of fruit":
+```{r debug2a, eval=T, echo=T, exercise=F}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+
+### Exercise 3
+
+And one more, with another very common bug:
+```{r debug3, exercise = T}
+ggplot(data = fruit, aes(x = type y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+<div id="debug3-hint">
+**Hint:** In R, all elements of a function (what is inside a function's parentheses, e.g. `aes()`) need to be separated by commas. Carefully go over the first line -- can you see two elements of a function that are *not* separated by a comma?
+</div>
+
+###
+
+The trick was to place a comma between the x- and y-elements of the `aes()` function:
+```{r debug3a, exercise = F, eval=T, echo=T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+
+### Exercise 4
+
+This one might be a bit tricky to spot:
+```{r debug4, exercise = T}
+ggplot(data = fruits, aes(x = typ, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+<div id="debug4-hint">
+**Hint:** The dataset is called `fruit`, and the variable for the type of fruit is called `type`.
+</div>
+
+###
+
+The solution: Remove the s in `fruits` and change `typ` to `type`:
+```{r debug4a, exercise = F, eval=T, echo=T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+
+### Exercise 5
+
+If you paid attention earlier, you should be able to spot this one easily:
+```{r debug5, exercise = T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() 
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+<div id="debug5-hint">
+**Hint:** You add extra layers to a graph with a `+` symbol.
+</div>
+
+###
+
+The `+` symbol behind `geom_col()` was missing!
+```{r debug5a, exercise = F, eval=T, echo=T}
+ggplot(data = fruit, aes(x = type, y = number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+
+
+### Summary
+
+These exercises introduced you to the (in my experience) most common sources of error messages:
+
+* Parentheses that were opened "("  but not also closed ")". This is confusing the computer because it is desperately looking for the end of the function that is lacking the closing parenthesis.
+* Text that is not enclosed in quotation marks. Computers can only read pre-defined code --- their native language. They do not understand human language.
+* Missing commas. This can happen easily when one writes code in a hurry. R needs you to be very explicit about how the different parts of a function should be separated.
+* Misspelled dataset- or variable names. This one is particularly devious: It is actually good if it results in an error because you referred to a non-existing dataset (`fruits`) or variable (`typ`). It is much more problematic if there actually _is_ a dataset called `fruits` because then the code runs error-free but might show you the wrong results!
+
+But you should also have seen that these 'bugs' are usually easy and fast to fix. You may at some point run into some problems that are more tricky --- but this happens very rarely. Mostly, it is stray commas, missing symbols, quotation marks and parentheses.
+
+*Now you should be ready to do it all yourself, without 'training wheels'! Bonne chance!*
