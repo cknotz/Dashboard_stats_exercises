@@ -81,7 +81,7 @@ sample %>%
   theme(axis.text.x = element_text(angle = 25,hjust = 1))
 
 # Simulate repeat sampling
-means <- sapply(seq(1,10000,1),
+means <- sapply(seq(1,50,1),
        function(x){
          sample <- sample(popdat$vacc,
                           size = 1500,
