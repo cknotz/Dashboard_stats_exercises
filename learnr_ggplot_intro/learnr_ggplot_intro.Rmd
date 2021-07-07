@@ -27,13 +27,24 @@ cpds <- haven::read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2
 
 ###
 
-In this interactive tutorial, you will learn the basics of visualizing data with ggplot2. ggplot2 is one of the various packages for R, and is widely used to make graphs.
+In this tutorial, you will learn the basics of visualizing data with ggplot2. ggplot2 is one of the various packages for R, and is widely used to make graphs.
 
-Click 'continue' to begin.
+This tutorial is *interactive*, which means that you get to do many things yourself --- of course with help. Throughout the tutorial, you find little consoles like the one just below.
+```{r tutintro, exercise=T}
+
+```
+
+Each of these consoles is the same as the console on the bottom left in RStudio: It allows you to run small pieces of R code and get a result. Try it out: Type `1+1` into the console and click `Run`. 
+
+Did you get a result? If yes, try computing `23*89`. If you like, play around with this a bit. 
+
+Otherwise, click 'Continue' to begin the tutorial.
 
 ### Preparation
 
-The first thing we need is some data that we can graph. We start _very_ simple and use a tiny practice-dataset that is easy to handle. I've created this for you --- here is how it looks like:
+The first thing we need if we want to make graphs is some data. 
+
+We start _very_ simple and use a tiny practice-dataset that is easy to handle. I've created this for you --- here is how it looks like:
 ```{r fruittab, exercise=F}
 
 print.data.frame(data.frame(type = c("Apples","Oranges"),
@@ -41,9 +52,11 @@ print.data.frame(data.frame(type = c("Apples","Oranges"),
 ```
 Our dataset contains two observations and two variables. Basically, our dataset tells us that we have 42 apples and 17 oranges. It's not more complicated than that.
 
-Now that we have data, we can graph them! In `ggplot`, graphs are created step-by-step -- or, more accurately, layer by layer. We'll now go over each step.
+Now that we have data, we can graph them!
 
-###
+### Introducing *ggplot2*
+
+*ggplot2* is a tool in R that we can use to make graphs. As mentioned above, it is very widely used by researchers, data scientists, etc. 
 
 If we want to create a graph with ggplot, we use the `ggplot()` command (or 'function'). This is the main and most important function --- everything else is built on and around it.
 
@@ -60,15 +73,15 @@ ggplot()
 
 ```
 
-You may wonder why not much is going on here. But consider what all we have told R with this command is to make a graph. Period. Not more. 
+You may wonder why not much is going on here. But consider what all we have specified with this command is open a graph window. Period. Not more. 
 
-R does not yet know the most important things: which dataset it should use and what variable goes on which axis of the graph. Therefore, all R does is to open an empty graph window.
+We have not yet defined the most important things: which dataset we want to use and what variable goes on which axis of the graph. Therefore, all that happens is that an empty graph window opens.
 
 Let's add the missing information.
 
 ###
 
-We give R this key information by adding further specifications into the parentheses of the `ggplot()` function. Take a look at the code, and then run it to see what happens: 
+We provide this missing information by adding further specifications into the parentheses of the `ggplot()` function. Take a look at the code, and then run it to see what happens: 
 ```{r fruit_s1, exercise=T}
 ggplot(data = fruit, aes(x = type, y = number))
 
