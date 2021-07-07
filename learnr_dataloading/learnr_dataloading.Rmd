@@ -1,0 +1,491 @@
+---
+title: "Getting data into R"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+library(haven)
+library(ggplot2)
+library(rsdmx)
+library(essurvey)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Getting data into R
+
+## Introduction {data-progressive=TRUE}
+
+Before you can do any data analysis, you obviously first need to have some dataset and get it into R. Luckily, R and the various packages for it offer you the ability to read a whole range of different data types and formats with just a few symbols of code. In this tutorial, we will cover direct downloads using pre-build commands, some basic functions included in R as such and two important packages from the `tidyverse` that are designed to read different data sources: `haven` and `readxl`.
+
+An added benefit of this lesson is also that you get to know various different data sources and how you access them!
+
+## Reading Stata & SPSS datasets {data-progressive=TRUE}
+
+We start with how to read Stata (.dta) and SPSS (.sav) files, because these types of files are both widely used but they also tend to be the least complicated to work with in R. The reason for this is that Stata and SPSS datasets are usually nicely formatted as *tidy* datasets: Each row is an observation (individual, country,...) and each column is a variable (gender, age, income,...).
+
+So, how do we read a Stata or SPSS file into R? For this, we use the haven`-package, which provides functions to read different types of dataset-files into R: Stata, SPSS, and also SAS.
+
+As always, we need to load the package before we can use it --- over to you! Complete the code below to load the `haven`-package:
+```{r havenload, exercise=T}
+library()
+```
+
+###
+
+### `haven`: Key functions to use
+
+The `haven`-package (https://haven.tidyverse.org/) has a quite logical structure: Each function that reads data files starts with 'read_' and then the file type:
+
+* `read_dta()` for Stata .dta files
+* `read_sav()` for SPSS .sav files
+* `read_sas()` for SAS .sas7bdat files
+
+All you really need to do is to paste the file name (if applicable, together with the path or link to where the file is saved) into the parentheses.
+
+For example: 
+
+* `read_dta("ess.dta")` reads the "ess.dta" file; 
+* `read_sav("/users/username/documents/datafiles/ess.sav")` would read the "ess.sav" file, but from the folder specified via the file path;
+
+Got it?
+
+###
+
+Let's find out!
+```{r havendta-q, echo=F}
+question("Which function would you use to read a Stata (.dta) file?",
+  answer("read_dta()", correct=T),
+  answer("read_sav()"),
+  answer("read_sas()"),
+  random_answer_order = TRUE)
+```
+
+###
+
+Let's do two more --- repetition is key to learning:
+```{r havensav-q, echo=F}
+quiz(caption=" ",
+question("Which function would you use to read an SPSS (.sav) file?",
+  answer("read_dta()"),
+  answer("read_sav()", correct=T),
+  answer("read_sas()"),
+  random_answer_order = TRUE),
+question("Which of these functions are included in the haven-package?",
+  answer("read_dta()", correct=T),
+  answer("read_xls()"),
+  answer("read_sas()", correct=T),
+  answer("read_sav()", correct=T),
+  random_answer_order = TRUE)
+)
+```
+
+
+### Reading a Stata (.dta) file
+
+Enough theory --- let's start actually doing things! First, we will use the `haven`-package to read a Stata file. And here we use the *Comparative Political Data Set*, which you already know from the previous tutorial on graphs.
+
+If you go to https://www.cpds-data.org/index.php/data, you find two links you can use to download the dataset: One for the Stata-version of the dataset, and another one for the Excel-version. We will for now use the Stata version (the Excel-version comes later!).
+
+Here's what you need to do now:
+
+1) Got to https://www.cpds-data.org/index.php/data
+2) Right-click on the link to the Stata-version of the dataset and copy the link address
+3) Paste this address into the `read_dta()`-function below (between the quotation marks!)
+
+If all works, then a table with the first rows of the dataset should appear shortly after you run this code:
+```{r cpdsdta, exercise=T}
+# This downloads the dataset and saves it as 'cpds'
+cpds <- read_dta("")
+
+# This prints the first few rows of the dataset
+head(cpds)
+```
+
+###
+
+This is the correct solution:
+```{r cpdsdta-a, echo=T, eval=T}
+# This downloads the dataset and saves it as 'cpds'
+cpds <- read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta")
+
+# This prints the first few rows of the dataset
+head(cpds)
+```
+Now your dataset is now in your R-workspace and ready for your analysis. Not too difficult, right?
+
+### Reading an SPSS (.sav) dataset
+
+Now that you know how to use the `haven`-package to read Stata-files, reading in SPSS files should be pretty easy. The only thing that changes is the precise function we use. Instead of `read_dta()`, we use `read_sav()`!
+
+To practice working with SPSS files, we use a dataset from peace & conflict studies: the *Major Episodes of Political Violence, 1946-2018* dataset. You can access this dataset (and other related ones) at: https://www.systemicpeace.org/inscrdata.html
+
+Now again over to you:
+
+1) Go to the dataset website: https://www.systemicpeace.org/inscrdata.html
+2) Find the *Major Episodes of Political Violence, 1946-2018* dataset
+3) Copy the link to the _SPSS Annual_ dataset (one of the square buttons on the right of the page)
+
+Once you have the link, _complete_ and then run the code below so that it downloads the dataset. Make sure to use the right function to read SPSS (.sav) datasets!
+```{r inscr, exercise=T}
+# This should download the dataset and save it as 'dcn'
+mepv <- read_
+
+# This shows the first few observations
+head(mepv)
+```
+
+###
+
+This is how the code should look like:
+```{r inscr-a, echo=T, eval=T}
+# This should download the dataset and save it as 'dcn'
+mepv <- read_sav("http://www.systemicpeace.org/inscr/MEPVv2018.sav")
+
+# This shows the first few observations
+head(mepv)
+```
+
+And again, the dataset is ready to go! (If you are curious about what these variables measure, check out the dataset's codebook. You can find that on the website where we got the data.)
+
+## Reading Excel datasets {data-progressive=TRUE}
+
+You are probably quite familiar with Excel and its file formats, `.xls` and the newer `.xlsx`. Excel is widely used and many of the datasets you will be wanting to work with in R will therefore come as Excel-files.
+
+Loading Excel-files into R is easy --- provided that the data are *tidy*: Every row is an observation, every column is a variable. And there should be none of the stuff that one often finds in Excel-files: Notes, graphs, links to websites, etc. 
+
+To read Excel-files, we use a dedicated package: `readxl`.
+
+### Using the `readxl`-package
+
+The `readxl`-package (https://readxl.tidyverse.org/) works very similarly to the `haven`-package: The functions to read data all start with "read_" followed by the file type:
+
+* `read_xls()` reads the older .xls file format
+* `read_xlsx()` reads the newer .xlsx file format
+* `read_excel()` figures out by itself which format your file has, and then reads it (convenient!)
+
+*Important:* These functions do unfortunately not allow you to directly download an Excel-file from a website into R. This means you first have to download the data file onto your computer before you can read it into R.
+
+As always, before we can use the package, we need to load it with the `library()` function:
+```{r loadxlpck, echo=T, eval=T}
+library(readxl)
+```
+
+###
+
+We will skip the quiz here and move straight to a practical example. For this, we go back to comparative politics. You may have heard of Pippa Norris, one of the leading political scientists of the last decades? On her website (https://www.pippanorris.com/), she provides access to several of the datasets she and her colleagues created.
+
+One of the datasets on her website is the *Democracy Cross-national Data*, which contains over 1000 variables that measure a range of social, political, and economic characteristics of 193 countries. You can think of this as the global version of the *Comparative Political Dataset*.
+
+Let's download the dataset and take a look:
+
+1) Go to https://www.pippanorris.com/data
+2) Scroll down until you find the *Democracy Cross-national Data* dataset (make sure it really is this dataset!)
+3) Download the Excel-version of the dataset *and save it somewhere where you can easily find it* (e.g. your Desktop)
+4) Navigate to the file and open it --- with Excel
+
+When the file opens in Excel, you should see nothing but a bunch of numbers. If you scroll all the way to the left and then up, country names should appear. Note that the first line indicates the variable names. But there are no graphs. No links. No other flashy stuff. This is exactly how R likes its Excel-datasets --- boring. 
+
+We can therefore directly read it into R. 
+
+###
+
+To read the dataset into R, go back to the folder where you have saved the file and copy the file path (on Mac: Right-click plus hold the 'Option'-key, then select "Copy as pathname"; on Windows: Right-click, then select "Copy as path").
+
+The path should look something like this: `/Users/carloknotz/Desktop/Democracy Cross-National Data V4.1 09092015.xlsx`. Now paste this path into the `read_excel()`-function below --- between the quotation marks:
+```{r cpdsxl, exercise=T}
+# This reads and saves the dataset in R as 'cpds'
+cpds <- read_excel("")
+
+# This prints the first few lines
+head(cpds)
+```
+
+Does it show you the first lines of the dataset?
+
+###
+
+This is how your code should look like:
+```{r cpdsxla, echo=T,eval=F}
+# This reads and saves the dataset in R as 'cpds'
+dcn <- read_excel("/Users/carloknotz/Desktop/Democracy Cross-National Data V4.1 09092015.xlsx")
+
+# This prints the first few lines
+head(dcn)
+```
+
+Now the dataset is read into R and ready for your analysis!
+
+### What if my Excel-file does not look *tidy*?
+
+The creators of the datasets we have used so far all took care to provide a clean file that is ready to be worked with. Of course, often your file will not look like this. 
+
+Let's look at an example of an "untidy" dataset: The *Migrant Integration Policy Index (MIPEX)* dataset (https://www.mipex.eu/). This dataset measures how countries include and integrate their immigrant populations. In some countries such as Canada, immigrants are granted quite many rights and are protected from discrimination. In others such as Germany or Switzerland, immigrants enjoy fewer rights. 
+
+If you go to https://www.mipex.eu/download-pdf, you can find a button to download an Excel-file with the data. When you download this and open it in Excel, you see a lot of different tables stacked on top of each other. This is made to be read by humans --- but not by computers.
+
+You could even use the code from above to read this file into R and it would probably not even throw an error. But the problem is: The dataset is not organized as a tidy statistical dataset --- with observations in rows and variables in numbers. If you wanted to work with this dataset, you would have to reshape it into a tidy dataset. You could do this either in Excel or in R --- but doing it in R is likely more difficult if you are not very experienced yet. In the case of this dataset, it would probably be easiest to prepare the data in Excel first and then read them into R.
+
+(We will go over some data reshaping and cleaning operations in a later tutorial.)
+
+## Reading comma-separated values (CSV) files {data-progressive=TRUE}
+
+You may ask yourself: "What is a CSV file?" Chances are, you have so far not come across one of these. Not to worry: CSV files are not much more than simpler, stripped-down versions of Excel (.xls, .xlsx) files.
+
+As mentioned in the title above, CSV stands for 'comma-separated values'. All this means is that the dataset consists of individual data points separated by commas. For example, a part of a dataset could look like this:
+```{r csvex, echo=F, eval=F}
+country,year,gdpgrowth,unemp
+Norway,2008,3.2,2.1
+Sweden,2008,2.8,5.6
+```
+
+CSV files are still popular because they can be read by any statistical software (R, Stata, SPSS, SAS) and also Excel, and because they basically just contain the data without any unnecessary or potentially problematic extras.
+
+###
+
+###
+
+To practive working with CSV-files, we will use another peace & conflict dataset: one of the *Ethnic Power Relations (EPR) Datasets* created by the International Conflict Research group at the ETH in Zurich. 
+
+If you go to https://icr.ethz.ch/data/epr/core/, you find a brief description of the *EPR Core* dataset plus the dataset itself in different versions.
+
+### Taking a first look at a CSV file
+
+Before we read the dataset into R, let's first take a look at it in Excel. From the EPR website, download the CSV-version of the *EPR Core* dataset to your computer and open it in Excel.
+
+What you see should look pretty much like any old Excel-file: Data points in cells. You may only see a warning that the file is in CSV-format and that you may want to save this file as a regular Excel-file.
+
+You also see that the first data points are about the United States and show that Whites were the dominant ethnic group during the early years after World War II.
+
+Now that you have an idea what the dataset looks like, let's read it into R.
+
+### Reading CSV files with `read.csv()`
+
+To read CSV files, we use the `read.csv()` function. Importantly, this function is already pre-installed in R --- it is not part of the `tidyverse` or the `haven` or `readxl`-packages! This is also why it uses a dot instead of an underscore in its name.
+
+With `read.csv`, we can again directly download files from websites using links. So, go back to the EPR website (https://icr.ethz.ch/data/epr/core/) and copy the link to the CSV-version of the dataset.
+
+Next, paste the link to the dataset into the appropriate spot below. Important: This time you also need to add quotation marks yourself!
+```{r rcsv, exercise=T}
+# This downloads and reads the EPR dataset into R
+epr <- read.csv()
+
+# This prints the first few observations in the dataset
+head(epr)
+```
+
+###
+
+This is how your code and the result should look like:
+```{r rcsv-a, eval=T, echo=T}
+# This downloads and reads the EPR dataset into R
+epr <- read.csv("https://icr.ethz.ch/data/epr/core/EPR-2021.csv")
+
+# This prints the first few observations in the dataset
+head(epr)
+```
+
+You should see again the first observations in the dataset, which relate to different ethnic groups in the United States.
+
+### Summary
+
+Now you have seen how you can read several of the most widely-used file formats for datasets into R so that you can work with them. This is a big step forward! 
+
+Do you feel ready for some exercises?
+
+## De-bugging exercises {data-progressive=TRUE}
+
+As in earlier tutorials, you can now practice what you have just learned by de-bugging some code chunks.
+
+In this first problem, we want to download and read the Stata (.dta) version of the *Comparative Political Data Set*, but the code does not seem to work. Can you help?
+```{r ex1, exercise=T}
+cpds <- read_sav("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta")
+
+head(cpds)
+```
+
+###
+
+###
+
+The problem: The wrong `read_` function was used. To read a Stata dataset, we need to use the `read_dta()` function, not the `read_sav()` function. This is the correct solution:
+```{r ex1-a, echo=T, eval=F}
+cpds <- read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta")
+
+head(cpds)
+```
+
+### Problem No. 1
+
+Here is the second problem. Can you fix the bug?
+```{r ex2, exercise=T}
+mepv <- read_sav(http://www.systemicpeace.org/inscr/MEPVv2018.sav)
+
+head(mepv)
+```
+
+### Problem No. 2
+
+Could you figure out what the problem was? Again one of the most common ones: Missing quotation marks! We have to tell R not to treat the link as a command but to treat it simply like a piece of text.
+
+This is the correct solution
+```{r ex2-a, echo=T, eval=F}
+mepv <- read_sav("http://www.systemicpeace.org/inscr/MEPVv2018.sav")
+
+head(mepv)
+```
+
+### Problem No. 3
+
+Now to the third problem. This one might be a bit trickier! Here, we try to download the Excel-version of Pippa Norris' *Democracy Cross-National Data* dataset from her website (or more accurately, her Dropbox account) --- but something does not want to work. Do you have a clue what could be wrong here?
+```{r ex3, exercise=T}
+dcn <- read_excel("https://www.dropbox.com/s/kycnqln2sslu91l/Democracy%20Cross-National%20Data%20V4.1%2009092015.xlsx?dl=0")
+
+# This prints the first few lines
+head(dcn)
+```
+
+###
+
+Figured it out? The problem was that `read_excel` cannot download files directly from the internet. This means we need to first download the file and then open it, for example like this:
+```{r ex3-a, echo=T, eval=F}
+dcn <- read_excel("/Users/carloknotz/Desktop/Democracy Cross-National Data V4.1 09092015.xlsx")
+
+# This prints the first few lines
+head(dcn)
+```
+
+## Exercises {data-progressive=TRUE}
+
+Now it is again time for you to code on your own. In the first of two exercises, you will quickly repeat some of the things we covered earlier. In the second exercise, you will work with a cool package that allows you to directly download data from the European Social Survey (ESS) into R, without any extra steps.
+
+### Exercise 1: Download and read in a Stata dataset {data-progressive=TRUE}
+
+This exercise should be easy to do. You just need to use the `haven`-package to read a Stata dataset into R. You can choose which dataset you want to work with. From here on, you should work in your own R-code file in RStudio.
+
+First, load the `haven`-package --- if necessary, install it first. You install the package, as always, with `install.packages()`:
+```{r insthav, echo=T, eval=F}
+install.packages("haven")
+```
+
+###
+
+Second, load the package with the `library()`-function:
+```{r loadhav, echo=T, eval=F}
+library(haven)
+```
+
+###
+
+Now you need to get the link to the dataset of your choice. You can use the *Comparative Political Data Set*, the *Democracy Cross-National Data* or any other dataset you find interesting as long as it is in Stata (.dta) format. Go to the respective dataset website, copy the link and then use it in `haven`'s `read_dta()`-function:
+```{r havexamp, echo=T, eval=F}
+your_dataset <- read_dta("[link]")
+```
+
+If it worked, you should see your dataset listed in the *Environment* tab on the upper right-hand side in RStudio.
+
+### Exercise 2: Using the `essurvey` package {data-progressive=TRUE}
+
+You may have heard of the European Social Survey (ESS). This is a large-scale survey project that collects data about the opinions and preferences of citizens in many European countries (plus Israel and Russia). Because it covers so many countries and so many topics (immigration, gender, climate change, health, inequality, well-being,...), it is one of the most widely-used survey datasets in political science and sociology. The Norwegian Centre for Research Data (NSD) is also one of the member organizations. Perhaps more importantly: The data are freely available to anyone who wants to use them.
+
+Normally, if we wanted to use ESS data, we would have to go to https://www.europeansocialsurvey.org/. There we would register as a user, then select the countries, topics, and years we are interested in, and download the data as an Excel (.xlsx) or Stata (.dta) file. Then we would read this file into R.
+
+Luckily, there's a way to save the last few steps and directly load the data into R: the `essurvey`-package (https://cran.r-project.org/web/packages/essurvey/vignettes/intro_ess.html)!
+
+In this exercise, you will work with the `essurvey`-package. As before, you will now work directly in R. This tutorial will only give you the code --- you have to run it yourself in R.
+
+### Register as a user
+
+To access the ESS data, you need to be registered as a user with the ESS. Thus, if you want to do the exercise, you need to quickly sign up on: https://www.europeansocialsurvey.org/user/new
+
+You will need the e-mail address you use to register for this exercise.
+
+###
+
+Now to the exercise. Your first step is again to install and load the package. 
+```{r essinstall, echo=T, eval=F}
+install.packages("essurvey")
+library(essurvey)
+```
+
+###
+
+Next you need the e-mail address you used to register as an ESS-user. The `essurvey`-package needs to know it when it communicates with the ESS-servers.
+
+You use the `set_email()` command to tell `essurvey` which e-mail address it should use. Run the code below -- with your own e-mail address -- in R:
+```{r essmail, echo=T, eval=F}
+set_email("name@email.com")
+```
+
+### List countries
+
+With the package loaded and the e-mail address registered, you can now directly access the ESS data.
+
+First, let's see in detail which countries are covered by the ESS. Run the command below in RStudio:
+```{r esscoun, echo=T, eval=F}
+show_countries()
+```
+
+Can you see Norway in the list?
+
+### List topics
+
+We can also see which topics are covered:
+```{r essthemes, echo=T, eval=F}
+show_themes()
+```
+
+Quite many, right?
+
+### Download by survey round
+
+Let's get to downloading! For a start, let's download the data from the first round of the ESS, which was conducted in 2002:
+```{r essr1, echo=T, eval=F}
+ess <- import_rounds(1) # this downloads the dataset and saves it as 'ess'
+```
+
+
+Now you should see in the *Environment*-panel on the upper right that the ESS data are saved as 'ess'. They --- and therefore you --- are ready to go! 
+
+### Which countries were included in which round?
+
+Now you have to work even more by yourself. Can you use the `show_country_rounds()`-function to see in which rounds Norway was included?
+
+###
+
+This is how you could do that:
+```{r cnrnd, echo=T, eval=F}
+show_country_rounds("Norway")
+```
+
+### Get ESS data for a specific country
+
+You can use the `import_country()`-function to get ESS data for a specific country *and* specific rounds. First, familiarize yourself with how the function works. You can do this by visiting https://rdrr.io/cran/essurvey/man/import_country.html; alternatively, you can type `?import_country()` into the console (lower left) in RStudio. A help file should appear on the bottom right in RStudio.
+
+Ready for the next step?
+
+###
+
+Now, use the `import_country()` function to get ESS data for Norway, but only from the first round! To solve this, you have to combine a few different things you know about R code. This may take you a bit of time to figure out! Take a look at the examples in the help file or on the website.
+
+A hint: Within the `import_country()`-function (inside the parentheses), you need to specify:
+
+1) `country` should be "Norway"
+2) `rounds` should be 1
+
+###
+
+This is how you could get data for Norway from the first ESS round:
+```{r essno, echo=T, eval=F}
+ess_no <- import_country(country = "Norway", rounds = 1)
+```
+
+Now you know how you can get survey data for Norway (and many other countries) on a wide variety of topics from a highly trusted source!
+
+Also: The last task should have shown you how you can set multiple options (or `arguments`, in R-lingo) within a single function.
+
+
+
+

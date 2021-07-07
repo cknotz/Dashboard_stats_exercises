@@ -1,0 +1,35 @@
+---
+title: "Data Cleaning with dplyr (1)"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+library(ggplot2)
+library(rsdmx)
+knitr::opts_chunk$set(echo = FALSE)
+
+
+```
+
+# Data Cleaning with dplyr (1)
+
+In this tutorial, you learn how to do basic data cleaning operations with the `dplyr`-package.
+
+## Introduction {data-progressive=TRUE}
+
+One of the biggest hurdles for beginner data analysts is data cleaning (a.k.a. data munging, management, preparation,...). In a statistics or data analysis course, you are normally given clean and tidy practice datasets that have been prepared by the instructors. But this is very different when you are 'out in the wild': Real-life data can often be messy and unorganized. And even if a dataset is reasonably clean, you might still have to trim away some unnecessary observations or transform some variables.
+
+Data cleaning is, to be honest, often tedious and boring and can be quite frustrating. In addition, R used to be the software where data cleaning was particularly tricky. This has changed a lot with the `tidyverse`, which now offers a whole array of packages for working with even the most complicated data structures (e.g. text or time-series). 
+
+The arguably most fundamental package for data cleaning in R is `dplyr`, which provides fairly easy to use commands to subset, summarize, reshape, split, combine ('merge'),... your data. In this tutorial, you will learn how to do basic data cleaning tasks with `dplyr`.
+
+###
+
+### Messy data --- a practical example (& )
+
+Before we get into the nitty-gritty of `dplyr`, let's first get an impression of how a messy real-life dataset looks like. For this, we use 
+
+
