@@ -1,0 +1,388 @@
+---
+title: "First steps in the R environment"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## What is going on here? 
+
+The previous tutorial on how to make graphs with `ggplot` hopped over quite a few smaller and larger details. In this tutorial, we make up for this and go over some important concepts and tools in the R environment. Think of this as a fundamental introduction to the R-language.
+
+Ready to start?
+
+## Interacting with R {data-progressive=TRUE}
+
+You probably remember the little consoles from the previous tutorial, in which you could run pieces of R code and get a result? Then you also recall that these are the same as the console on the bottom left of RStudio. Both of these allow you to give commands to R and get a result (or error message).
+
+One way of interacting with R is to use it as a pocket calculator. To warm up, try it out in the console below --- let R do some math!
+```{r math, exercise=T}
+
+```
+
+* Use `+` to add
+* Use `-` to subtract
+* Use `*` to multiply
+* Use `/` to divide
+
+###
+
+### Telling R what to do
+
+Unless you have some experience working with other computer languages (HTML/CSS/Javascript, Python, C++, LaTeX,...), you probably interacted with your computer to a large extent via menus, using your mouse or touchpad. If you want to run a program, you double-click on the icon on your desktop; if you want to change a setting, you open the settings-menu and check or uncheck a box; if you want a graph or table to appear at a certain position in your Word-document, you drag it with your mouse to that position.
+
+Moving from a mouse- or touchpad-based 'click-drag-drop' workflow to using commands can feel quite weird at first --- you type something, run it and then 'stuff' happens. Sometimes you get the result you want, sometimes not. And there's little 'meaningful' interaction between you and the computer: If there is something wrong, it just gives you some cryptic error message but does not clearly tell you what is wrong and what you should be doing differently.
+
+If that is your experience, there is no reason to worry! This is normal. You just need to practice and get used to it. After a while, it will feel very natural (and you may even appreciate that you can tell your computer exactly --- *exactly* --- what to do). 
+
+In the meantime, you should keep in mind two principles:
+
+1) *R only speaks the R language.* It does not understand "human" --- be it English, Norwegian, or Swahili. If you want to communicate with R, you need to learn and speak its language.
+2) *R takes you exactly literally.* In other words, R does not get context. It cannot "read the room". Consider this: A human reader will understand, depending on the context, what you mean when you write "Come on, let's eat grandpa!". If you are in Western Europe, most human readers will correctly infer that you just forgot a comma and meant to write "Come on, let's eat, grandpa!". (Elsewhere, a human reader might correctly infer that you did in fact mean exactly what you wrote...). R cannot do that. It will take you literally. For better or worse.
+
+The lesson is: *If you want to communicate with R, you need to speak its language and you need to speak it exactly --- down to the comma.* You need to be precise.
+
+###
+
+Got it? Let's find out:
+```{r q1, echo=F}
+quiz(caption = "Communicating with R",
+question("How flexible is R with languages?",
+         answer("R is like a computer in some sci-fi movie --- I can just talk to it like I would to a human being, and it totally gets the message!"),
+         answer("R understands one and only one language. If I want R to do something, I need to speak its language!", correct = T),
+         answer("R is stupid. It doesn't understand anything I tell it to do!"),
+         random_answer_order = TRUE,allow_retry = TRUE),
+question("How precise and careful do you have to be when you write code?",
+         answer("R is quite smart and understands my code even if some commands are spelled wrong or there are missing commas"),
+         answer("R takes me literally. I need to write each command exactly as it is supposed to be written, otherwise R will misunderstand me or not understand me at all.", correct=T),
+         random_answer_order = TRUE,allow_retry = TRUE)
+)
+```
+
+###
+
+(OK, these questions were only half-serious...). Let's get to know more about the R language!
+
+## The fundamentals of the R language {data-progressive=TRUE}
+
+### The R vocabulary: Functions
+
+Functions are the *verbs* in the R language. The "do stuff" words. You could also call them "commands".
+
+You can tell that a piece of code is a function when it ends with parentheses --- "()". For example, `mean()` is the function to calculate the mean (or average) of some numbers. `max()` is the function to identify the largest value in a set of numbers; `min()` is the function to identify the minimum. `ggplot()` is the function to make a graph with ggplot2.
+
+Inside the parentheses of a function go *arguments* --- you could also call them options or parameters. You remember from the last tutorial the arguments that the `ggplot()`-function needs:
+```{r funexmp, echo=T, eval=F}
+ggplot(data = my_dataset, mapping = aes(x=variable_1, y=variable_2))
+```
+
+* `ggplot()` needs to know what dataset it should use. You specify this via the `data`-argument (`data=....`)
+* `ggplot()` needs to know which variable goes on which axis of the graph. You specify this via the `mapping`-argument. Important: Here, the input is another function, the `aes()`-function. Sometimes, functions can or even must be used within other functions!
+
+### The R vocabulary: Objects
+
+Let's stay with the `ggplot()` example:
+```{r funexmp2, echo=T, eval=F}
+ggplot(data = my_dataset, mapping = aes(x=variable_1, y=variable_2))
+```
+
+You now know what a function is --- a command for R to do something. But we have not yet explained what it is that R should do something *with*.
+
+The things R is supposed to do things with are, in the end, different types of *objects*. Think of these as the nouns in the R language.
+
+So, what can be an object in R? There are a few different types of objects. For the start, the most important ones are the following:
+
+* A single value can be an object
+* A collection of values can be an object --- a `vector`
+* A dataset can be an object --- a `data.frame`
+
+This may all sound a bit abstract -- we will go over some examples to make this clearer.
+
+### Single values and the assignment operator (`<-`)
+
+Let's say we do some calculation in R --- e.g. `5*5` --- and we then want to use the result for another subsequent calculation.
+
+If we do what we did above and simply calculate `5*5`, we get the result --- but it does not get stored. To store something in R, you use the *assignment operator*: `<-`
+
+For example, if we wanted to store the value `25` for later use, we would *assign* it to an object that we define using the assignment operator `<-`. The code would be `result <- 25`. This means *"take the value of 25 and store it as 'result'"*.
+
+If we want to see or use a stored object, we can simply type its name: `result`
+
+Give it a try! Use the code above to store 25 as 'result'; below, type 'result' to print it out again:
+```{r assign, exercise=T}
+
+```
+
+Click 'Continue' to see the solution.
+
+###
+
+```{r assign-a, exercise=T}
+result <- 25
+
+result
+```
+
+
+Note that we could also directly store the result of a calculation: `result <- 5*5`. This means *"multiply 5 with 5 and store the result as 'result'"*.
+
+Try it yourself:
+
+* Multiply 5 with 5
+* Store the result as 'result'
+* Print it back out
+
+```{r calc, exercise=T}
+
+```
+
+Click "Continue" to see the solution.
+
+###
+
+Here is how you could directly store the result of a calculation and then print it:
+```{r calc-a, exercise=T}
+result <- 5*5
+
+result
+```
+
+Note that if we wanted to print something, we could also be very explicit and tell R that you want to *print* the object's contents using the `print()`-function: `print(result)`. Try it out for yourself:
+```{r print, exercise=T}
+result <- 25 # this stores the value 25 as 'result'
+
+
+```
+
+### 
+
+In the examples so far, we worked with numbers. But we can also store pieces of text as objects. 
+
+*Important*: If we want R to handle text, we need to designate it as such by placing it between quotation marks (""). Otherwise, R will think we want to give it a command, will try to understand it, will (likely) fail to do so, and return a cryptic error message. In R (and in other programming languages), a piece of text that is placed between quotation marks is called a *string*.
+
+To store a piece of text (or *string*), we simply use our assignment operator again, e.g.: `name <- "Thomas"` means "take "Thomas" and store it as 'name'".
+
+Again over to you: Store some piece of text in an object, then print it back out:
+```{r storetext, exercise=T}
+
+```
+
+Click "Continue" to see the solution.
+
+###
+
+Here is how you could store and then print a piece of text:
+```{r storetext-a, exercise=T}
+name <- "Thomas"
+
+name
+```
+
+So far, we have stored only single values or pieces of text. Let's move on to storing multiple values in a `vector`!
+
+### Collections of values: `vectors`
+
+If we want to store multiple values or pieces of text, we can combine or *"concatenate"* them into a `vector`. To do so, we use the *concatenate*-function: `c()`.
+
+For example, let's say we want to store the ages of a group of individuals: 35, 27, 76, and 52. In this case, we simply combine them with the `c()`-function and store them as an object: `age <- c(35,27,76,52)`.
+
+Once more over to you: Using the example code above, combine some set of numbers into a vector, store it, and then print it out again:
+```{r vec, exercise=T}
+
+```
+
+###
+
+Here is how this could look like:
+```{r vec-a, exercise=T}
+ages <- c(35,27,76,52)
+
+ages
+```
+
+*Important*Note how all the numbers are separated by commas!
+
+Because this vector contains only numbers, we call it a `numeric` vector.
+
+###
+
+We can also create vectors that contain pieces of text (*strings*), for instance: `names <- c("Thomas","Marie","Samuel","Lisa")`. 
+
+Do you want to give it a try?
+```{r vec-text, exercise=T}
+
+```
+
+###
+
+Here is how you could store and then print a set of names:
+```{r vec-text-a, exercise=T}
+names <- c("Thomas","Marie","Samuel","Lisa")
+
+names
+```
+
+In this example, we stored some pieces of text rather than numbers. A vector that contains text is called a `character` vector.
+
+We call it a `character` vector rather than a `text` or `string` vector because, technically, we could also store individual characters, for instance: `letters <- c("A","B","C")`.
+
+### Other types of vectors
+
+There are also other types of vectors next to character and numeric vectors! 
+
+First, technically the objects that we stored single values into earlier (`result <- 25`) are also vectors. Because they contain only a single item, they are called `atomic` vectors. 
+
+Second, when we directly stored the results of a calculation into an object (`result <- 5*5`), we created what is called a `complex` vector --- it contains a calculation, and calculations are complex!
+
+One other type of vector that you might encounter contains information that indicates if something is true or not. This is called a `logical` vector (sometimes it also called a *Boolean* vector).
+
+In R, you designate if something is true or not like this:
+
+* Is true: `TRUE` or `T`
+* Is not true: `FALSE` or `F`
+
+To create a logical vector, you simply use these terms:
+```{r log, exercise=T}
+truefalse <- c(TRUE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE)
+
+truefalse
+```
+
+You sometimes need to use this type of vector if you want to subset data. More on this later!
+
+###
+
+Phew, this was a lot of material! Let's do a quick quiz to repeat the key points:
+```{r q2, echo=F}
+quiz(caption = "Types of vectors",
+     question("How do you call a vector that contains numbers?",
+              answer("A numeric vector", correct=T),
+              answer("A character vector"),
+              answer("Vectors do not have specific names in R"),
+              random_answer_order=T,allow_retry=T),
+     question("How do you call a vector that contains text?",
+              answer("A character vector", correct=T),
+              answer("A string vector"),
+              answer("A text vector"),
+              random_answer_order=T,allow_retry=T),
+     question("There are no other types of vectors besides those for text and those for numbers",
+              answer("TRUE"),
+              answer("FALSE", correct=T),
+              random_answer_order=T,allow_retry=T)
+     )
+```
+
+
+Now we know how to create vectors --- can you guess what the next step is? Correct: combining vectors into `data.frames`!
+
+### Collections of vectors: `data.frames`
+
+Sets of single values are usually only partly helpful --- for example, it is nice to have a set of numbers indicating the ages of a group of individuals, but it would be even better if we also knew the names of the individuals in that groups!
+
+In R, we can combine multiple vectors into a `data.frame`. A `data.frame` is a type of object that can contain vectors of different types --- e.g. one `numeric` and one `character` vector.
+
+To combine vectors into a data.frame, we first create the vectors (as above) and then combine them using the `data.frame()` function. For example:
+```{r df, exercise=T}
+name <- c("Thomas","Marie","Samuel","Lisa")
+age <- c(35,27,76,52)
+
+my_dataset <- data.frame(name,age)
+```
+
+Can you add code to print out the `my_dataset` object?
+
+###
+
+Note that the table you just saw is not how a data.frame would typically be shown in R. Normally, a printed data.frame would look like this in R:
+```{r df-a, echo=F,eval=T}
+name <- c("Thomas","Marie","Samuel","Lisa")
+age <- c(35,27,76,52)
+
+print.data.frame(data.frame(name,age))
+```
+
+You just created your own little dataset! Congrats!
+
+### Other types of R objects
+
+You now know some important types of R objects: `vectors` and `data.frames`. But -- you probably guessed it -- there are also other types of objects.
+
+* `matrix`: A matrix contains two vectors --- and both vectors have to be of the same type!
+* `array`: Where a matrix contains two vectors, an array can contain three or more (it can be *three or more-dimensional* --- but they still need to be of the same time)
+* `list`: Different objects tied together. Lists are very flexible. A list can include, for example, two data.frames, one vector and three matrices.
+
+Let's quickly go over some examples with matrices and lists.
+
+### Matrices
+
+A matrix is a set of numbers arranged like a table ("in two dimensions"). Matrices are often used when you get to more advanced statistical methods like correlation and regression.
+
+There are different ways of creating a matrix. The probably most intuitive is to bind two vectors together with the *column-bind* or `cbind()` function. Here is an example:
+```{r cbind, exercise=T}
+one <- c(1,2,3)
+two <- c(4,5,6)
+
+matrix <- cbind(one,two) 
+matrix
+```
+
+To understand the logic behind *column-bind*: R first puts the two vectors upright (like columns in a building) and then glues them together side-by-side.
+
+###
+
+You can also create a matrix directly via the `matrix()` function. This way is a bit more complicated --- don't worry if you do not get it a first. Here is an example:
+```{r mat, exercise=T}
+new_matrix <- matrix(c(1,2,3,4,5,6),nrow = 3,ncol = 2)
+new_matrix
+```
+
+Can you understand this code? What this does is, basically, to create a vector containing numbers from 1 through 6. Then it arranges it into a matrix with 3 rows and 2 columns. The first three values (1-3) go into the first column, the latter three values go into the second column.
+
+Difficult? Don't worry, many people struggle with this at first. As mentioned, you will probably not need to work with this at the beginning. It is nevertheless good to know --- if only to repeat how functions work, with different arguments (here: `nrow`, `ncol`). 
+
+###
+
+Matrices can also contain text --- but then they can contain *only* text, no numbers. Here's a quick example:
+```{r strmat, exercise=T}
+text_matrix <- matrix(c("Apples","Pears","Cherries","Oranges","Lemons","Limes"),nrow = 3,ncol = 2)
+text_matrix
+```
+
+###
+
+What happens if we happen to combine numbers and text into one single matrix? Let's look at another quick example:
+```{r numtextmat, exercise=T}
+name <- c("Thomas","Marie","Samuel","Lisa")
+age <- c(35,27,76,52)
+
+combined_matrix <- cbind(name,age)
+combined_matrix
+```
+
+It still works --- but notice the quotation marks around all the numbers? This means that R first converted or *"coerced"* the numbers to text. R does this automatically in this case.
+
+### Lists
+
+Lists are a great tool if you need store different types of objects together --- this happens for instance when you want to store the results of a statistical estimation. Some of the results might be a vector, others a matrix, some contain text and others contain numbers.
+
+To create a list, we use the `list()` function. Here is again an example:
+```{r list, exercise=T}
+name <- c("Thomas","Marie","Samuel","Lisa")
+age <- c(35,27,76,35)
+
+matrix <- matrix(c(1,2,3,4,5,6),nrow = 3,ncol = 2)
+
+my_list <- list(name,age,matrix)
+my_list
+```
+
+You see that the `name` vector was put into the first element in the list (`[[1]]`), the `age` vector became the second element (`[[2]]`), and the matrix became the third (`[[3]]`). All are arranged like, well, a list.
+
+## Exercises {data-progressive=TRUE}
+
+
