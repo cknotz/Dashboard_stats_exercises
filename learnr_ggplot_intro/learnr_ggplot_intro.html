@@ -122,79 +122,86 @@ $(document).ready(function () {
 <h2 data-progressive="TRUE">First steps</h2>
 <div id="section-section" class="section level3">
 <h3></h3>
-<p>In this tutorial, you will learn the basics of visualizing data with ggplot2. ggplot2 is one of the various packages for R, and is widely used to make graphs.</p>
-This tutorial is <em>interactive</em>, which means that you get to do many things yourself — of course with help. Throughout the tutorial, you find little consoles like the one just below.
+<p>In this tutorial, you will learn the basics of visualizing data with <code>ggplot2</code>, which is one of the various packages for R, and is probably the most popular tool to make graphs in R with.</p>
+This tutorial for <code>ggplot2</code> is <em>interactive</em>, which means that you get to do many things yourself — with help, of course! Throughout the tutorial, you find little consoles like the one just below.
 <div class="tutorial-exercise" data-label="tutintro" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
-<p>Each of these consoles is the same as the console on the bottom left in RStudio: It allows you to run small pieces of R code and get a result. Try it out: Type <code>1+1</code> into the console and click <code>Run</code>.</p>
-<p>Did you get a result? If yes, try computing <code>23*89</code>. If you like, play around with this a bit.</p>
+<p>Each of these consoles is the same as the console on the bottom left in RStudio: It allows you to run small pieces of R code and get a result.</p>
+<p>Try it out: Type <code>1+1</code> into the console and click <code>Run</code>. Did you get a result? If yes, try also computing <code>23*89</code>. If you like, play around with this a bit.</p>
 <p>Otherwise, click ‘Continue’ to begin the tutorial.</p>
 </div>
-<div id="section-preparation" class="section level3">
-<h3>Preparation</h3>
-<p>The first thing we need to make graphs is some data that we can graph.</p>
-<p>We start <em>very</em> simple and use a tiny practice-dataset that is easy to handle. I’ve created this for you — here is how it looks like:</p>
+<div id="section-first-steps-a-simple-bar-graph" class="section level3">
+<h3>First steps: A simple bar graph</h3>
+<p>In the first part of this tutorial, you will learn how to create a simple bar graph, step-by-step. To show you what the end result is going to look like: This below is the graph that we will be creating.</p>
+<p><img src="learnr_ggplot_intro_files/figure-html/barshow-1.png" width="624" /></p>
+<p>This graph is obviously not very complicated: It shows how many pieces of two types of fruit (apples and oranges) we have.</p>
+<p>Let’s also take a quick look at the “dataset” that we use here:</p>
 <pre><code>##      type number
 ## 1  Apples     42
 ## 2 Oranges     17</code></pre>
-<p>Our dataset contains two observations and two variables. Basically, our dataset tells us that we have 42 apples and 17 oranges. It’s not more complicated than that.</p>
-<p>Now that we have data, we can graph them! In <code>ggplot</code>, graphs are created step-by-step – or, more accurately, layer by layer. We’ll now go over each step.</p>
+<p>Our “dataset” contains only two variables (<code>type</code> &amp; <code>number</code>) and only two observations, one for apples and one for oranges. Basically, our dataset tells us that we have 42 apples and 17 oranges. It’s not more complicated than that.</p>
 </div>
-<div id="section-section-1" class="section level3">
-<h3></h3>
-<p>If we want to create a graph with ggplot, we use the <code>ggplot()</code> command (or ‘function’). This is the main and most important function — everything else is built on and around it.</p>
-Run the code below to see what happens when you use the <code>ggplot()</code> function:
+<div id="section-the-workflow-of-making-graphs-with-ggplot2" class="section level3">
+<h3>The workflow of making graphs with <code>ggplot2</code></h3>
+<p>If you were to build a house, you would normally start with the foundation and the basement. Then you add the main walls and the roof. Once the house’s raw structure is done and stable, you would move on to work on improving how it looks: painting the facade, putting in windows, maybe doing some landscaping.</p>
+<p>The workflow of making graphs with <code>ggplot2</code> is very similar: The first thing we do is create an empty graph window (the “foundation”). Then we define the main components of the graph, which dataset and variables we want to use and what type of graph we want to create (bar graph, line graph, scatter plot,…). Once these parts are done, we work on the finer details (labels, colors,…).</p>
+</div>
+<div id="section-the-foundation-opening-an-empty-graph-window" class="section level3">
+<h3>The foundation: Opening an empty graph window</h3>
+<p>Everything in <code>ggplot2</code> starts with the <code>ggplot()</code> command (or ‘function’). This is the main and most important function — everything else is built on and around it. Simply put, this function tells R that we want to make a graph and to open a graph window.</p>
+Run the code below to see what happens when you run the <code>ggplot()</code> function without any settings:
 <div class="tutorial-exercise" data-label="fruit0" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>ggplot()</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-2" class="section level3">
+<div id="section-section-1" class="section level3">
 <h3></h3>
 <pre class="r"><code>ggplot()</code></pre>
 <p><img src="learnr_ggplot_intro_files/figure-html/fruit0a-1.png" width="624" /></p>
-<p>You may wonder why not much is going on here. But consider what all we have told R with this command is to make a graph. Period. Not more.</p>
-<p>R does not yet know the most important things: which dataset it should use and what variable goes on which axis of the graph. Therefore, all R does is to open an empty graph window.</p>
+<p>There is not much going on — all you see is an empty window. But consider what all we have told R to do with this command is open a graph window. Period. Not more. So all R does is to open an empty graph window.</p>
+<p>We have not yet defined the most important things: Which dataset we want to use and what variable goes on which axis of the graph.</p>
 <p>Let’s add the missing information.</p>
 </div>
-<div id="section-section-3" class="section level3">
+<div id="section-section-2" class="section level3">
 <h3></h3>
-We give R this key information by adding further specifications into the parentheses of the <code>ggplot()</code> function. Take a look at the code, and then run it to see what happens:
+We provide this missing information by adding further specifications into the parentheses of the <code>ggplot()</code> function. Take a look at the code, and then run it to see what happens:
 <div class="tutorial-exercise" data-label="fruit_s1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>ggplot(data = fruit, aes(x = type, y = number))</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-4" class="section level3">
+<div id="section-section-3" class="section level3">
 <h3></h3>
-<pre class="r"><code>ggplot(data = fruit, aes(x = type, y = number))</code></pre>
+<pre class="r"><code>ggplot(data = fruit, 
+       mapping = aes(x = type, y = number))</code></pre>
 <p><img src="learnr_ggplot_intro_files/figure-html/fruit_s1a-1.png" width="624" /></p>
-<p>Let’s take a quick look at what the code chunk did:</p>
+<p>You may already guess what is going on here, but let’s take a quick look together at what the code chunk did:</p>
 <ul>
 <li>As before, <code>ggplot()</code> tells R that we want to create a graph with ggplot.</li>
 <li>Within the <code>ggplot()</code>-command, we first specify that we want to use the fruit-dataset with <code>data=fruit</code>.</li>
-<li>The next part (<code>aes(...)</code>) specifies the main dimensions (or <em>aesthetics</em>) of our graph. You can probably guess that we told R to put the type-variable on the x-axis at the bottom and the number-variable on the vertical y-axis.</li>
+<li>The next part starting with <code>mapping</code> defines the so-called <em>aesthetic mapping</em>: Which variables we want to use, and how they should be placed into the graph. Here, <code>aes(...)</code> specifies the main dimensions (or <em>aesthetics</em>) of our graph. You can probably guess that we told R to put the type-variable on the x-axis at the bottom and the number-variable on the vertical y-axis.</li>
 </ul>
-<p>Now we have laid the foundation for our graph.</p>
+<p>Now we have laid the foundation for our graph! Let’s add some content.</p>
 </div>
 <div id="section-adding-content" class="section level3">
 <h3>Adding content</h3>
-<p>Now that we have the foundation, we put the actual content on top of it. For this simple dataset, we use a simple bar (a.k.a. ‘column’) graph. As before, take a look at the code and then run it:</p>
+<p>We add the main content on top of our foundation — as an <em>additional layer</em>. As before, take a look at the code and then run it to see what it does. We’ll then discuss what has happened:</p>
 <div class="tutorial-exercise" data-label="fruit2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>ggplot(data = fruit, aes(x = type, y = number)) +
     geom_col()</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-5" class="section level3">
+<div id="section-section-4" class="section level3">
 <h3></h3>
 <pre class="r"><code>ggplot(data = fruit, aes(x = type, y = number)) +
     geom_col()</code></pre>
 <p><img src="learnr_ggplot_intro_files/figure-html/fruit2a-1.png" width="624" /></p>
 <p>Now we have a real graph! So, what happened? Note first that we have added an extra layer to our foundation with the <code>+</code> symbol. In <code>ggplot</code>, you always add layers with the <code>+</code> symbol.</p>
 <p>We have specified this new layer as <code>geom_col()</code>, and obviously it has added bars or <em>columns</em> to our graph. But what does this ‘geom’-thing mean?</p>
-<p>In <code>ggplot</code>, the core contents of a graph — the bars in a bar graph, the dots in a scatterplot, the lines in a line graph — are referred to as ‘geometric objects’ or ‘geoms’.</p>
+<p>In <code>ggplot</code>, the core contents of a graph — the bars in a bar graph, the dots in a scatterplot, the lines in a line graph — are referred to as <em>geometric objects</em> or <em>geoms</em>’*.</p>
 <p>For a simple bar graph, we use <code>geom_col()</code> — i.e. ‘geometric object: column’. We could have also used <code>geom_bar()</code> — this is the more sophisticated version of <code>geom_col()</code> that offers more possibilities to tweak and customize the output. We’ll use this one later.</p>
 <p>There are also others:</p>
 <ul>
@@ -216,7 +223,7 @@ We do this again by adding new layers. You know the drill:
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-6" class="section level3">
+<div id="section-section-5" class="section level3">
 <h3></h3>
 <pre class="r"><code>ggplot(data = fruit, aes(x = type, y = number)) +
     geom_col() +
@@ -230,7 +237,7 @@ We do this again by adding new layers. You know the drill:
 </ul>
 <p><em>Important</em>: Because axis labels are <em>text</em>, we need to put it in quotation marks!</p>
 </div>
-<div id="section-section-7" class="section level3">
+<div id="section-section-6" class="section level3">
 <h3></h3>
 <p>As a last step, we change the overall look of the graph. The gray background is not ideal because it can sometimes make it more difficult to see smaller details in a graph and it also uses up more ink if we print it.</p>
 Typically, we want a sleek and simple black-and-white background. We can change the overall look – or <em>theme</em> – of the graph as follows:
@@ -243,7 +250,7 @@ Typically, we want a sleek and simple black-and-white background. We can change 
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-8" class="section level3">
+<div id="section-section-7" class="section level3">
 <h3></h3>
 <pre class="r"><code>ggplot(data = fruit, aes(x = type, y = number)) +
     geom_col() +
@@ -314,7 +321,7 @@ Typically, we want a sleek and simple black-and-white background. We can change 
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-9" class="section level3">
+<div id="section-section-8" class="section level3">
 <h3></h3>
 <pre class="r"><code>ggplot(data=cpds, aes(x=country,y=womenpar)) +
   geom_col()</code></pre>
@@ -322,7 +329,7 @@ Typically, we want a sleek and simple black-and-white background. We can change 
 <p>We have a graph – but it certainly doesn’t look very nice yet. Not only do we not have labelled axes and a clean theme, but we cannot even read the country names.</p>
 <p>Let’s work on the last problem.</p>
 </div>
-<div id="section-section-10" class="section level3">
+<div id="section-section-9" class="section level3">
 <h3></h3>
 <p>One solution to the problem of overlapping country names is simply to flip the graph and make it horizontal so the bars go sideways instead of up. We can do this with <code>coord_flip()</code>. Can you add <code>coord_flip()</code> to the code below?</p>
 <div class="tutorial-exercise" data-label="femrep2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -331,7 +338,7 @@ Typically, we want a sleek and simple black-and-white background. We can change 
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-11" class="section level3">
+<div id="section-section-10" class="section level3">
 <h3></h3>
 <p>This is how the result should look like:</p>
 <pre class="r"><code>ggplot(data=cpds, aes(x=country,y=womenpar)) +
@@ -340,7 +347,7 @@ Typically, we want a sleek and simple black-and-white background. We can change 
 <p><img src="learnr_ggplot_intro_files/figure-html/femrep2a-1.png" width="624" /></p>
 <p>Much better, isn’t it?</p>
 </div>
-<div id="section-section-12" class="section level3">
+<div id="section-section-11" class="section level3">
 <h3></h3>
 Let’s also add axis labels and adapt the theme. Can you add axis labels (with <code>xlab()</code> &amp; <code>ylab()</code>) to the graph and adjust the theme (with <code>theme_bw()</code>)?
 <div class="tutorial-exercise" data-label="femrep3" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -350,7 +357,7 @@ Let’s also add axis labels and adapt the theme. Can you add axis labels (with 
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-13" class="section level3">
+<div id="section-section-12" class="section level3">
 <h3></h3>
 <p>This would be a solution:</p>
 <pre class="r"><code>ggplot(data=cpds, aes(x=country,y=womenpar)) +
@@ -377,7 +384,7 @@ Take a look at the code, then run it to see the result:
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-14" class="section level3">
+<div id="section-section-13" class="section level3">
 <h3></h3>
 <pre class="r"><code>ggplot(data=cpds, aes(x=reorder(country, womenpar),y=womenpar)) +
   geom_col() +
@@ -394,7 +401,7 @@ Take a look at the code, then run it to see the result:
 <li>Put the result on the x-axis</li>
 </ol>
 </div>
-<div id="section-section-15" class="section level3">
+<div id="section-section-14" class="section level3">
 <h3></h3>
 Note that we could also have ordered the order way around by adding a <code>-</code> like so: <code>reorder(country, -womenpar)</code>. Do you want to add the <code>-</code> and run the code:
 <div class="tutorial-exercise" data-label="femrep4b" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -419,7 +426,7 @@ Note that we could also have ordered the order way around by adding a <code>-</c
 </div>
 <p>You probably remember: This code only creates the foundation for our graph. We still need to add the core element, the <em>geometric object</em>, or ‘geom’. Let’s go do that!</p>
 </div>
-<div id="section-section-16" class="section level3">
+<div id="section-section-15" class="section level3">
 <h3></h3>
 <p>Remember the correct ‘geom’ for scatterplots?</p>
 <div class="panel panel-default">
@@ -431,7 +438,7 @@ Note that we could also have ordered the order way around by adding a <code>-</c
 </div>
 </div>
 </div>
-<div id="section-section-17" class="section level3">
+<div id="section-section-16" class="section level3">
 <h3></h3>
 <p>So, we have to add a <code>geom_point()</code> to the existing code. You probably remember that you add extra layers with a <code>+</code>. Why don’t you try this yourself:</p>
 <ol style="list-style-type: decimal">
@@ -445,7 +452,7 @@ Note that we could also have ordered the order way around by adding a <code>-</c
 </div>
 <p>(Did you notice the auto-complete suggestions? Neat, right?)</p>
 </div>
-<div id="section-section-18" class="section level3">
+<div id="section-section-17" class="section level3">
 <h3></h3>
 <p>Your code and graph should now look like this (if not, just scroll back up and klick ‘start over’):</p>
 <pre class="r"><code>ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
@@ -454,7 +461,7 @@ geom_point()</code></pre>
 <p>The graph doesn’t look too bad, and we can already learn something: There is indeed a positive relationship between the share of women in parliament and spending on childcare services.</p>
 <p>But, as before, the graph still looks a bit unpolished without proper axis labels and with the dull gray background. So let’s go and polish this graph like we did with the previous one!</p>
 </div>
-<div id="section-section-19" class="section level3">
+<div id="section-section-18" class="section level3">
 <h3></h3>
 <p>Do you remember how to add axis labels with <code>xlab()</code> and <code>ylab()</code>? Why don’t you give it a try and add these to the graph — don’t forget to always use the <code>+</code> symbol to add new layers!</p>
 <div class="tutorial-exercise" data-label="cpds3" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -463,7 +470,7 @@ geom_point()</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":false,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-20" class="section level3">
+<div id="section-section-19" class="section level3">
 <h3></h3>
 <p>Your code and graph should now look like this (your axis labels might be different, but that is fine for now.):</p>
 <pre class="r"><code>ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
@@ -473,7 +480,7 @@ ylab(&quot;Spending on childcare services (% GDP)&quot;)</code></pre>
 <p><img src="learnr_ggplot_intro_files/figure-html/cpds3a-1.png" width="624" /></p>
 <p>Next we’ll adapt the overall theme of the graph.</p>
 </div>
-<div id="section-section-21" class="section level3">
+<div id="section-section-20" class="section level3">
 <h3></h3>
 <p>Can you change the graph theme to black-and-white (remember: <code>theme_bw()</code>):</p>
 <div class="tutorial-exercise" data-label="cpds4" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -484,7 +491,7 @@ ylab(&quot;Spending on childcare services (% GDP)&quot;)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":false,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-22" class="section level3">
+<div id="section-section-21" class="section level3">
 <h3></h3>
 <p>Here is again how the result should look like now:</p>
 <pre class="r"><code>ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
@@ -499,7 +506,7 @@ theme_bw()</code></pre>
 <p>Technically, we have a quite neat-looking graph now. But we can still make it more informative. As it is now, the individual observations are only shown as black points. If we were working with survey data, where all observations are anonymous persons, this would be fine. But in this case, we know that these are all different countries — and we know, of course, what these countries are called!</p>
 <p>With ‘ggplot’, we can print the countries’ names or the ISO abbreviations instead of the dots. Let’s get going!</p>
 </div>
-<div id="section-section-23" class="section level3">
+<div id="section-section-22" class="section level3">
 <h3></h3>
 <p>To use text labels, we need to use a different ‘geom’: <code>geom_text()</code>. So, to change the graph, we replace <code>geom_point()</code> with <code>geom_text()</code> — but then there is some more!</p>
 <p>To get started, take a look at the code I have prepared, run it, and then let’s talk about what the code does:</p>
@@ -512,7 +519,7 @@ theme_bw()</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":false,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-section-24" class="section level3">
+<div id="section-section-23" class="section level3">
 <h3></h3>
 <pre class="r"><code>ggplot(data = cpds, aes(x=womenpar,y=childcare)) +
 geom_text(aes(label=iso)) +
@@ -624,7 +631,7 @@ theme_bw()</code></pre>
 <li>You get so see the most common causes of error messages (‘bugs’) — and that they are usually easily fixable and less scary than they might seem at first</li>
 <li>You get used to dealing with problems when coding, and thus become a more confident user of R</li>
 </ol>
-<div id="section-section-25" class="section level3">
+<div id="section-section-24" class="section level3">
 <h3></h3>
 </div>
 <div id="section-exercise-1" class="section level3">
@@ -642,7 +649,7 @@ Below you see a set of code for a bar graph that does not work. Click ‘run cod
 <p><strong>Hint:</strong> Check that all parentheses – ( ) – are closed.</p>
 </div>
 </div>
-<div id="section-section-26" class="section level3">
+<div id="section-section-25" class="section level3">
 <h3></h3>
 <p>You only needed to close the parenthesis for <code>geom_col</code>:</p>
 <pre class="r"><code>ggplot(data = fruit, aes(x = type, y = number)) +
@@ -667,7 +674,7 @@ Here is one more code chunk that throws an error. Can you fix this one?
 <p><strong>Hint:</strong> Check that all text is enclosed in quotation marks ("").</p>
 </div>
 </div>
-<div id="section-section-27" class="section level3">
+<div id="section-section-26" class="section level3">
 <h3></h3>
 <p>The solution was to add an opening quotation mark before “Type of fruit”:</p>
 <pre class="r"><code>ggplot(data = fruit, aes(x = type, y = number)) +
@@ -692,7 +699,7 @@ And one more, with another very common bug:
 <p><strong>Hint:</strong> In R, all elements of a function (what is inside a function’s parentheses, e.g. <code>aes()</code>) need to be separated by commas. Carefully go over the first line – can you see two elements of a function that are <em>not</em> separated by a comma?</p>
 </div>
 </div>
-<div id="section-section-28" class="section level3">
+<div id="section-section-27" class="section level3">
 <h3></h3>
 <p>The trick was to place a comma between the x- and y-elements of the <code>aes()</code> function:</p>
 <pre class="r"><code>ggplot(data = fruit, aes(x = type, y = number)) +
@@ -717,7 +724,7 @@ This one might be a bit tricky to spot:
 <p><strong>Hint:</strong> The dataset is called <code>fruit</code>, and the variable for the type of fruit is called <code>type</code>.</p>
 </div>
 </div>
-<div id="section-section-29" class="section level3">
+<div id="section-section-28" class="section level3">
 <h3></h3>
 <p>The solution: Remove the s in <code>fruits</code> and change <code>typ</code> to <code>type</code>:</p>
 <pre class="r"><code>ggplot(data = fruit, aes(x = type, y = number)) +
@@ -742,7 +749,7 @@ If you paid attention earlier, you should be able to spot this one easily:
 <p><strong>Hint:</strong> You add extra layers to a graph with a <code>+</code> symbol.</p>
 </div>
 </div>
-<div id="section-section-30" class="section level3">
+<div id="section-section-29" class="section level3">
 <h3></h3>
 <p>The <code>+</code> symbol behind <code>geom_col()</code> was missing!</p>
 <pre class="r"><code>ggplot(data = fruit, aes(x = type, y = number)) +
@@ -874,7 +881,7 @@ output$`tutorial-exercise-cpds1-output` <- renderUI({
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "q_geom", question = structure("Pick the correct &#39;geom&#39; for a scatterplot", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_5d34936",     option = "geom_bar()", value = "geom_bar()", label = structure("geom_bar()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_4e9a1c",     option = "geom_line()", value = "geom_line()", label = structure("geom_line()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_76ae5e",     option = "geom_point()", value = "geom_point()", label = structure("geom_point()", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_3d2d546",     option = "geom_text()", value = "geom_text()", label = structure("geom_text()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "q_geom-answer", question = "q_geom"), loading = structure("<strong>Loading:<\u002fstrong> \nPick the correct &#39;geom&#39; for a scatterplot\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = TRUE, allow_retry = TRUE,     seed = 512420562.761386, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "q_geom", question = structure("Pick the correct &#39;geom&#39; for a scatterplot", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_7794261",     option = "geom_bar()", value = "geom_bar()", label = structure("geom_bar()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_b90cd2e",     option = "geom_line()", value = "geom_line()", label = structure("geom_line()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_e89e0f6",     option = "geom_point()", value = "geom_point()", label = structure("geom_point()", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_a5aab5e",     option = "geom_text()", value = "geom_text()", label = structure("geom_text()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "q_geom-answer", question = "q_geom"), loading = structure("<strong>Loading:<\u002fstrong> \nPick the correct &#39;geom&#39; for a scatterplot\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = TRUE, allow_retry = TRUE,     seed = 2046672882.54694, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">

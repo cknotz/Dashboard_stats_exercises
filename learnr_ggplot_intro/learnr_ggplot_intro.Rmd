@@ -27,40 +27,53 @@ cpds <- haven::read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2
 
 ###
 
-In this tutorial, you will learn the basics of visualizing data with ggplot2. ggplot2 is one of the various packages for R, and is widely used to make graphs.
+In this tutorial, you will learn the basics of visualizing data with `ggplot2`, which is one of the various packages for R, and is probably the most popular tool to make graphs in R with.
 
-This tutorial is *interactive*, which means that you get to do many things yourself --- of course with help. Throughout the tutorial, you find little consoles like the one just below.
+This tutorial for `ggplot2` is *interactive*, which means that you get to do many things yourself --- with help, of course! Throughout the tutorial, you find little consoles like the one just below.
 ```{r tutintro, exercise=T}
 
 ```
 
-Each of these consoles is the same as the console on the bottom left in RStudio: It allows you to run small pieces of R code and get a result. Try it out: Type `1+1` into the console and click `Run`. 
+Each of these consoles is the same as the console on the bottom left in RStudio: It allows you to run small pieces of R code and get a result. 
 
-Did you get a result? If yes, try computing `23*89`. If you like, play around with this a bit. 
+Try it out: Type `1+1` into the console and click `Run`. Did you get a result? If yes, try also computing `23*89`. If you like, play around with this a bit. 
 
 Otherwise, click 'Continue' to begin the tutorial.
 
-### Preparation
+### First steps: A simple bar graph
 
-The first thing we need if we want to make graphs is some data. 
+In the first part of this tutorial, you will learn how to create a simple bar graph, step-by-step. To show you what the end result is going to look like: This below is the graph that we will be creating.
 
-We start _very_ simple and use a tiny practice-dataset that is easy to handle. I've created this for you --- here is how it looks like:
-```{r fruittab, exercise=F}
+```{r barshow, eval=T, echo=F}
+ggplot(data = fruit, aes(x=type,y=number)) +
+    geom_col() +
+    xlab("Type of fruit") +
+    ylab("Number of pieces") +
+    theme_bw()
+```
+
+This graph is obviously not very complicated: It shows how many pieces of two types of fruit (apples and oranges) we have.
+
+Let's also take a quick look at the "dataset" that we use here:
+```{r fruittab, echo=F,eval=T}
 
 print.data.frame(data.frame(type = c("Apples","Oranges"),
                     number = c(42,17)))
 ```
-Our dataset contains two observations and two variables. Basically, our dataset tells us that we have 42 apples and 17 oranges. It's not more complicated than that.
 
-Now that we have data, we can graph them!
+Our "dataset" contains only two variables (`type` & `number`) and only two observations, one for apples and one for oranges. Basically, our dataset tells us that we have 42 apples and 17 oranges. It's not more complicated than that.
 
-### Introducing *ggplot2*
+### The workflow of making graphs with `ggplot2`
 
-*ggplot2* is a tool in R that we can use to make graphs. As mentioned above, it is very widely used by researchers, data scientists, etc. 
+If you were to build a house, you would normally start with the foundation and the basement. Then you add the main walls and the roof. Once the house's raw structure is done and stable, you would move on to work on improving how it looks: painting the facade, putting in windows, maybe doing some landscaping. 
 
-If we want to create a graph with ggplot, we use the `ggplot()` command (or 'function'). This is the main and most important function --- everything else is built on and around it.
+The workflow of making graphs with `ggplot2` is very similar: The first thing we do is to create an empty graph window (the "foundation"). Then we define the main components of the graph, which dataset and variables we want to use and what type of graph we want to create (bar graph, line graph, scatter plot,...). Once these parts are done, we work on the finer details (labels, colors,...).
 
-Run the code below to see what happens when you use the `ggplot()` function:
+### The foundation: Opening an empty graph window
+
+Everything in `ggplot2` starts with the `ggplot()` command (or 'function'). This is the main and most important function --- everything else is built on and around it. Simply put, this function tells R that we want to make a graph and to open a graph window.
+
+Run the code below to see what happens when you run the `ggplot()` function without any settings:
 ``` {r fruit0, exercise=T}
 ggplot()
 
@@ -73,15 +86,15 @@ ggplot()
 
 ```
 
-You may wonder why not much is going on here. But consider what all we have specified with this command is open a graph window. Period. Not more. 
+There is not much going on --- all you see is an empty window. But consider what all we have told R to do with this command is open a graph window. Period. Not more. So all R does is to open an empty graph window.
 
-We have not yet defined the most important things: which dataset we want to use and what variable goes on which axis of the graph. Therefore, all that happens is that an empty graph window opens.
+We have not yet defined the most important things: Which dataset we want to use and what variable goes on which axis of the graph.
 
 Let's add the missing information.
 
 ###
 
-We provide this missing information by adding further specifications into the parentheses of the `ggplot()` function. Take a look at the code, and then run it to see what happens: 
+We provide this missing information by adding further specifications into the parentheses of the `ggplot()` function. Take a look at the code, and then run it to see what happens. We'll go over the code afterwards: 
 ```{r fruit_s1, exercise=T}
 ggplot(data = fruit, aes(x = type, y = number))
 
@@ -90,21 +103,22 @@ ggplot(data = fruit, aes(x = type, y = number))
 ###
 
 ```{r fruit_s1a, exercise=F,echo=T}
-ggplot(data = fruit, aes(x = type, y = number))
+ggplot(data = fruit, 
+       mapping = aes(x = type, y = number))
 
 ```
 
-Let's take a quick look at what the code chunk did:
+You may already guess what is going on here, but let's take a quick look together at what the code chunk did:
 
 * As before, `ggplot()` tells R that we want to create a graph with ggplot.
 * Within the `ggplot()`-command, we first specify that we want to use the fruit-dataset with `data=fruit`.
-* The next part (`aes(...)`) specifies the main dimensions (or _aesthetics_) of our graph. You can probably guess that we told R to put the type-variable on the x-axis at the bottom and the number-variable on the vertical y-axis.
+* The next part starting with `mapping` defines the so-called *aesthetic mapping*: Which variables we want to use, and how they should be placed into the graph. Here, `aes(...)` specifies the main dimensions (or _aesthetics_) of our graph. You can probably guess that we told R to put the type-variable on the x-axis at the bottom and the number-variable on the vertical y-axis.
 
-Now we have laid the foundation for our graph.
+Now we have laid the foundation for our graph! Let's add some content.
 
 ### Adding content
 
-Now that we have the foundation, we put the actual content on top of it. For this simple dataset, we use a simple bar (a.k.a. 'column') graph. As before, take a look at the code and then run it:
+We add the main content on top of our foundation --- as an *additional layer*. As before, take a look at the code and then run it to see what it does. We'll then discuss what has happened:
 
 ```{r fruit2, exercise=T}
 ggplot(data = fruit, aes(x = type, y = number)) +
@@ -122,13 +136,13 @@ ggplot(data = fruit, aes(x = type, y = number)) +
 
 Now we have a real graph! So, what happened? Note first that we have added an extra layer to our foundation with the `+` symbol. In `ggplot`, you always add layers with the `+` symbol.
 
-We have specified this new layer as `geom_col()`, and obviously it has added bars or _columns_ to our graph. But what does this 'geom'-thing mean?
+We have specified this new layer as `geom_col()`, and obviously it has added bars --- or _columns_ --- to our graph. But what does this 'geom'-thing mean?
 
-In `ggplot`, the core contents of a graph --- the bars in a bar graph, the dots in a scatterplot, the lines in a line graph --- are referred to as 'geometric objects' or 'geoms'.
+In `ggplot`, the core contents of a graph --- the bars in a bar graph, the dots in a scatterplot, the lines in a line graph --- are referred to as *geometric objects* or *geoms*'*.
 
 For a simple bar graph, we use `geom_col()` --- i.e. 'geometric object: column'. We could have also used `geom_bar()` --- this is the more sophisticated version of `geom_col()` that offers more possibilities to tweak and customize the output. We'll use this one later.
 
-There are also others:
+There are also other *geometric objects* we could use:
 
 * For a line graph, we would use `geom_line()`
 * For a scatter plot, we would use `geom_point` (because a scatter plot shows, in essence, points or dots scattered over the graph)
@@ -195,13 +209,13 @@ Are you feeling ready to work on a real dataset? Then click 'continue'!
 
 ## Using a real dataset {data-progressive=TRUE}
 
-In a real-life scenario, you would normally work with much larger datasets than the tiny fruit-dataset we used in the previous part. The workflow to create graphs with ggplot stays generally the same. This is one of the reasons why we use statistical software instead of Excel: Even very large and complex datasets can be handled without endless scrolling and cursor-dragging.
+In a real-life scenario, you would normally work with much larger datasets than the tiny fruit-dataset we used in the previous part. But the workflow to create graphs with ggplot stays generally the same: We set the foundation, we add the main contents, and then we polish.
 
-In this part of this tutorial, we will use a part of the *Comparative Political Data Set* (https://www.cpds-data.org/). This dataset includes information on a range of political and socio-economic variables for the economically advanced democracies since the 1960s --- for example which parties are in government, how high the unemployment rate is, and how many workers are organized in trade unions. It is freely available and widely used by comparative sociologists and political scientists.
+In this second part of the tutorial, we will start working with real data --- specifically, we will use a part of the *Comparative Political Data Set* (https://www.cpds-data.org/). This dataset, which is widely used by comparative sociologists and political scientists in their research, includes information on a range of political and socio-economic variables for the economically advanced democracies since the 1960s --- for example which parties are in government, how high the unemployment rate is, and how many workers are organized in trade unions. It is also freely available --- you can use it, if you want!
 
-I have created a subset of this dataset that includes only a few variables and covers only one year, 2015.
+The real dataset is quite large, but I have created a smaller subset of the dataset that includes only a few variables and covers only one year, 2015.
 
-You can see the dataset below:
+You can see this smaller dataset, which we will be working with now, below:
 ```{r cpds_tab, exercise=F, echo=F}
 print.data.frame(cpds)
 ```
@@ -216,7 +230,7 @@ You can see that the dataset includes the following information:
 * `unemp`: The country's unemployment rate
 * `emprot_reg`: This is an index that measures how difficult it is for employers to dismiss ('fire') workers with a regular employment contract. This 'Employment Protection Index' has been created by the OECD. Higher scores mean it is more difficult to fire workers.
 
-Notice also that there are some `NA`s in our dataset. These are observations where we have missing information ('Not Available').
+Notice also that there are some `NA`s in our dataset. These are observations where we have missing information ('Not Available'). In real-life research, you will see these very often!
 
 ### Which countries have more women in parliament?
 
