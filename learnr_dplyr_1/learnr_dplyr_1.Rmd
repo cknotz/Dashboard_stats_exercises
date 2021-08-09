@@ -7,10 +7,19 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 library(learnr)
 library(tidyverse)
+library(dplyr)
 library(ggplot2)
 library(rsdmx)
 knitr::opts_chunk$set(echo = FALSE)
 
+# Loading conflict data from ICDP
+temp <- tempfile() # opens empty temporary file
+download.file("https://correlatesofwar.org/data-sets/national-material-capabilities/nmc-v5-1/at_download/file", temp) # downloads and saves into 'temp'
+cow <- read.csv(unz(temp, # unzips & reads CSV file
+                    "NMC_5_0.csv"),
+                header = T)
+unlink(temp)
+rm(temp)
 
 ```
 
@@ -20,7 +29,7 @@ In this tutorial, you learn how to do basic data cleaning operations with the `d
 
 ## Introduction {data-progressive=TRUE}
 
-One of the biggest hurdles for beginner data analysts is data cleaning (a.k.a. data munging, management, preparation,...). In a statistics or data analysis course, you are normally given clean and tidy practice datasets that have been prepared by the instructors. But this is very different when you are 'out in the wild': Real-life data can often be messy and unorganized. And even if a dataset is reasonably clean, you might still have to trim away some unnecessary observations or transform some variables.
+One of the biggest hurdles for beginner data analysts is *data cleaning* (a.k.a. data munging, management, preparation,...). In a statistics or data analysis course, you are normally given clean and tidy practice datasets that have been prepared by the instructors. But this is very different when you are 'out in the wild': Real-life data can often be messy and unorganized. And even if a dataset is reasonably clean, you might still have to trim away some unnecessary observations or transform some variables.
 
 Data cleaning is, to be honest, often tedious and boring and can be quite frustrating. In addition, R used to be the software where data cleaning was particularly tricky. This has changed a lot with the `tidyverse`, which now offers a whole array of packages for working with even the most complicated data structures (e.g. text or time-series). 
 
@@ -28,8 +37,112 @@ The arguably most fundamental package for data cleaning in R is `dplyr`, which p
 
 ###
 
-### Messy data --- a practical example (& )
+### Messy data --- a practical example
 
-Before we get into the nitty-gritty of `dplyr`, let's first get an impression of how a messy real-life dataset looks like. For this, we use 
+Before we get into the nitty-gritty of `dplyr`, let's first get an impression of how a messy real-life dataset looks like. For this, we use a dataset from the *Correlates of War* (https://correlatesofwar.org/) project. The CoW project has produced a number of important datasets on various types of armed conflict and the actors in these conflicts (see also the Uppsala Conflict Data Program* at  https://www.pcr.uu.se/research/UCDP/ for a related project with additional data).
 
+Specifically, we will use the [*National Material Capabilities*](https://correlatesofwar.org/data-sets/national-material-capabilities) dataset. This dataset measures, in essence, how powerful countries are. To do so, it includes data on how large countries' militaries are, how much they spend on them, how much energy they consume, how much iron and steel they produce, and how large their populations are. 
+
+###
+
+I have already downloaded the data for you. It is saved as `cow`. Do you remember how to display the first and last rows --- the "head" and "tail" --- of a dataset? Do you want to give it a try?
+```{r cowinsp, exercise=T}
+
+```
+
+###
+
+This is how you could have done it:
+```{r cowinspa, eval=T, echo=T}
+head(cow)
+
+tail(cow)
+```
+
+This should give you an idea of what the data look like --- but you obviously do not know what the numbers really mean! 
+
+Not to worry: Please download the dataset's [codebook](https://correlatesofwar.org/data-sets/national-material-capabilities/nmc-codebook-v5-1/at_download/file), go to page 10, and familiarize yourself with the dataset and the variables in it.
+
+(If you cannot see all the variables listed in the codebook in the tables shown above, click on the small black triangles on the right-hand side of the table.)
+
+Ready to move on?
+
+###
+
+Let's take another look at the list of variables:
+
+* `stateabb`: the coutries' name, abbreviated to three letters
+* `ccode`: a numerical code for each country
+* `year`: the year of observation (notice that the data go back to 1816!)
+* `milex`: military expenditures (in British Pounds until 1913; from 1914 in US Dollars)
+* `milper`: military personnel (thousands)
+* `irst`: iron & steel productuction (thousands of tons)
+* `pec`: primary energy consumption
+* `tpop`: size of total population (thousands of persons)
+* `upop`: size of urban population (thousands of persons; until 2001: persons in cities >100k inhabitants, then >300k)
+* `cinc`: composite index of national capability (CINC) score
+* `version`: version of the dataset
+
+You should have noted two things:
+
+1. Two variables have 'breaks': `milex` and `upop` --- their calculation changes over time!
+2. We have some variables that we probably won't really need, especially `version`
+
+In the next two sections, you will see how we can deal with these problems.
+
+### Preparation: Loading the `dplyr` package
+
+
+
+
+
+
+## Choosing (or removing) variables with `select()`
+
+We saw that our `cow` dataset includes some variables that we do not really need. `version` is one of them (we know this after a first look). And, in some scenarios, we may even decide that we really only need one or two variables out of this dataset.
+
+Let's assume for now that all we are interested in is how much countries spend on their militaries and not in any of the other variables. Quick question for you:
+```{r selectq, echo=F}
+question("Which variable(s) would we need to keep in our dataset?",
+         answer("`milex`"),
+         answer("`year`"),
+         answer("`stateabb`"),
+         answer("All of them", correct=T),
+         random_answer_order = TRUE,
+         allow_retry = TRUE,
+         incorrect = "Are you sure? We always need to know which country and year a given value corresponds to!")
+```
+
+###
+
+Obviously, we need to keep the `milex`-variable --- but we also need to keep `stateabb` and `year` so that we always know which country and year a given observation relates to. (`stateabb` and `year` are *identifiers* in that they together identify each unique observation --- there is only one value for the USA in the year 1878!)
+
+Having established which variables we need to keep, how to we get rid of the rest? This is where `select()` comes in!
+
+### Using `select()`
+
+`select()` allows you to, well, *select* variables out of a larger dataset. If we want to use the `select()` function, we need to specify the dataset (obviously!) and which variables we want to keep. Here is an example:
+```{r selectex1, exercise=T}
+select(.data = cow,
+       stateabb, year, milex)
+```
+
+You may notice two things:
+
+1. In the first line, where we specify which dataset we use, we type `.data` instead of `data`
+2. We enter the list of variables we want to keep (`stateabb`,`year`,`milex`) without any extra quotation marks or parentheses
+
+The second aspect is simply for your convenience --- less typing. The former has a deeper meaning, which we will get to in a minute!
+
+
+
+## Choosing (or removing) observations with `filter()`
+
+## Building pipelines with `%>%` 
+
+## Creating new variables with `mutate()`
+
+## Summarizing with `summarize()`
+
+## Recoding with `recode()`
 
