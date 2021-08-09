@@ -1,5 +1,5 @@
 ---
-title: "First steps in the R environment"
+title: "Getting to know the R environment"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## What is going on here? 
 
-The previous tutorial on how to make graphs with `ggplot` hopped over quite a few smaller and larger details. In this tutorial, we make up for this and go over some important concepts and tools in the R environment. Think of this as a fundamental introduction to the R-language.
+The previous tutorial on how to make graphs with `ggplot` hopped over quite a few smaller and larger details -- such as how data is stored in R or how you should in general communicate with R. In this tutorial, we make up for this and go over some important concepts and tools in the R environment. Think of this as a fundamental introduction to the R-language.
 
 Ready to start?
 
@@ -205,7 +205,7 @@ ages <- c(35,27,76,52)
 ages
 ```
 
-*Important*Note how all the numbers are separated by commas!
+*Important:* Note how all the numbers are separated by commas!
 
 Because this vector contains only numbers, we call it a `numeric` vector.
 
@@ -230,6 +230,83 @@ names
 In this example, we stored some pieces of text rather than numbers. A vector that contains text is called a `character` vector.
 
 We call it a `character` vector rather than a `text` or `string` vector because, technically, we could also store individual characters, for instance: `letters <- c("A","B","C")`.
+
+
+### Factors
+
+You have just learned about `character` and `numerical` vectors: The first are collections of letters or pieces of text such as `("A","B","C")` or `("Apple","Orange")`, the latter are collections of numbers, e.g. `(1,2,3,4)`.
+
+When working with an real dataset in R, you will come across `factors` --- which are something like a mix of character and numerical vectors. You can think of them as "numbers with text labels". Factors are usually used for _categorical_ variables like gender, religion, or country of origin (see also https://r4ds.had.co.nz/factors.html, on which this part of the tutorial is based). 
+
+Why do we use factors? Factors are particularly useful when we have some pieces of text that we want to sort in a specific order --- weekdays, for example. The code below creates a character vector and then sorts it. Run the code and see if you would be happy with the result:
+```{r fac1, exercise=T}
+weekdays <- c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+
+sort(weekdays)
+```
+
+###
+
+```{r fac1a, echo=T, eval=T}
+weekdays <- c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+
+sort(weekdays)
+```
+
+Obviously, this way of sorting weekdays makes no sense. What we want is to sort the elements in this character vector in a *controlled* way. This is where `factors` come in handy!
+
+We can use the `factor()` function to convert our `weekdays` character vector into a factor. In the `factor()`-function, we first specify the existing vector (`x`) that we want to convert and then we use the `levels` option to tell R exactly in which order the individual elements should appear. Try out the code below and see what happens when you sort the result:
+```{r fac2, exercise=T}
+weekdays <- c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+
+weekdays_fac <- factor(x = weekdays,
+                       levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
+
+sort(weekdays_fac)
+
+```
+
+###
+
+```{r fac2a, echo=T,eval=T}
+weekdays <- c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+
+weekdays_fac <- factor(x = weekdays,
+                       levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
+
+sort(weekdays_fac)
+
+```
+
+Much better, isn't it? You can see in the result above (behind `"levels"`) that the new `weekdays_fac`-factor we created has a set of distinct levels, listed under `"levels"`. If you want to see more in detail how a particular factor is built, you can use the following two functions (see also [here](https://www.dummies.com/programming/r/how-to-look-at-the-structure-of-a-factor-in-r/)):
+
+* `levels()` displays the levels of a factor
+* `str()` displays the structure of a factor (or other objects)
+
+Run the code below to see what I mean:
+```{r exfac, exercise=T}
+weekdays <- c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+
+weekdays_fac <- factor(x = weekdays,
+                       levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
+
+levels(weekdays_fac)
+
+str(weekdays_fac)
+```
+
+###
+
+Now over to you! Can you create your own factor and look at its contents?
+
+1. Building on the example code above, create a new and different character vector and convert it to a factor
+2. Take a look at the factor you created using the `levels()` and `str()` functions
+3. See what happens when you sort it using the `sort()` function
+
+```{r facexc, exercise=T}
+
+```
+
 
 ### Other types of vectors
 
