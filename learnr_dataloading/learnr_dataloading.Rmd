@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 Before you can do any data analysis, you obviously first need to have some dataset and get it into R. Luckily, R and the various packages for it offer you the ability to read a whole range of different data types and formats with just a few symbols of code. In this tutorial, we will cover direct downloads using pre-build commands, some basic functions included in R as such and two important packages from the `tidyverse` that are designed to read different data sources: `haven` and `readxl`.
 
-An added benefit of this lesson is also that you get to know various different data sources and how you access them!
+An added benefit of this lesson is also that you get to know some different data file formats and how you access them!
 
 ## Reading Stata & SPSS datasets {data-progressive=TRUE}
 
