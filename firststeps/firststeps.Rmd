@@ -66,11 +66,9 @@ question("How precise and careful do you have to be when you write code?",
 
 ###
 
-(OK, these questions were only half-serious...). Let's get to know more about the R language!
+(OK, these questions were obviously only semi-serious...). Let's get to know more about the R language!
 
-## The fundamentals of the R language {data-progressive=TRUE}
-
-### The R vocabulary: Functions
+## The R vocabulary: Functions {data-progressive=TRUE}
 
 Functions are the *verbs* in the R language. The "do stuff" words. You could also call them "commands".
 
@@ -84,7 +82,7 @@ ggplot(data = my_dataset, mapping = aes(x=variable_1, y=variable_2))
 * `ggplot()` needs to know what dataset it should use. You specify this via the `data`-argument (`data=....`)
 * `ggplot()` needs to know which variable goes on which axis of the graph. You specify this via the `mapping`-argument. Important: Here, the input is another function, the `aes()`-function. Sometimes, functions can or even must be used within other functions!
 
-### The R vocabulary: Objects
+## The R vocabulary: Objects
 
 Let's stay with the `ggplot()` example:
 ```{r funexmp2, echo=T, eval=F}
@@ -459,6 +457,74 @@ my_list
 ```
 
 You see that the `name` vector was put into the first element in the list (`[[1]]`), the `age` vector became the second element (`[[2]]`), and the matrix became the third (`[[3]]`). All are arranged like, well, a list.
+
+## The R vocabulary: Comparison operators {data-progressive=TRUE}
+
+So far, you have learned about functions and objects --- the "verbs" and "nouns" in the R language. These two get us quite far, but we often also need tools that allow us to evaluate or compare things. For example, we may sometimes want to run a certain function only on a subset of a dataset or only if some condition is fulfilled, or we may want to trim down a dataset to a specific range of values.
+
+This is where "comparison operators" come in. You can think of them as the adjectives of the R language --- they indicate if something is greater than, smaller than, equal to, or not equal to something else. 
+
+###
+
+###
+
+The symbols we use as comparison operators should be familiar from your high school math class:
+
+* `>` means "greater than"
+* `<` means "smaller than"
+* `<=` and `>=` mean "smaller than or equal" and "greater than or equal", respectively
+* `==` means "is equal to" --- *notice how we use two equal signs here!* This is to be extra clear that we want to state that something *should* be equal
+* `!`: means "is not" --- it is a *negation*. You use it in combination with other operators. For example, `!=` means "is not equal to"
+
+As mentioned, one use of these comparison operators is to evaluate if something is true or not. Why don't you try out to evaluate the following statements:
+
+* `5` is greater than `2`
+* `14` is smaller than `3`
+* `6` is equal to `6`
+* `27` is equal to `34`
+* `9` is not equal to `10`
+* `"Bread"` is equal to `"Butter"`
+* `"Twelve"` is equal to "`Twelve"`
+* `"Salt"` is not equal to `"Pepper"`
+
+```{r compop-ex, exercise=T}
+
+```
+
+###
+
+Here's the solution:
+```{r compop-ex-a, eval=F,echo=T}
+5>2
+
+14<3
+
+6==6
+
+27==34
+
+9!=10
+
+"Bread"=="Butter" # notice the quotation marks -- we're dealing with text here!
+
+"Twelve"=="Twelve"
+
+"Salt"!="Pepper"
+```
+
+Quite easy, right?
+
+###
+
+You have now learned about the basics of the R language: 
+
+* Functions --- the "verbs" (e.g. the `ggplot()` function)
+* Objects --- the "nouns" (e.g. a vector or a dataframe)
+* Comparison operators --- the "adjectives" (e.g. `==` or `<=`)
+
+Knowing these basics is *essential* to understand the following tutorials, especially those concerned with data management. For example, when you want to subset a dataset according to some criterion, you need to specify the dataset (object), the function you want to use (verb, and the criterion (the adjective).
+
+It is important to reinforce what you have just learned by doing a few exercises, which come next.
 
 ## Exercises {data-progressive=TRUE}
 
