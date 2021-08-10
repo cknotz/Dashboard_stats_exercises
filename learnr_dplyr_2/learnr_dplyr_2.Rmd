@@ -1,0 +1,46 @@
+---
+title: "Data Cleaning with dplyr (2)"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(rsdmx)
+knitr::opts_chunk$set(echo = FALSE)
+
+# Loading conflict data from ICDP
+temp <- tempfile() # opens empty temporary file
+download.file("https://correlatesofwar.org/data-sets/national-material-capabilities/nmc-v5-1/at_download/file", temp) # downloads and saves into 'temp'
+cow <- read.csv(unz(temp, # unzips & reads CSV file
+                    "NMC_5_0.csv"),
+                header = T)
+unlink(temp)
+rm(temp)
+
+```
+
+## Introduction
+
+In the previous tutorial, you learned how to do two important data cleaning operations with the `dplyr`-package: keeping (or dropping) variables using the `select()`-function, and keep or dropping observations based on some criteria using `filter()`. You also learned how you can efficiently execute several such commands in sequence by using the pipe-operator `%>%`.
+
+With these commands, you can do some basic data cleaning and trim your dataset to what you really need for your analysis. But, obviously, this gets you only so far and most data cleaning and management also involves creating new variables, recoding existing ones, aggregating the data (e.g. into average values) as a whole or also for some groups of observations.
+
+You will learn how to do these operations in this tutorial. And, as in the previous tutorial, we will rely mostly on functions from the `dplyr` package as well as the pipe operator `%>%`.
+
+Before we get started, let's quickly repeat what the pipe operator does and how you use it.
+
+## A quick recap of the `%>%`
+
+
+
+## Creating new variables with `mutate()`
+
+## Summarizing with `summarize()`
+
+## Grouping with `group()`
+
+## Recoding with `recode()`

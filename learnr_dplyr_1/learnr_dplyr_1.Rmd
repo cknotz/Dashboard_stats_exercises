@@ -348,7 +348,7 @@ cow %>%
 ###
 
 Here we want to limit the dataset to observations relating to Norway and years after 2009 --- the code runs without error, but the result is not the desired one!
-```{r dplyr1_debug3, exercise=T}
+```{r dplyr1_debug4, exercise=T}
 cow %>% 
   select(stateabb,year,irst) %>% 
   filter(stateabb="Norway" | year>=2010)
@@ -356,8 +356,12 @@ cow %>%
 
 ###
 
-The comparison operator was of course the problem --- we need to use `&` ("and") instead of `|` ("or")!
-
+The comparison operator was of course the problem --- we need to use `&` ("and") instead of `|` ("or") in our `select()` function!
+```{r dplyr1_debug4-a, eval=F,echo=T}
+cow %>% 
+  select(stateabb,year,irst) %>% 
+  filter(stateabb="Norway" & year>=2010)
+```
 
 ### Build your own pipeline
 

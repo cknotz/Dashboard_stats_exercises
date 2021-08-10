@@ -525,6 +525,8 @@ The symbols we use as comparison operators should be familiar from your high sch
 * `<=` and `>=` mean "smaller than or equal" and "greater than or equal", respectively
 * `==` means "is equal to" --- *notice how we use two equal signs here!* This is to be extra clear that we want to state that something *should* be equal
 * `!`: means "is not" --- it is a *negation*. You use it in combination with other operators. For example, `!=` means "is not equal to"
+* `&` means "and" --- this is used to combine multiple conditions, e.g. `year>1932 & country=="Norway"` means "all observations that relate to Norway after 1932"
+* `|` means "or" --- similar to `&`, this combines multiple conditions, e.g. `country=="Sweden" | country=="Norway"` means "all observations that relate to either Sweden or Norway"
 
 As mentioned, one use of these comparison operators is to evaluate if something is true or not. Why don't you try out to evaluate the following statements:
 
