@@ -53,20 +53,70 @@ Got it? Let's find out:
 ```{r q1, echo=F}
 quiz(caption = "Communicating with R",
 question("How flexible is R with languages?",
-         answer("R is like a computer in some sci-fi movie --- I can just talk to it like I would to a human being, and it totally gets the message!"),
+         answer("R is like a computer in some sci-fi movie --- I can just use human language, including slang, and it still totally gets the message!"),
          answer("R understands one and only one language. If I want R to do something, I need to speak its language!", correct = T),
          answer("R is stupid. It doesn't understand anything I tell it to do!"),
          random_answer_order = TRUE,allow_retry = TRUE),
 question("How precise and careful do you have to be when you write code?",
-         answer("R is quite smart and understands my code even if some commands are spelled wrong or there are missing commas"),
+         answer("R is quite smart and understands my code even if some commands are spelled wrong or there are missing symbols"),
          answer("R takes me literally. I need to write each command exactly as it is supposed to be written, otherwise R will misunderstand me or not understand me at all.", correct=T),
          random_answer_order = TRUE,allow_retry = TRUE)
 )
 ```
 
+OK, admittedly these questions were only semi-serious... 
+
+### Telling R to ignore you
+
+Sometimes when you write R code, you may want to add some notes and comments that explain to a human reader what a particular piece of code does. Adding such comments is especially important when you write larger or more complex scripts or when you start writing your own functions. 
+
+Obviously, if you add language that is intended for humans, you need to tell R that it should ignore it. Otherwise R will show you an error message. You can use the `#` symbol (familiar from social media!) to indicate that some lines are comments.
+
+For example:
+```{r hashexa, echo=T, eval=F}
+# This code below assigns the value of 5 to the object X
+X <- 5 
+
+Y <- 7 # comments can also be added after a command!
+```
+
+Let's do a little intermittent debugging exercise to practice. Can you add `#` symbols so that the following code runs without error?
+```{r hashexc, exercise=T}
+This line contains a comment and should not be executed
+
+A <- 56 This assigns the value of 56 to A
+
+The code below assigns the value of 99 to B
+
+B <- 99
+
+A + B This adds A to B, yielding 155
+
+All work and no play makes Jack a dull boy...
+All work and no play makes Jack a dull boy...
+All work and no play makes Jack a dull boy...
+```
+
 ###
 
-(OK, these questions were obviously only semi-serious...). Let's get to know more about the R language!
+Here is how you would designate comments to make the code work:
+```{r hashexc-a, eval=F, echo=T}
+# This line contains a comment and should not be executed
+
+A <- 56 # This assigns the value of 56 to A
+
+# The code below assigns the value of 99 to B
+
+B <- 99
+
+A + B # This adds A to B, yielding 155
+
+# All work and no play makes Jack a dull boy...
+# All work and no play makes Jack a dull boy...
+# All work and no play makes Jack a dull boy...
+```
+
+Now that you know how *not* to run code, let's move on to learning how to write and run it!
 
 ## The R vocabulary: Functions {data-progressive=TRUE}
 
