@@ -25,7 +25,7 @@ rm(temp)
 
 # Data Cleaning with dplyr (1)
 
-In this tutorial, you learn how to do basic data cleaning operations with the `dplyr`-package.
+In this tutorial, you learn how to do some basic data cleaning operations with the `dplyr`-package.
 
 ## Introduction {data-progressive=TRUE}
 
@@ -35,17 +35,41 @@ Data cleaning is, to be honest, often tedious and boring and can be quite frustr
 
 The arguably most fundamental package for data cleaning in R is `dplyr`, which provides fairly easy to use commands to subset, summarize, reshape, split, combine ('merge'),... your data. In this tutorial, you will learn how to do basic data cleaning tasks with `dplyr`.
 
+### Preparation: Loading the `dplyr` package
+
+As always when we want to use extra add-on packages in R, we first need to load them. When we want to use `dplyr`, we have two options.
+
+1. Load `dplyr` by itself
+2. Load the entire `tidyverse` collection of packages, which includes `dplyr` (and also `ggplot2`,...)
+
+(In case you have not installed either the `tidyverse` collection or `dplyr`, you first need to install one of them via `install.packages("tidyverse")` or `install.packages("dplyr")`.)
+```{r qpackload, echo=F}
+question("Do you remember which function you use to load packages?",
+         answer("`library()`", correct=T),
+         answer("`ggplot()`"),
+         answer("`use()`"),
+         answer("`load()`"),
+         random_answer_order = TRUE,
+         allow_retry = TRUE)
+```
+
+###
+
+This should not have been too difficult: You use `library(dplyr)` or `library(tidyverse)`.
+
+Let's move on to working with some data!
+
 ###
 
 ### Messy data --- a practical example
 
-Before we get into the nitty-gritty of `dplyr`, let's first get an impression of how a messy real-life dataset looks like. For this, we use a dataset from the *Correlates of War* (https://correlatesofwar.org/) project. The CoW project has produced a number of important datasets on various types of armed conflict and the actors in these conflicts (see also the Uppsala Conflict Data Program* at  https://www.pcr.uu.se/research/UCDP/ for a related project with additional data).
+Before we get into the nitty-gritty of `dplyr`, let's first get an impression of how a messy real-life dataset looks like. For this, we use a dataset from the *Correlates of War* (CoW, https://correlatesofwar.org/) project. The CoW project has produced a number of important datasets on various types of armed conflict and the actors in these conflicts (see also the *Uppsala Conflict Data Program* at  https://www.pcr.uu.se/research/UCDP/ for a related project with additional data).
 
 Specifically, we will use the [*National Material Capabilities*](https://correlatesofwar.org/data-sets/national-material-capabilities) dataset. This dataset measures, in essence, how powerful countries are. To do so, it includes data on how large countries' militaries are, how much they spend on them, how much energy they consume, how much iron and steel they produce, and how large their populations are. 
 
 ###
 
-I have already downloaded the data for you. It is saved as `cow`. Do you remember how to display the first and last rows --- the "head" and "tail" --- of a dataset? Do you want to give it a try?
+I have already downloaded the data for you and saved it as `cow`. Do you remember how to display the first and last rows --- the "head" and "tail" --- of a dataset? Do you want to give it a try?
 ```{r cowinsp, exercise=T}
 
 ```
@@ -59,7 +83,7 @@ head(cow)
 tail(cow)
 ```
 
-This should give you an idea of what the data look like --- but you obviously do not know what the numbers really mean! 
+The tables also give you an idea of what the dataset looks like: We have repeated observations for single countries: The USA in 1816, in 1817, in 1818, and so on, also for many other countries. What you can't see here is what all these numbers really mean, of course.
 
 Not to worry: Please download the dataset's [codebook](https://correlatesofwar.org/data-sets/national-material-capabilities/nmc-codebook-v5-1/at_download/file), go to page 10, and familiarize yourself with the dataset and the variables in it.
 
@@ -71,12 +95,12 @@ Ready to move on?
 
 Let's take another look at the list of variables:
 
-* `stateabb`: the coutries' name, abbreviated to three letters
+* `stateabb`: the countries' names, abbreviated to three letters
 * `ccode`: a numerical code for each country
 * `year`: the year of observation (notice that the data go back to 1816!)
 * `milex`: military expenditures (in British Pounds until 1913; from 1914 in US Dollars)
 * `milper`: military personnel (thousands)
-* `irst`: iron & steel productuction (thousands of tons)
+* `irst`: iron & steel production (thousands of tons)
 * `pec`: primary energy consumption
 * `tpop`: size of total population (thousands of persons)
 * `upop`: size of urban population (thousands of persons; until 2001: persons in cities >100k inhabitants, then >300k)
@@ -85,21 +109,14 @@ Let's take another look at the list of variables:
 
 You should have noted two things:
 
-1. Two variables have 'breaks': `milex` and `upop` --- their calculation changes over time!
-2. We have some variables that we probably won't really need, especially `version`
+1. Two variables have 'breaks' in them: `milex` and `upop` --- their calculation changes over time!
+2. We have some variables that we probably won't need, especially `version`
 
 In the next two sections, you will see how we can deal with these problems.
 
-### Preparation: Loading the `dplyr` package
+## Choosing (or removing) variables with `select()` {data-progressive=TRUE}
 
-
-
-
-
-
-## Choosing (or removing) variables with `select()`
-
-We saw that our `cow` dataset includes some variables that we do not really need. `version` is one of them (we know this after a first look). And, in some scenarios, we may even decide that we really only need one or two variables out of this dataset.
+Let's first deal with the issue of unneccessary variables in our dataset. `version` is one of them (we know what version the dataset is after a first look). In some real-life scenarios, of course, we may need only one or two variables out of a dataset.
 
 Let's assume for now that all we are interested in is how much countries spend on their militaries and not in any of the other variables. Quick question for you:
 ```{r selectq, echo=F}
@@ -117,9 +134,9 @@ question("Which variable(s) would we need to keep in our dataset?",
 
 Obviously, we need to keep the `milex`-variable --- but we also need to keep `stateabb` and `year` so that we always know which country and year a given observation relates to. (`stateabb` and `year` are *identifiers* in that they together identify each unique observation --- there is only one value for the USA in the year 1878!)
 
-Having established which variables we need to keep, how to we get rid of the rest? This is where `select()` comes in!
+Having established which variables we need to keep, how do we get rid of the rest? This is where `select()` comes in!
 
-### Using `select()`
+### Using `select()` to keep variables
 
 `select()` allows you to, well, *select* variables out of a larger dataset. If we want to use the `select()` function, we need to specify the dataset (obviously!) and which variables we want to keep. Here is an example:
 ```{r selectex1, exercise=T}
@@ -132,17 +149,249 @@ You may notice two things:
 1. In the first line, where we specify which dataset we use, we type `.data` instead of `data`
 2. We enter the list of variables we want to keep (`stateabb`,`year`,`milex`) without any extra quotation marks or parentheses
 
-The second aspect is simply for your convenience --- less typing. The former has a deeper meaning, which we will get to in a minute!
+The second point reflects that `dplyr` tries to make things convenient for you by requiring fewer keystrokes. The former has a deeper meaning, which we will get to after we're done with the next section on the `filter()` function.
+
+### Using `select()` to delete ("drop") variables
+
+You now know how to keep certain variables in a dataset and get rid of all the rest. We can also use `select()` to delete or "drop" individual variables from our dataset and keep all the rest. 
+
+Doing this is easy: We simply add a `-` before each variable we want to drop in our code. Here is how we could remove the `version` and `tpop`-variables from our dataset:
+```{r selectout, echo=T, eval=F}
+select(.data=cow,
+       -version,-tpop)
+```
+
+Now over to you: How would you remove the `irst` (iron and steel production) variable from the `cow` dataset?
+```{r selectoutex, exercise=T}
+select()
+```
+
+###
+
+This is how you could have done that:
+```{r selectout-a, echo=T, eval=T}
+select(.data=cow,
+       -irst)
+```
+
+Not too hard, is it?
+
+Are you ready to move on to the next part?
+
+## Choosing (or removing) observations with `filter()` {data-progressive=TRUE}
+
+Remember that there were two variables in our dataset, which had 'breaks' in them:
+
+* `upop`: the size of a country's urban population (thousands of persons). Until 2001, this refers to persons in cities with >100k inhabitants; from 2002 on, it refers to persons in cities with >300k inhabitants)
+* `milex`: a country's military expenditures, which are expressed in in British Pounds until 1913 and from 1914 in US Dollars
+
+These breaks are a problem: Strictly speaking, we cannot really compare countries' military expenditures before and after 1914, and the same applies to countries' urban populations before and after 2002.
+
+One way of dealing with this would of course be to convert the `milex` data using exchange rate information, or to collect new data on countries' urban populations. Both are not easy to do, however.
+
+A quick and dirty solution is simply to get rid of some parts of our dataset --- for instance, deleting ("dropping") all observations that refer to years before 1914 would solve our problem with the change in the reference currency. 
+
+This is where the `filter()`-function in `dplyr` comes in handy: It lets us "filter" our dataset according to one or more criteria.
+
+###
+
+Let's use the `filter()` function to get rid of all observations in our dataset that refer to years before 1914. Here is how the code looks like --- see what it does!
+```{r filterex, exercise=T}
+filter(.data=cow,
+       year<1914)
+```
+
+###
+
+```{r filterex-a, eval=T,echo=T}
+filter(.data=cow,
+       year>=1914)
+```
+
+You should not find it difficult to read this piece of code:
+
+* As with `select()`, the first step is to specify which dataset we want to filter. We do so with `.data=cow`
+* Then we simply state that we want to keep all observations where year is equal to or greater (`>=`) than 1914
+
+### A quick reminder on "comparison operators" in R
+
+In the previous part, we used `>=` in our command to filter our dataset. You hopefully remember the part about comparison operators ("adjectives") in the earlier tutorial on the basics of the R language.
+
+If yes, then you should remember that `>=` means "greater than or equal to". This symbol is one of a larger range of symbols --- or "operators" --- that we can use in `dplyr`, but also in R generally and many other programming languages. Here are again some of the most important operators you should know:
+
+* `>`: "greater than"
+* `<`: "smaller than"
+* `<=` and `>=`: "smaller than or equal" and "greater than or equal"
+* `==`: "is equal to" --- *notice how we use two equal signs here!* This is to be extra clear that we want to state that something *should* be equal
+* `!`: "is not" --- it is a *negation*. You use it in combination with other operators. For example, `!=` means "is not equal to"
+* `&`: "and" --- this is used to combine multiple conditions, e.g. `year>1932 & country=="Norway"` means "all observations that relate to Norway after 1932"
+* `|`: "or" --- similar to `&`, this combines multiple conditions, e.g. `country=="Sweden" | country=="Norway"` means "all observations that relate to either Sweden or Norway"
+
+Let's do a quick exercise to practice! Can you change the code below to instead filter all observations that relate to years after 1945 and the United States (`"USA"`)?
+```{r filterex2, exercise=T}
+filter(.data=cow,
+       year>=1914)
+```
+
+Want to see the solution?
+
+### 
+
+```{r filterex2-a, echo=T, eval=T}
+filter(.data=cow,
+       year>1945 & stateabb=="USA")
+```
+
+## Building pipelines with `%>%` {data-progressive=TRUE}
+
+In the previous two sections, we used only one function at a time: We used `select()` to select (or drop) some variables in our dataset, and we used `filter()` to remove observations from the data.
+
+In a normal data cleaning operation, you will have to use both functions. Similar to what we have done earlier, you will first select some variables that you need and drop the rest and then you might also need to trim the dataset by removing observations. 
+
+One way of doing this would be to do step 1, save the result in a new object, and then use that new object to do step two. This is obviously not ideal. For one, it means we have to type more but, more importantly, this may be difficult if not impossible to do if we work with very, very large datasets (>1GB --- yes, they do exist and not every computer is strong enough to keep two such large datasets in its working memory at the same time!). 
+
+The pipe operator -- `%>%` -- offers a more efficient way to solve this problem. With the pipe-operator, you basically tell R to take the result of one operation and feed it into a next one (and one after that, and so on...). By linking several of these operations together, you can build a whole "pipeline" that takes a raw dataset, filters and transforms it and spits out a clean new dataset that is ready for graphs or statistical analyses. The pipe operator is also part of the `tidyverse` and compatible with `dplyr` functions.
+
+###
+
+###
+
+A look at some commented code might make the logic of the pipe-operator clearer:
+```{r pipeex, exercise=T}
+cow %>% # 1.
+  select(stateabb,year,milex) %>%  # 2.
+  filter(year>=1914) %>%  # 3.
+  head() # 4.
+```
+
+In human language:
+
+1. "Take the `cow` dataset,..."
+2. "...select these three variables from it and drop the rest,..."
+3. "...then keep only those observations that relate to 1914 and after,..."
+4. "...and finally print the first few observations."
+
+Notice that, because we use `%>%` operator, we can use the `head()` function by itself, without further details. R knows that we want to take the result from the previous steps here. Convenient, isn't it? 
+
+###
+
+Remember also that when we first used the `select()`-function, we stated explicitly that we wanted to use the `cow`-dataset with `.data=cow` --- i.e. `select(.data=cow,...)`? 
+
+Now compare this to the code below:
+```{r pipeex-1, eval=F, echo=T}
+cow %>%
+  select(stateabb,year,milex) %>%
+  filter(year>=1914) %>%
+  head()
+```
+
+Here, we stated in the first line that we want to use the `cow`-dataset. In the second and all subsequent lines, we then only state which variables and observations we want to keep. Again, this is because we tell R with the `%>%` operator that we want to use the result of the previous line in the current line --- no need for further information!
+
+###
+
+Time for a quick summary: 
+
+* `select()` lets us (de-)select variables out of a larger dataset
+* `filter()` lets us filter the dataset according to some criterion (e.g. `year>1956`)
+* With the pipe-operator `%>%`, we can link together multiple commands
+
+Ready to move on to the exercises?
+
+## Exercises {data-progressive=TRUE}
+
+### De-bugging exercises
+
+As before, you can practice your skills by debugging some erroneous code. Here is the first example --- can you make it work correctly?
+```{r dplyr1_debug1, exercise=T}
+select(.data=cow,
+       stateabb,year,milex
+```
+
+###
+
+Easy, right?
+```{r dplyr1_debug1-a, eval=F,echo=T}
+select(.data=cow,
+       stateabb,year,milex)
+```
+
+###
+
+The devil is in the detail...
+```{r dplyr1_debug2, exercise=T}
+select(data=cow,
+       stateabb,year,milex)
+```
+
+###
+
+A missing dot caused the error!
+```{r dplyr1_debug2-a, eval=F,echo=T}
+select(.data=cow,
+       stateabb,year,milex)
+```
+
+Alternatively, you could also use the pipe operator!
+```{r dplyr1_debug2-b, eval=F,echo=T}
+cow %>% 
+  select(stateabb,year,milex)
+```
+
+###
+
+We want to keep all observations that refer to the USA -- but something doesn't work. Do you know what is wrong?
+```{r dplyr1_debug3, exercise=T}
+cow %>% 
+  filter(stateabb="USA")
+```
+
+###
+
+Here we want to limit the dataset to observations relating to Norway and years after 2009 --- the code runs without error, but the result is not the desired one!
+```{r dplyr1_debug3, exercise=T}
+cow %>% 
+  select(stateabb,year,irst) %>% 
+  filter(stateabb="Norway" | year>=2010)
+```
+
+###
+
+The comparison operator was of course the problem --- we need to use `&` ("and") instead of `|` ("or")!
 
 
+### Build your own pipeline
 
-## Choosing (or removing) observations with `filter()`
+Can you build your own "data cleaning pipeline" for the `cow` dataset, building on the example code below? 
 
-## Building pipelines with `%>%` 
+```{r pipeex-2, eval=F, echo=T}
+cow %>%
+  select(stateabb,year,milex) %>%
+  filter(year>=1914) %>%
+  head()
+```
 
-## Creating new variables with `mutate()`
+1. Select the urban population (`upop`) variable, in addition to `stateabb` and `year`
+2. Filter out all observations that relate to years after 2001 (when the calculation changes)
+3. Print out the first lines ("head") of your result
+4. Do not copy-paste, always write your own code. You will learn more this way!
 
-## Summarizing with `summarize()`
+```{r pipeex-3, exercise=T}
 
-## Recoding with `recode()`
+```
+
+###
+
+Here is how you could do this:
+```{r pipeex-3a, eval=F, echo=T}
+cow %>%
+  select(stateabb,year,irst) %>%
+  filter(year<=2001) %>%
+  head()
+```
+
+###
+
+Great, now you should be familiar with two basic data cleaning operations. The next two tutorials build directly on this and you will learn how to create new variables, group and summarize, and how to reshape and merge data.
+
+
 
