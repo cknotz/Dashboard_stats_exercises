@@ -7,6 +7,7 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 library(learnr)
 library(tidyverse)
+library(haven)
 library(dplyr)
 library(ggplot2)
 library(rsdmx)
@@ -56,10 +57,117 @@ Notice that, because we use `%>%` operator, we can use the `head()` function by 
 
 Got it? Great, then let's learn how to create new variables!
 
-## Creating new variables with `mutate()`
+## Creating new variables with `mutate()` {data-progressive=TRUE}
+
+For many data analysis projects, you need to construct your own variables or indicators from existing data. For example, you may need to divide one variable by another one to put them in relation to each other, or you may want construct an aggregate index to measure social and political attitudes such as authoritarianism (a desire for social order, conformity, and obedience to established norms and rules; [Feldman 2003](https://www.jstor.org/stable/3792510)) or ethnocentrism (the perception that one's own group is more intelligent, hard-working, and trustworthy than others; [Kam & Kinder 2012](https://doi.org/10.1111/j.1540-5907.2011.00564.x)). 
+
+To create new variables, you can use the `mutate()` function from the `dplyr` package. As the name suggests, you use this function to "mutate" existing variables into new ones. Let's go straight to an example to show you how this works.
+
+###
+
+### Adding two variables
+
+We start with a very simple operation: Calculating the sum of two variables. To practice this, we use again the [*National Material Capabilities*](https://correlatesofwar.org/data-sets/national-material-capabilities) dataset from the *Correlates of War project*, which we also used in the previous tutorial.
+
+Specifically, assume we wanted to add the following two variables from the dataset together:
+
+* `milper`: The number of persons in countries' militaries (in thousands of persons)
+* `upop`: The number of persons living in big cities (also in thousands of persons)
+
+The code below shows how this is done (after some data cleaning, which you should now be familiar with):
+```{r mutad-1, exercise=T}
+cow %>% 
+  select(stateabb,year,upop,milper) %>% 
+  filter(stateabb=="USA" & year>=2005) %>% 
+  mutate(added = milper + upop)
+```
+
+This should not be difficult to understand:
+
+* The first lines select the variables we really need (and drop the rest) and filters the data so that we only have observations for the US from 2005 on
+* Then we create a new variable, `added`, that is the sum of `milper` and `upop`
+* (We of course use the `%>%` to link everything elegantly together)
+
+Easy!
+
+###
+
+Now over to you: Can you complete the code below to create a new variable, `summen`, which is the sum of:
+
+* `irst`: iron & steel production, thousands of tons
+* `pec`: primary energy consumption, tousands of coal-ton equivalents
+
+```{r mutad_2, exercise=T}
+cow %>% 
+  select(stateabb,year,irst,pec) %>% 
+  filter(stateabb=="USA" & year>=2005) %>% 
+  mutate()
+```
+
+###
+
+This is how you could have solved this:
+```{r mutad_2a, exercise=T}
+cow %>% 
+  select(stateabb,year,irst,pec) %>% 
+  filter(stateabb=="USA" & year>=2005) %>% 
+  mutate(summen = irst + pec)
+```
 
 
 
+### Calculating a percentage {data-progressive=TRUE}
+
+One very common type of "data mutation" you may have to do in your work is to calculate a percentage --- i.e. put two variables in relation to each other ("X in percent of Y"). This is especially important when we compare countries with larger and smaller economies or populations. 
+
+We use again data from the *National Material Capabilities* dataset, specifically:
+
+* `tpop`: The overall population, in thousands of persons
+* `upop`: The urban population (persons living in big cities), in thousands of persons
+
+If we wanted to compare how "urbanized" countries are, we would normally not look at the overall number but the *percentage* of persons living in big cities --- in this way, we can compare large countries such as the US or China to smaller countries such as Norway or Austria.
+
+Here is how you could calculate the percentage with `mutate()`:
+```{r mutex-1, exercise=T}
+cow %>% 
+  select(stateabb,year,tpop,upop) %>% 
+  filter(stateabb=="NOR" & year>=2002) %>% 
+  mutate(urban = (upop/tpop)*100)
+```
+
+Can you see what is going on here?
+
+1. We first do some data cleaning, as before
+2. Once we have trimmed the data, we use `mutate()` to create a new variable, `urban` as the percentage of the overall population that lives in larger cities (`upop` divided by `tpop`, then multiplied by 100)
+
+From the result, you can see that about 17% of Norwegians lived in bigger cities in 2002 and that that number increased slowly over the following years.
+
+Ready to try it for yourself?
+
+###
+
+We now use the *Comparative Political Data Set* (also familiar!). The code below downloads the dataset and trims the data to some years for Norway and two central variables:
+
+* `emp_ag`: The number of persons employed in agriculture, in thousands of persons
+* `emp_civ`: The overall number of persons employed, in thousands of persons 
+
+Can you complete the code below to calculate a new variable, `per_ag`, that measures the number of persons working in agriculture *as a percentage* of all employed persons?
+```{r mutex-2, exercise=T}
+read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta") %>% 
+  select(country,year,emp_ag,emp_civ) %>% 
+  filter(country=="Norway" & year>=2010) %>% 
+  mutate()
+```
+
+###
+
+Here is one potential solution:
+```{r mutex-2a, exercise=T}
+read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta") %>% 
+  select(country,year,emp_ag,emp_civ) %>% 
+  filter(country=="Norway" & year>=2010) %>% 
+  mutate(per_ag = (emp_ag/emp_civ)*100)
+```
 
 ## Summarizing with `summarize()`
 
