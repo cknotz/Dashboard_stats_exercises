@@ -1,5 +1,5 @@
 ---
-title: "Getting data into R"
+title: "Getting your data into R"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
@@ -14,7 +14,7 @@ library(essurvey)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-# Getting data into R
+# Getting your data into R
 
 ## Introduction {data-progressive=TRUE}
 
@@ -317,7 +317,7 @@ cpds <- read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Upd
 head(cpds)
 ```
 
-### Problem No. 1
+### Problem No. 2
 
 Here is the second problem. Can you fix the bug?
 ```{r ex2, exercise=T}
@@ -361,32 +361,49 @@ head(dcn)
 
 Now it is again time for you to code on your own. In the first of two exercises, you will quickly repeat some of the things we covered earlier. In the second exercise, you will work with a cool package that allows you to directly download data from the European Social Survey (ESS) into R, without any extra steps.
 
-### Exercise 1: Download and read in a Stata dataset {data-progressive=TRUE}
+*IMPORTANT:* From here on, you should work in your own R-code file in RStudio.
 
-This exercise should be easy to do. You just need to use the `haven`-package to read a Stata dataset into R. You can choose which dataset you want to work with. From here on, you should work in your own R-code file in RStudio.
+### Exercise 1: Download and read in a Stata (.dta) dataset {data-progressive=TRUE}
 
-First, load the `haven`-package --- if necessary, install it first. You install the package, as always, with `install.packages()`:
-```{r insthav, echo=T, eval=F}
-install.packages("haven")
-```
+This exercise should be easy to do. You just need to use the `haven`-package to read a Stata dataset into R. You can choose which dataset you want to work with. You can use the *Comparative Political Data Set*, the *Democracy Cross-National Data* or any other dataset you find interesting as long as it is in Stata (.dta) format. 
 
-###
+1. (If necessary, install the `haven` package using `install.packages("")`)
+2. Load the `haven` package using `library()`
+3. Use the `read_dta()` function to load the dataset into R and save it as an object using the assignment operator `<-`
+4. Print out the first few observations of the dataset using `head()`
 
-Second, load the package with the `library()`-function:
-```{r loadhav, echo=T, eval=F}
-library(haven)
-```
+If it worked, you should see your dataset listed in the *Environment* tab on the upper right-hand side in RStudio, and you should see the first observations printed out in the console on the lower left-hand side.
 
 ###
 
-Now you need to get the link to the dataset of your choice. You can use the *Comparative Political Data Set*, the *Democracy Cross-National Data* or any other dataset you find interesting as long as it is in Stata (.dta) format. Go to the respective dataset website, copy the link and then use it in `haven`'s `read_dta()`-function:
-```{r havexamp, echo=T, eval=F}
-your_dataset <- read_dta("[link]")
+Here is how you could have done it:
+```{r dtaex-a, echo=T, eval=F}
+cpds <- read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta")
+
+head(cpds)
 ```
 
-If it worked, you should see your dataset listed in the *Environment* tab on the upper right-hand side in RStudio.
+### Exercise 2: Dowload and read in an SPSS (.sav) data file
 
-### Exercise 2: Using the `essurvey` package {data-progressive=TRUE}
+Now you use the `haven`-package to load an SPSS (.sav) datafile into R --- and this time you have to write the code yourself (you can of course take a peek at the previous exercise, if you need).
+
+As before, you will use the Major Episodes of Political Violence (MPEV) dataset, which you can download via this link: http://www.systemicpeace.org/inscr/MEPVv2018.sav
+
+1. Using the link and the appropriate function for SPSS files from the `haven` package, write code to download the MPEV dataset and save it as `mpev`
+2. Print out the first few observations of the dataset
+
+###
+
+Here is how you could have done it:
+```{r savex-a, echo=T, eval=F}
+mpev <- read_sav("http://www.systemicpeace.org/inscr/MEPVv2018.sav")
+
+head(mpev)
+```
+
+Ready to move on to a more advanced exercise with the European Social Survey?
+
+### Exercise 3: Using the `essurvey` package {data-progressive=TRUE}
 
 You may have heard of the European Social Survey (ESS). This is a large-scale survey project that collects data about the opinions and preferences of citizens in many European countries (plus Israel and Russia). Because it covers so many countries and so many topics (immigration, gender, climate change, health, inequality, well-being,...), it is one of the most widely-used survey datasets in political science and sociology. The Norwegian Centre for Research Data (NSD) is also one of the member organizations. Perhaps more importantly: The data are freely available to anyone who wants to use them.
 

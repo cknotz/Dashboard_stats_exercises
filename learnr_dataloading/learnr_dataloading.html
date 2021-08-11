@@ -13,7 +13,7 @@
 <meta name="progressive" content="false" />
 <meta name="allow-skip" content="false" />
 
-<title>Getting data into R</title>
+<title>Getting your data into R</title>
 
 
 <!-- highlightjs -->
@@ -116,12 +116,12 @@ $(document).ready(function () {
 
 <div class="topics">
 
-<div id="section-getting-data-into-r" class="section level1">
-<h1>Getting data into R</h1>
+<div id="section-getting-your-data-into-r" class="section level1">
+<h1>Getting your data into R</h1>
 <div id="section-introduction" class="section level2" data-progressive="TRUE">
 <h2 data-progressive="TRUE">Introduction</h2>
 <p>Before you can do any data analysis, you obviously first need to have some dataset and get it into R. Luckily, R and the various packages for it offer you the ability to read a whole range of different data types and formats with just a few symbols of code. In this tutorial, we will cover direct downloads using pre-build commands, some basic functions included in R as such and two important packages from the <code>tidyverse</code> that are designed to read different data sources: <code>haven</code> and <code>readxl</code>.</p>
-<p>An added benefit of this lesson is also that you get to know various different data sources and how you access them!</p>
+<p>An added benefit of this lesson is also that you get to know some different data file formats and how you access them!</p>
 </div>
 <div id="section-reading-stata-spss-datasets" class="section level2" data-progressive="TRUE">
 <h2 data-progressive="TRUE">Reading Stata &amp; SPSS datasets</h2>
@@ -393,8 +393,8 @@ head(cpds)</code></pre>
 
 head(cpds)</code></pre>
 </div>
-<div id="section-problem-no.-1" class="section level3">
-<h3>Problem No. 1</h3>
+<div id="section-problem-no.-2" class="section level3">
+<h3>Problem No. 2</h3>
 Here is the second problem. Can you fix the bug?
 <div class="tutorial-exercise" data-label="ex2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>mepv &lt;- read_sav(http://www.systemicpeace.org/inscr/MEPVv2018.sav)
@@ -403,7 +403,7 @@ head(mepv)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-problem-no.-2" class="section level3">
+<div id="section-problem-no.-2-1" class="section level3">
 <h3>Problem No. 2</h3>
 <p>Could you figure out what the problem was? Again one of the most common ones: Missing quotation marks! We have to tell R not to treat the link as a command but to treat it simply like a piece of text.</p>
 <p>This is the correct solution</p>
@@ -434,25 +434,44 @@ head(dcn)</code></pre>
 <div id="section-exercises" class="section level2" data-progressive="TRUE">
 <h2 data-progressive="TRUE">Exercises</h2>
 <p>Now it is again time for you to code on your own. In the first of two exercises, you will quickly repeat some of the things we covered earlier. In the second exercise, you will work with a cool package that allows you to directly download data from the European Social Survey (ESS) into R, without any extra steps.</p>
+<p><em>IMPORTANT:</em> From here on, you should work in your own R-code file in RStudio.</p>
 <div id="section-exercise-1-download-and-read-in-a-stata-dataset" class="section level3" data-progressive="TRUE">
 <h3 data-progressive="TRUE">Exercise 1: Download and read in a Stata dataset</h3>
-<p>This exercise should be easy to do. You just need to use the <code>haven</code>-package to read a Stata dataset into R. You can choose which dataset you want to work with. From here on, you should work in your own R-code file in RStudio.</p>
-<p>First, load the <code>haven</code>-package — if necessary, install it first. You install the package, as always, with <code>install.packages()</code>:</p>
-<pre class="r"><code>install.packages(&quot;haven&quot;)</code></pre>
+<p>This exercise should be easy to do. You just need to use the <code>haven</code>-package to read a Stata dataset into R. You can choose which dataset you want to work with. You can use the <em>Comparative Political Data Set</em>, the <em>Democracy Cross-National Data</em> or any other dataset you find interesting as long as it is in Stata (.dta) format.</p>
+<ol style="list-style-type: decimal">
+<li>(If necessary, install the <code>haven</code> package using <code>install.packages("")</code>)</li>
+<li>Load the <code>haven</code> package using <code>library()</code></li>
+<li>Use the <code>read_dta()</code> function to load the dataset into R and save it as an object using the assignment operator <code>&lt;-</code></li>
+<li>Print out the first few observations of the dataset using <code>head()</code></li>
+</ol>
+<p>If it worked, you should see your dataset listed in the <em>Environment</em> tab on the upper right-hand side in RStudio, and you should see the first observations printed out in the console on the lower left-hand side.</p>
 </div>
 <div id="section-section-14" class="section level3">
 <h3></h3>
-<p>Second, load the package with the <code>library()</code>-function:</p>
-<pre class="r"><code>library(haven)</code></pre>
+<p>Here is how you could have done it:</p>
+<pre class="r"><code>cpds &lt;- read_dta(&quot;https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta&quot;)
+
+head(cpds)</code></pre>
+</div>
+<div id="section-exercise-2-dowload-and-read-in-an-spss-.sav-data-file" class="section level3">
+<h3>Exercise 2: Dowload and read in an SPSS (.sav) data file</h3>
+<p>Now you use the <code>haven</code>-package to load an SPSS (.sav) datafile into R — and this time you have to write the code yourself (you can of course take a peek at the previous exercise, if you need).</p>
+<p>As before, you will use the Major Episodes of Political Violence (MPEV) dataset, which you can download via this link: <a href="http://www.systemicpeace.org/inscr/MEPVv2018.sav" class="uri">http://www.systemicpeace.org/inscr/MEPVv2018.sav</a></p>
+<ol style="list-style-type: decimal">
+<li>Using the link and the appropriate function for SPSS files from the <code>haven</code> package, write code to download the MPEV dataset and save it as <code>mpev</code></li>
+<li>Print out the first few observations of the dataset</li>
+</ol>
 </div>
 <div id="section-section-15" class="section level3">
 <h3></h3>
-<p>Now you need to get the link to the dataset of your choice. You can use the <em>Comparative Political Data Set</em>, the <em>Democracy Cross-National Data</em> or any other dataset you find interesting as long as it is in Stata (.dta) format. Go to the respective dataset website, copy the link and then use it in <code>haven</code>’s <code>read_dta()</code>-function:</p>
-<pre class="r"><code>your_dataset &lt;- read_dta(&quot;[link]&quot;)</code></pre>
-<p>If it worked, you should see your dataset listed in the <em>Environment</em> tab on the upper right-hand side in RStudio.</p>
+<p>Here is how you could have done it:</p>
+<pre class="r"><code>mpev &lt;- read_sav(&quot;http://www.systemicpeace.org/inscr/MEPVv2018.sav&quot;)
+
+head(mpev)</code></pre>
+<p>Ready to move on to a more advanced exercise with the European Social Survey?</p>
 </div>
-<div id="section-exercise-2-using-the-essurvey-package" class="section level3" data-progressive="TRUE">
-<h3 data-progressive="TRUE">Exercise 2: Using the <code>essurvey</code> package</h3>
+<div id="section-exercise-3-using-the-essurvey-package" class="section level3" data-progressive="TRUE">
+<h3 data-progressive="TRUE">Exercise 3: Using the <code>essurvey</code> package</h3>
 <p>You may have heard of the European Social Survey (ESS). This is a large-scale survey project that collects data about the opinions and preferences of citizens in many European countries (plus Israel and Russia). Because it covers so many countries and so many topics (immigration, gender, climate change, health, inequality, well-being,…), it is one of the most widely-used survey datasets in political science and sociology. The Norwegian Centre for Research Data (NSD) is also one of the member organizations. Perhaps more importantly: The data are freely available to anyone who wants to use them.</p>
 <p>Normally, if we wanted to use ESS data, we would have to go to <a href="https://www.europeansocialsurvey.org/" class="uri">https://www.europeansocialsurvey.org/</a>. There we would register as a user, then select the countries, topics, and years we are interested in, and download the data as an Excel (.xlsx) or Stata (.dta) file. Then we would read this file into R.</p>
 <p>Luckily, there’s a way to save the last few steps and directly load the data into R: the <code>essurvey</code>-package (<a href="https://cran.r-project.org/web/packages/essurvey/vignettes/intro_ess.html" class="uri">https://cran.r-project.org/web/packages/essurvey/vignettes/intro_ess.html</a>)!</p>
@@ -552,15 +571,15 @@ output$`tutorial-exercise-havenload-output` <- renderUI({
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "havendta-q", question = structure("Which function would you use to read a Stata (.dta) file?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_db57d29",     option = "read_dta()", value = "read_dta()", label = structure("read_dta()", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_3d71571",     option = "read_sav()", value = "read_sav()", label = structure("read_sav()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_9fff3ad",     option = "read_sas()", value = "read_sas()", label = structure("read_sas()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "havendta-q-answer", question = "havendta-q"), loading = structure("<strong>Loading:<\u002fstrong> \nWhich function would you use to read a Stata (.dta) file?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = TRUE, allow_retry = FALSE,     seed = 2067311326.53733, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "havendta-q", question = structure("Which function would you use to read a Stata (.dta) file?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_e2f3088",     option = "read_dta()", value = "read_dta()", label = structure("read_dta()", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_1d6fdad",     option = "read_sav()", value = "read_sav()", label = structure("read_sav()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_44e1047",     option = "read_sas()", value = "read_sas()", label = structure("read_sas()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "havendta-q-answer", question = "havendta-q"), loading = structure("<strong>Loading:<\u002fstrong> \nWhich function would you use to read a Stata (.dta) file?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = TRUE, allow_retry = FALSE,     seed = 354782036.834792, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "havensav-q-1",     question = structure("Which function would you use to read an SPSS (.sav) file?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_35dcd91",         option = "read_dta()", value = "read_dta()", label = structure("read_dta()", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_ea605f3",         option = "read_sav()", value = "read_sav()", label = structure("read_sav()", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_18bf3e7",         option = "read_sas()", value = "read_sas()", label = structure("read_sas()", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "havensav-q-1-answer", question = "havensav-q-1"),     loading = structure("<strong>Loading:<\u002fstrong> \nWhich function would you use to read an SPSS (.sav) file?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = TRUE, allow_retry = FALSE,     seed = 1196018567.44306, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "havensav-q-1",     question = structure("Which function would you use to read an SPSS (.sav) file?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_6622d8e",         option = "read_dta()", value = "read_dta()", label = structure("read_dta()", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_1e0d407",         option = "read_sav()", value = "read_sav()", label = structure("read_sav()", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_a6c2836",         option = "read_sas()", value = "read_sas()", label = structure("read_sas()", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "havensav-q-1-answer", question = "havensav-q-1"),     loading = structure("<strong>Loading:<\u002fstrong> \nWhich function would you use to read an SPSS (.sav) file?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = TRUE, allow_retry = FALSE,     seed = 45805590.9786701, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "havensav-q-2",     question = structure("Which of these functions are included in the haven-package?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_ece7963",         option = "read_dta()", value = "read_dta()", label = structure("read_dta()", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_822a007",         option = "read_xls()", value = "read_xls()", label = structure("read_xls()", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_10b280a",         option = "read_sas()", value = "read_sas()", label = structure("read_sas()", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_a15d85d",         option = "read_sav()", value = "read_sav()", label = structure("read_sav()", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "havensav-q-2-answer", question = "havensav-q-2"),     loading = structure("<strong>Loading:<\u002fstrong> \nWhich of these functions are included in the haven-package?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = TRUE, allow_retry = FALSE,     seed = 2034094512.0528, options = list()), class = c("learnr_checkbox", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "havensav-q-2",     question = structure("Which of these functions are included in the haven-package?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_827a8a9",         option = "read_dta()", value = "read_dta()", label = structure("read_dta()", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_6f55392",         option = "read_xls()", value = "read_xls()", label = structure("read_xls()", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_3e43a91",         option = "read_sas()", value = "read_sas()", label = structure("read_sas()", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_b5693a5",         option = "read_sav()", value = "read_sav()", label = structure("read_sav()", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "havensav-q-2-answer", question = "havensav-q-2"),     loading = structure("<strong>Loading:<\u002fstrong> \nWhich of these functions are included in the haven-package?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = TRUE, allow_retry = FALSE,     seed = 659585084.692857, options = list()), class = c("learnr_checkbox", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -634,7 +653,7 @@ output$`tutorial-exercise-ex3-output` <- renderUI({
 
 <!-- begin doc-metadata -->
 <div id="doc-metadata">
-<h2 class="title toc-ignore" style="display:none;">Getting data into R</h2>
+<h2 class="title toc-ignore" style="display:none;">Getting your data into R</h2>
 </div>
 <!-- end doc-metadata -->
 
