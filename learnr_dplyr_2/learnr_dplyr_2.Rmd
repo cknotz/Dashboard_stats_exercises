@@ -38,7 +38,7 @@ Before we get started, let's quickly repeat what the pipe operator does and how 
 This tutorial will make heavy use of the pipe operator `%>%`, so it is important to quickly repeat what it does. In essence, the pipe operator links together multiple functions in a row --- it tells R to take the result from one operation and feed it directly into the next one, and so on. By linking together multiple operations in this way, we can build "data management pipelines", which take a messy dataset at one end, clean it, and then spit out a clean dataset at the other end.
 
 To make matters more concrete, here is a piece of code that shows the pipe in action:
-```{r pipeex, exercise=T}
+```{r pipeex, eval=F, echo=T}
 cpds %>% # 1.
   select(country,year,unemp) %>%  # 2.
   filter(year>=1990) %>%  # 3.
@@ -48,7 +48,7 @@ cpds %>% # 1.
 In human language:
 
 1. "Take the `cpds` object (the *Comparative Political Dataset*, in this case),..."
-2. "...select three variables, `country`, `year`, and `unemp` (the unemployment rate variable) from it and drop the rest,..."
+2. "...select three variables, `country`, `year`, and `unemp` (the unemployment rate), from it and drop the rest,..."
 3. "...then keep only those observations that relate to 1990 and after,..."
 4. "...and finally print the first few observations."
 
