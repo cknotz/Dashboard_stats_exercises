@@ -22,6 +22,14 @@ cow <- read.csv(unz(temp, # unzips & reads CSV file
 unlink(temp)
 rm(temp)
 
+# Loading data from the CPDS
+cpds <- read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta")
+
+# Generating sample survey data for recode()
+surv <- data.frame(idno = seq(1,12,1),
+                   vaccinate = sample(rep(c("disagree strongly", "disagree", "agree", "agree strongly"),times = 3)))
+
+
 ```
 
 ## Introduction
@@ -146,14 +154,14 @@ Ready to try it for yourself?
 
 ###
 
-We now use the *Comparative Political Data Set* (also familiar!). The code below downloads the dataset and trims the data to some years for Norway and two central variables:
+We now use the *Comparative Political Data Set* (also familiar!). The dataset is already downloaded and saved as `cpds`. The code below already trims the data to some years for Norway and two central variables:
 
 * `emp_ag`: The number of persons employed in agriculture, in thousands of persons
 * `emp_civ`: The overall number of persons employed, in thousands of persons 
 
 Can you complete the code below to calculate a new variable, `per_ag`, that measures the number of persons working in agriculture *as a percentage* of all employed persons?
 ```{r mutex-2, exercise=T}
-read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta") %>% 
+cpds %>% 
   select(country,year,emp_ag,emp_civ) %>% 
   filter(country=="Norway" & year>=2010) %>% 
   mutate()
@@ -163,18 +171,288 @@ read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020
 
 Here is one potential solution:
 ```{r mutex-2a, exercise=T}
-read_dta("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta") %>% 
+cpds %>% 
   select(country,year,emp_ag,emp_civ) %>% 
   filter(country=="Norway" & year>=2010) %>% 
   mutate(per_ag = (emp_ag/emp_civ)*100)
 ```
 
-## Summarizing with `summarize()`
+### Other data transformations with `mutate()`
+
+Next to calculating sums or percentages, you can also use the `mutate()` function for many other data transformations. See the documentation for an overview and some examples: https://dplyr.tidyverse.org/reference/mutate.html#useful-mutate-functions
+
+## Summarizing with `summarize()` {data-progressive=TRUE}
+
+As a data analyst, one of your central tasks is to aggregate and generalize, to turn a large and complex set of data into one or a few numbers that convey important information. For example, if you are working with a newly collected survey dataset, you may want to learn a bit about your sample as a whole: What is the average age of the respondents, what is the median income, how many respondents do you have in total? Similarly, if you work with cross-country comparative data, you may want to learn about the sample of countries you are working with: What is the average unemployment rate or what is the minimum and maximum observed level of spending on social protection?
+
+The `summarize()` function allows you to do that, using the standard `R` functions:
+
+* `mean()` to calculate the average
+* `max()` to calculate the maximum
+* `min()` to calculate the minimum
+* `sd()` to calculate the standard deviation
+* `median()` to calculate the median
+* `n()` to count the number of observations
+
+For example, you use `summarize(mean(unemployment))` to calculate the average of the `unemployment` variable, or `summarize(max(age))` to get the maximum of `age`.
+
+Ready to try it out on some data?
+
+###
+
+### Calculate the average unemployment rate during the Great Recession
+
+To practice using `summarize()`, let's use the Comparative Political Data Set to calculate the average unemployment rate in the advanced western democracies during the Great Recession --- the big *once-in-a-century* economic crisis (or so everyone thought...) following the collapse of the Lehman Bros. bank in 2008.
+
+First, let us take a quick look at the data we will be working with:
+```{r sum_dat, echo=F, eval=T}
+cpds %>% 
+  select(country,year,unemp,realgdpgr) %>% 
+  filter(year==2009)
+```
+
+We will be using only data for the year 2009 (the year after the initial stock market crash) and two variables:
+
+* `unemp`: The unemployment rate
+* `realgdpgr`: real GDP growth (the economic growth rate)
+
+You can flip through the table to see which countries we have in our data.
+
+###
+
+Now that you are familiar with the data, let us see what `summarize()` does:
+```{r sumex-1, exercise = T}
+cpds %>% 
+  select(country,year,unemp) %>% 
+  filter(year==2009) %>%  # we use only data from 
+  summarize(mean(unemp))
+```
+
+###
+
+You see that `summarize()` does as its name suggests: It aggregates a set of data down to a single number. In the previous example, this number was the aggregate unemployment rate in 2009.
+
+You can also save the result to a new variable. The process is the same as with `mutate()`. For example, to create a new variable `avg_unemp` containing the average of `unemp`, we would use: `summarize(avg_unemp = mean(unemp))`.
+
+Again over to you: Can you complete the code below to calculate the average of the `realgdpgr` variable (which measures the rate of economic growth, or GDP growth) and save the result as `avg_growth`?
+```{r sumex-2, exercise = T}
+cpds %>% 
+  select(country,year,realgdpgr) %>% 
+  filter(year==2009) %>%  # we use only data from the year after the initial stock market crash
+  summarize()
+```
+
+###
+
+This is how you could have solved the previous exercise:
+```{r sumex-2a, eval=T,echo=T}
+cpds %>% 
+  select(country,year,realgdpgr) %>% 
+  filter(year==2009) %>%  # we use only data from the year after the initial stock market crash
+  summarize(avg_growth = mean(realgdpgr))
+```
+
+You can see that 2009 was a serious crisis year: the advanced economies shrank by on average 4 percent!
+
+### More than one summary value
+
+You can also use `summarize()` to calculate two aggregate values at the same time. To do so, you just add a second calculation within the `summarize()` function. For example, the following code would calculate both the average and maximum unemployment rate:
+```{r sumex-3, eval=F, echo=T}
+summarize(avg_unemp = mean(unemp),
+          max_unemp = max(unemp))
+```
+
+Give it a try: Complete the code below to calculate the maximum (`max()`) and minimum (`min()`) economic growth rate (`realgdpgr`) in the advanced economies in 2009:
+```{r sumex-4, exercise=T}
+cpds %>% 
+  select(country,year,realgdpgr) %>% 
+  filter(year==2009) %>%  # we use only data from the year after the initial stock market crash
+  summarize()
+```
+
+###
+
+This is one potential solution:
+```{r sumex-4a, eval=T,echo=T}
+cpds %>% 
+  select(country,year,realgdpgr) %>% 
+  filter(year==2009) %>%  # we use only data from the year after the initial stock market crash
+  summarize(max_growth = max(realgdpgr),
+            min_growth = min(realgdpgr))
+```
+
+You can see that there is quite some variation in our data! One country's economy shrank by almost 15 percent, while another country's economy even *grew* by almost three percent! (Of course, in this particular case, we would now also like to know which countries these are. But if we were working with anonymous survey data, knowing only the maximum and minimum value would be sufficient.) 
+
+
+## Summarize by: `summarize()` & `group_by()` {data-progressive=TRUE}
+
+Being able to summarize an entire dataset in one or two statistics is nice, but it is often not exactly what we want to do. Often, we want to calculate summary statistics for several groups of observations in our data. For example, if we are interested in the 'gender pay gap', we need to look at average salaries broken down *by gender*. Or, if we are working with cross-country data, we may want to calculate summary statistics for certain groups of countries.
+
+Using `group_by()` with `summarize()` is relatively simple: We simply tell `R` that we want our summary statistics grouped by adding a `group_by()` command before `summarize()` in our "pipeline". For example:
+```{r grex1, echo=T, eval=F}
+group_by(gender) %>% 
+  summarize(avg_salary = mean(salary))
+```
+
+Let's again work on a concrete example.
+
+###
+
+### The Great Recession in East and West
+
+We work again with the CPDS dataset and the same main variables as before (`realgdpgr` & `unemp`), but we now add a third one: `poco`, which indicates if a country is *post-communist* or not. The variable is a so-called *dummy* variable: It takes the value of 1 if the country is post-communist, and 0 otherwise.
+
+Take a look at the table to see how the data look like:
+```{r grodat, eval=T, echo=F}
+cpds %>% 
+  select(country,year,unemp,realgdpgr,poco) %>% 
+  filter(year==2009)
+```
+
+You see that the former Warsaw Pact countries in Central and Eastern Europe --- Poland, Lithuania, Bulgaria, etc. --- are labelled *post-communist*. Countries like Norway or France, of course, are not.
+
+###
+
+Now let us find out if the Great Recession hit harder in the formerly communist countries of Central and Eastern Europe.
+
+The code below does what we covered in the previous section: It calculates the average unemployment rate across all countries in the CPDS dataset. 
+
+Now, can you add code to get the result grouped by `poco`? (Scroll back up for a hint.)
+```{r groex1, exercise = T}
+cpds %>% 
+  select(country,year,unemp,poco) %>% 
+  filter(year==2009) %>% 
+  summarize(avg_unem = mean(unemp))
+```
+
+###
+
+Here is how you could have solved this one:
+```{r groex1a, eval=T,echo=T}
+cpds %>% 
+  select(country,year,unemp,poco) %>% 
+  filter(year==2009) %>% 
+  group_by(poco) %>% # We add the group_by() command here
+  summarize(avg_unem = mean(unemp))
+```
+
+You simply add a `group_by()` command with the relevant grouping variable into your "pipeline" before you summarize.
+
+###
+
+Let's do one more! Can you add code below to calculate the average GPD growth rate for post-communist countries and others?
+```{r groex2, exercise = T}
+cpds %>% 
+  select(country,year,realgdpgr,poco) %>% 
+  filter(year==2009) %>% 
+  
+```
+
+### 
+
+Here is a possible solution:
+```{r groex2a, eval=T,echo=T}
+cpds %>% 
+  select(country,year,realgdpgr,poco) %>% 
+  filter(year==2009) %>% 
+  group_by(poco) %>% 
+  summarize(avg_growth = mean(realgdpgr))
+```
+
+Now you had to write a bit more code all by yourself. But this should still not have been too hard, or was it?
+
+###
+
+One last note on the `group_by()` function: It usually makes only sense to use a categorical (or perhaps ordinal) variable as a grouping variable --- a variable like post-communist, or also gender or education. *Technically*, you could also group by a metric/continuous variable (e.g., `unemp`). `R` will then calculate a summary statistic for each unique value of the continuous variable --- but this rarely makes sense, because continuous variables have, by definition, an infinite number of possible values. So, all you get is a long list of meaningless numbers.
+
+###
+
+Good job --- now you know create new variables (with `mutate()`), how to calculate summary statistics (with `summarize()`), and how to group the latter (with `group_by()`). You are getting close to being able to tackle your own data analysis project!
+
+But there is one more important command you should learn: `recode()`. We will cover this in the last part of this tutorial.
+
+## Recoding with `recode()` {data-progressive=TRUE}
+
+Recoding is clearly one of the most common task in a data cleaning and analysis operation. When you recode a variable, you change its values according to some rule. For example, you sometimes need to recode a Likert-scale variable ("disagree strongly", "disagree", "agree", "agree strongly") into a simpler binary *dummy* version of itself ("against", "in favor") to do some analyses.
+
+To recode variables with `dplyr`, we use --- you guessed it! --- the `recode()` function. It works on a fairly simple logic: You need to specify the variable you want to recode and one or more rules that tell `R` how different values should be changed. For example: `recoded_var <- recode(original_var,old_value = "new_value")`
+
+You can in principle use `recode()` by itself when you work with a single vector ("variable"), outside of a dataset. Usually, however, we work within a dataset and use `recode()` to create new variables in our dataset. And, as you learned earlier: We use `mutate()` to create new variables in a dataset. This means that you combine `mutate()` and `recode()` when you recode variables in a dataset.
+
+This will become clearer when we look at an example.
+
+### 
+
+###
+
+To have an easier start, we work first with a small simulated dataset instead of a real one. Think of this as a small survey dataset called `surv` with twelve respondents and two variables:
+
+* `idno`: The respondent's individual survey ID number
+* `vaccinate`: Whether the respondent would get vaccinated against COVID-19 ("disagree strongly", "disagree", "agree", "agree strongly")
+
+Here is how the data look like:
+```{r recdat, eval=T, echo=F}
+surv
+
+```
+
+###
+
+Assume that we are feeling silly today and we want to recode the `vaccinate` variable so that every instance of "disagree" is replaced with "banana". 
+
+The code below generates a new variable, `vacc_banana`, which is a recoded version of `vaccinate`. Run it and take a look at the result:
+```{r recex1, exercise=T}
+surv %>% 
+  mutate(vacc_banana = recode(vaccinate,
+         "disagree" = "banana"))
+```
+
+###
+
+You should see a bit clearer how `recode()` works: We define a rule (`"disagree" = "banana"`) and `R` then goes over the variable we want to recode and uses our rule to change the values. And when we do not specify a rule for a particular value, `R` leaves that value alone.
+
+Let's work on a more realistic example: Let's say we really want to simplify the `vaccinate` variable and reduce the number of categories. Specifically, we want to:
+
+* Combine "disagree strongly" and "disagree" into "against"
+* Combine "agree strongly" and "agree" into "in favor"
+
+The code below shows you the first part --- can you complete the recoding rules yourself?
+```{r recex2, exercise = T}
+surv %>% 
+  mutate(vacc_simple = recode(vaccinate,
+                              "disagree strongly" = "against",
+                              "disagree" = "against",
+                              "agree" = 
+                              ))
+```
+
+###
+
+This is how you could have solved the exercise:
+```{r recex2a, eval=T,echo=T}
+surv %>% 
+  mutate(vacc_simple = recode(vaccinate,
+                              "disagree strongly" = "against",
+                              "disagree" = "against",
+                              "agree" = "in favor",
+                              "agree strongly" = "in favor"))
+```
+
+Are you getting the hang of it? 
+
+###
+
+We can also use `recode()` to change numbers. In this case, we only need to place the old value within single quotation marks. The code below shows how you can change the value of 7 to 9999:
+```{r recex3, exercise = T}
+surv %>% 
+  mutate(id_new = recode(idno,
+                         `7` = 9999))
+```
+
+### Recoding `factor` variables
 
 
 
+## Debugging exercises {data-progressive=TRUE}
 
 
-## Grouping with `group()`
-
-## Recoding with `recode()`
