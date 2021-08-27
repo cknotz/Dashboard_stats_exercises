@@ -299,14 +299,16 @@ Do you feel ready for some exercises?
 
 As in earlier tutorials, you can now practice what you have just learned by de-bugging some code chunks.
 
+###
+
+### Problem No. 1
+
 In this first problem, we want to download and read the Stata (.dta) version of the *Comparative Political Data Set*, but the code does not seem to work. Can you help?
 ```{r ex1, exercise=T}
 cpds <- read_sav("https://www.cpds-data.org/images/Update2020/CPDS_1960-2018_Update_2020.dta")
 
 head(cpds)
 ```
-
-###
 
 ###
 

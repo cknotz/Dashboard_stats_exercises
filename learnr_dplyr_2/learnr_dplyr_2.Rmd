@@ -32,7 +32,7 @@ surv <- data.frame(idno = seq(1,12,1),
 
 ```
 
-## Introduction
+## Introduction {data-progressive=TRUE}
 
 In the previous tutorial, you learned how to do two important data cleaning operations with the `dplyr`-package: keeping (or dropping) variables using the `select()`-function, and keep or dropping observations based on some criteria using `filter()`. You also learned how you can efficiently execute several such commands in sequence by using the pipe-operator `%>%`.
 
@@ -40,11 +40,15 @@ With these commands, you can do some basic data cleaning and trim your dataset t
 
 You will learn how to do these operations in this tutorial. And, as in the previous tutorial, we will rely mostly on functions from the `dplyr` package as well as the pipe operator `%>%`.
 
-Before we get started, let's quickly repeat what the pipe operator does and how you use it.
+*A heads-up:* This tutorial is quite long and you might feel that it is more difficult compared to the previous ones. Make sure you go over this tutorial when you are well-rested and not in a hurry.
 
-## A quick recap of the `%>%`
+Ready to start?
 
-This tutorial will make heavy use of the pipe operator `%>%`, so it is important to quickly repeat what it does. In essence, the pipe operator links together multiple functions in a row --- it tells R to take the result from one operation and feed it directly into the next one, and so on. By linking together multiple operations in this way, we can build "data management pipelines", which take a messy dataset at one end, clean it, and then spit out a clean dataset at the other end.
+## A quick recap of the `%>%` {data-progressive=TRUE}
+
+This tutorial will make heavy use of the pipe operator `%>%`, so it is important to quickly repeat what it does. 
+
+In essence, the pipe operator links together multiple functions in a row --- it tells R to take the result from one operation and feed it directly into the next one, and so on. By linking together multiple operations, we can build "data management pipelines", which take a messy dataset, clean it, and then spit out a clean dataset at the end.
 
 To make matters more concrete, here is a piece of code that shows the pipe in action:
 ```{r pipeex, eval=F, echo=T}
@@ -75,7 +79,7 @@ To create new variables, you can use the `mutate()` function from the `dplyr` pa
 
 ### Adding two variables
 
-We start with a very simple operation: Calculating the sum of two variables. To practice this, we use again the [*National Material Capabilities*](https://correlatesofwar.org/data-sets/national-material-capabilities) dataset from the *Correlates of War project*, which we also used in the previous tutorial.
+We start with a very simple operation: Calculating the sum of two variables. To practice this, we use the [*National Material Capabilities*](https://correlatesofwar.org/data-sets/national-material-capabilities) dataset from the *Correlates of War project*, which we also used in the previous tutorial.
 
 Specifically, assume we wanted to add the following two variables from the dataset together:
 
@@ -90,11 +94,11 @@ cow %>%
   mutate(added = milper + upop)
 ```
 
-This should not be difficult to understand:
+This code chunk should not be difficult to understand:
 
-* The first lines select the variables we really need (and drop the rest) and filters the data so that we only have observations for the US from 2005 on
+* The first lines select the variables we really need (and drop the rest) and filters the data so that we only have observations for the US for the years 2005 and after (`>=2005`)
 * Then we create a new variable, `added`, that is the sum of `milper` and `upop`
-* (We of course use the `%>%` to link everything elegantly together)
+* (We use the `%>%` to link everything elegantly together)
 
 Easy!
 
@@ -112,10 +116,12 @@ cow %>%
   mutate()
 ```
 
+(Feel free to scroll up to see again how this is done.)
+
 ###
 
 This is how you could have solved this:
-```{r mutad_2a, exercise=T}
+```{r mutad_2a, eval=T,echo=T}
 cow %>% 
   select(stateabb,year,irst,pec) %>% 
   filter(stateabb=="USA" & year>=2005) %>% 
@@ -124,7 +130,7 @@ cow %>%
 
 
 
-### Calculating a percentage {data-progressive=TRUE}
+### Calculating a percentage
 
 One very common type of "data mutation" you may have to do in your work is to calculate a percentage --- i.e. put two variables in relation to each other ("X in percent of Y"). This is especially important when we compare countries with larger and smaller economies or populations. 
 
@@ -170,7 +176,7 @@ cpds %>%
 ###
 
 Here is one potential solution:
-```{r mutex-2a, exercise=T}
+```{r mutex-2a, echo=T, eval=T}
 cpds %>% 
   select(country,year,emp_ag,emp_civ) %>% 
   filter(country=="Norway" & year>=2010) %>% 
@@ -220,7 +226,7 @@ You can flip through the table to see which countries we have in our data.
 
 ###
 
-Now that you are familiar with the data, let us see what `summarize()` does:
+Now that you are familiar with the data, let's find out what `summarize()` does. Run the code to see for yourself:
 ```{r sumex-1, exercise = T}
 cpds %>% 
   select(country,year,unemp) %>% 
@@ -228,9 +234,9 @@ cpds %>%
   summarize(mean(unemp))
 ```
 
-###
-
 You see that `summarize()` does as its name suggests: It aggregates a set of data down to a single number. In the previous example, this number was the aggregate unemployment rate in 2009.
+
+### Creating new variables with `summarize()`
 
 You can also save the result to a new variable. The process is the same as with `mutate()`. For example, to create a new variable `avg_unemp` containing the average of `unemp`, we would use: `summarize(avg_unemp = mean(unemp))`.
 
@@ -317,7 +323,7 @@ Now let us find out if the Great Recession hit harder in the formerly communist 
 
 The code below does what we covered in the previous section: It calculates the average unemployment rate across all countries in the CPDS dataset. 
 
-Now, can you add code to get the result grouped by `poco`? (Scroll back up for a hint.)
+Now, can you add code to get the result grouped by `poco`? (Hint: Add `group_b()` before `summarize()`; see also above)
 ```{r groex1, exercise = T}
 cpds %>% 
   select(country,year,unemp,poco) %>% 
@@ -332,7 +338,7 @@ Here is how you could have solved this one:
 cpds %>% 
   select(country,year,unemp,poco) %>% 
   filter(year==2009) %>% 
-  group_by(poco) %>% # We add the group_by() command here
+  group_by(poco) %>% # Add the group_by() command here
   summarize(avg_unem = mean(unemp))
 ```
 
@@ -340,7 +346,7 @@ You simply add a `group_by()` command with the relevant grouping variable into y
 
 ###
 
-Let's do one more! Can you add code below to calculate the average GPD growth rate for post-communist countries and others?
+Let's do one more! Can you add code below to calculate the average GPD growth rate for post-communist countries and others? (Hint: Now you need to use both `group_by()` and `summarize()` by yourself!)
 ```{r groex2, exercise = T}
 cpds %>% 
   select(country,year,realgdpgr,poco) %>% 
@@ -442,17 +448,304 @@ Are you getting the hang of it?
 
 ###
 
-We can also use `recode()` to change numbers. In this case, we only need to place the old value within single quotation marks. The code below shows how you can change the value of 7 to 9999:
+We can also use `recode()` to change numbers ("continuous" or "numeric" variables). In this case, we only need to place the old value within single quotation marks. The code below shows how you can change the value of 7 to 9999:
 ```{r recex3, exercise = T}
 surv %>% 
   mutate(id_new = recode(idno,
                          `7` = 9999))
 ```
 
-### Recoding `factor` variables
+### Recoding `factor` variables 
+
+Do you remember what factors were in `R`? Factors are how `R` likes to store categorical or ordinal variables such as a survey respondent's gender or their level of education. Factors are, in essence, numbers with labels.
+
+Let's take a quick look at how factors work, to freshen up your memory. We will use the `vaccinate` variable from the earlier part for this.
+
+The `vaccinate` variable was so far saved as a character ("text") vector. Let's see what it looks like by printing out the *unique* values of the `vaccinate` variable:
+```{r fac1, echo=F, eval=T}
+unique(surv$vaccinate)
+```
+You see that it has four unique levels: "disagree strongly", "disagree", "agree", "agree strongly".
+
+If we would convert it to a factor, it would look like this:
+```{r fac2, echo=F, eval=T}
+vacc <- c("disagree strongly", "disagree", "agree", "agree strongly")
+
+vacc_fac <- factor(vacc,
+                   levels = vacc)
 
 
+print(data.frame(levels = unique(vacc_fac), 
+           value = as.numeric(unique(vacc_fac))))
+```
+
+Now we have associated the labels ("disagree strongly", "disagree", etc.) with numbers (1, 2, etc.). Again, factors are numbers with labels on them.
+
+###
+
+Recoding a factor works in principle like recoding other types of variables, and we can still use `recode()`. We just need to be more explicit about the recoding rules. Specifically, we need to tell `R` that it should leave all levels that we do not want to change as they are. For example:
+```{r fac3, echo=T,eval=F}
+recoded_factor <- recode(existing_factor,
+                         "old_level" = "new_level",
+                         .default = levels(existing_factor))
+```
+
+Now comes a bigger exercise:
+
+1. The code below "mutates" the `vaccinate` variable into a factor called `vacc_fac`
+2. Can you add code (using the example above) to create a "mutated" version of the new `vacc_fac` variable, where "disagree" is changed to to "banana"
+
+```{r facex1, exercise=T}
+surv %>% 
+  select(vaccinate) %>% 
+  mutate(vacc_fac = factor(vaccinate,
+                           levels = c("disagree strongly", "disagree", "agree", "agree strongly"))) %>% 
+  mutate(vacc_banana = recode(     ))
+```
+
+This one may be a bit trickier than the previous exercises. Take your time! (And don't get frustrated if you get error messages.)
+
+###
+
+Here is a possible way to solve it:
+```{r facex1a, eval=T, echo=T}
+surv %>% 
+  select(vaccinate) %>% 
+  mutate(vacc_fac = factor(vaccinate,
+                           levels = c("disagree strongly", "disagree", "agree", "agree strongly"))) %>% 
+  mutate(vacc_banana = recode(vacc_fac,
+                              "disagree" = "banana",
+                              .default = levels(vacc_fac)))
+```
+
+You see that the result is the same as earlier --- every instance of "disagree" is now labelled "banana". Only the type of variable is now a `fct`. 
+
+To show you what is happening "under the hood", here are the new levels and underlying numbers associated with the levels of our new `vacc_fac` variable:
+```{r facex1b, echo=F, eval=T}
+vacc <- c("disagree strongly", "banana", "agree", "agree strongly")
+
+vacc_fac <- factor(vacc,
+                   levels = vacc)
+
+
+print(data.frame(levels = unique(vacc_fac), 
+           value = as.numeric(unique(vacc_fac))))
+```
+
+You see that the level "banana" is now associated with the number 2.
+
+Factors are certainly a bit tricky to deal with --- but we do use them, and so it is important that you understand how to manage and recode them. Also, this exercise should have served as a refresher on factors in R.
+
+Now, to engrave the lessons of this (admittedly) very long and not always easy tutorial: Debugging exercises!
 
 ## Debugging exercises {data-progressive=TRUE}
 
+You should know the drill at this point: You get a few code chunks that do not work and are asked to correct them.
 
+Ready?
+
+###
+
+### Problem No. 1
+
+With this first chunk of code, we try to produce a "data cleaning pipeline" --- but it seems there is something missing at some point. Can you help?
+```{r debug1, exercise=T}
+cow %>% 
+  select(stateabb,year,irst,pec)
+  filter(stateabb=="USA" & year>=2005)
+  mutate(summen = irst + pec)
+
+```
+
+###
+
+Here is the solution: You needed to add pipes (`%>%`) at the of the middle two lines:
+```{r debug1a, eval=T,echo=T}
+cow %>% 
+  select(stateabb,year,irst,pec) %>% # added
+  filter(stateabb=="USA" & year>=2005) %>% # added
+  mutate(summen = irst + pec)
+```
+
+### Problem No. 2
+
+Now we want to calculate a percentage using `mutate()` --- but `R` does not seem happy. Can you fix this bug?
+```{r debug2, exercise=T}
+cpds %>% 
+  select(country,year,emp_civ,emp_serv) %>% 
+  filter(country == "Norway" & year>=2015) %>% 
+  mutate(per_serv = (emp_serv/emp_civ*100)
+```
+
+###
+
+This one might have difficult to spot --- there was a missing closing parenthesis `)`!
+```{r debug2a, eval=T, echo=T}
+cpds %>% 
+  select(country,year,emp_civ,emp_serv) %>% 
+  filter(country == "Norway" & year>=2015) %>% 
+  mutate(per_serv = (emp_serv/emp_civ)*100)
+```
+
+Compare:
+```{r debug2b, eval=F, echo=T}
+mutate(per_serv = (emp_serv/emp_civ*100) # Wrong
+
+mutate(per_serv = (emp_serv/emp_civ)*100) # Correct
+```
+
+### Problem No. 3
+
+This one looks quite messy. Can you correct all the typos here?
+
+```{r debug3, exercise=T}
+cow %>% 
+  seet(stateabb,year,irst,pec) %>% 
+  fltry(stateabb=="NOR" & year==2007) %>% 
+  mutte(summen = irst + pec)
+```
+
+###
+
+No one likes proofreading --- but there was no other option here. All the commands were misspelled: 
+
+* `select()`, not `seet()`
+* `filter()`, not `fltry()`
+* `mutate()`, not `mutte()`
+
+```{r debug3a, eval=T, echo=T}
+cow %>% 
+  select(stateabb,year,irst,pec) %>% 
+  filter(stateabb=="NOR" & year==2007) %>% 
+  mutate(summen = irst + pec)
+```
+
+### Problem No. 4
+
+One more problem with `mutate()` --- help please!
+
+```{r debug4, exercise=T}
+cpds %>% 
+  select(country,year,ud,unemp) %>% 
+  filter(country = "Norway" & year=2015) %>% 
+  mutate(added = ud + unemp)
+```
+
+###
+
+This one might have been a bit misleading. There was nothing wrong with `summarize()` --- the issue was in the `filter()`-command: We need to use double equal signs (`==`) here.
+```{r debug4a, eval=T,echo=T}
+cpds %>% 
+  select(country,year,ud,unemp) %>% 
+  filter(country == "Norway" & year==2015) %>% 
+  mutate(added = ud + unemp)
+```
+
+### Problem No. 5
+
+This is the last `mutate()` problem, promise!
+```{r debug5, exercise=T}
+cow %>% 
+  select(stateabb,year,irst,pec) %>% 
+  filter(stateabb=="NOR" & year==2007) %>% 
+  mutate(summen = irst + stateabb)
+```
+
+###
+
+The code as such was not the problem this time --- it was the operation within `mutate()` that made no sense. We tried to add the `irst` variable to the `stateabb` variable. In effect, we asked `R` to calculate `708 + NOR`. Obviously, we can only add numbers! Here is a calculation that functions: 
+
+```{r debug5a, echo=T, eval=T}
+cow %>% 
+  select(stateabb,year,irst,pec) %>% 
+  filter(stateabb=="NOR" & year==2007) %>% 
+  mutate(summen = irst + pec)
+```
+
+### Problem No. 6
+
+Now we want to summarize --- specifically, we want to get the median level of iron & steel production in all the countries in our *Material Capabilities* dataset (in a single year, 2002). We have some code, but it does not give us the desired result, just a long list of numbers.
+```{r debug6, exercise = T}
+cow %>% 
+  select(stateabb,year,irst) %>% 
+  filter(year==2002) %>% 
+  summarize(irst)
+```
+
+###
+
+Not too difficult, was it? If we want to use `summarize()` to get some summary statistics, we need to also specify *which* statistic we want: The average, the median, the sum, the minimum, maximum,...
+
+Here is how we could have calculated the median:
+```{r debug6a, eval=T, echo=T}
+cow %>% 
+  select(stateabb,year,irst) %>% 
+  filter(year==2002) %>% 
+  summarize(median(irst))
+```
+
+### Problem No. 7
+
+Now we want to get the average number of military personnell (`milper`) in our dataset (again, for a single year). This time, we specified a summary function, the average. But `R` does not seem to like this....
+```{r debug7, exercise=T}
+cow %>% 
+  select(stateabb,year,milper) %>% 
+  filter(year==2002) %>% 
+  summarize(average(milper))
+```
+
+###
+
+In `R`, the function to calculate the average --- or mean --- is called `mean()`. Seems like a case of *tomayto, tomahto*, but this is just how `R` works. It wants the commands it knows, exactly the commands it knows, and nothing but the commands it knows.
+```{r debug7a, eval=T, echo=T}
+cow %>% 
+  select(stateabb,year,milper) %>% 
+  filter(year==2002) %>% 
+  summarize(mean(milper))
+```
+
+### Problem No. 8
+
+Now we go back to our simulated survey dataset, `surv`, and do some recoding. Here is the `surv` dataset, in case you forgot what it looks like:
+```{r debug8d, eval=T, echo=F}
+surv
+```
+
+To the problem: We are again feeling silly and want to recode the levels of our `vaccinate` variable as different types of fruit. But `R` does not play along. Nothing gets changed. 
+```{r debug8, exercise=T}
+surv %>% 
+  mutate(vacc_simple = recode(vaccinate,
+                              "apple" = "disagree strongly",
+                              "banana" = "disagree",
+                              "orange" = "agree",
+                              "cherry" = "agree strongly"))
+```
+
+(This one might take a while to figure out, and you have to change quite a bit of code. Hang in there!)
+
+###
+
+Figured it out? It was the order of old and new levels: old comes before new! 
+
+* *Wrong*: `"apple" = "disagree strongly"`
+* *Correct*: `"disagree strongly" = "apple"`
+
+Here is the entire chunk, corrected:
+```{r debug8a, eval=T, echo=T}
+surv %>% 
+  mutate(vacc_simple = recode(vaccinate,
+                              "disagree strongly" = "apple",
+                              "disagree" = "banana",
+                              "agree" = "orange",
+                              "agree strongly" = "cherry"))
+```
+
+###
+
+Congrats, you almost made it to the end of this tutorial! The last item on the list: Proper exercises, where you write your own code from scratch. 
+
+But you might want to take a quick break and grab a cup of coffee first --- this was a long and certainly not always easy tutorial!
+
+## Exercises {data-progressive=TRUE}
+
+### Exercise 1

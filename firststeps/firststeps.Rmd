@@ -80,7 +80,7 @@ X <- 5
 Y <- 7 # comments can also be added after a command!
 ```
 
-Let's do a little intermittent debugging exercise to practice. Can you add `#` symbols so that the following code runs without error?
+Let's do a little debugging exercise to practice. Can you add `#` symbols so that the following code runs without error?
 ```{r hashexc, exercise=T}
 This line contains a comment and should not be executed
 
@@ -153,15 +153,15 @@ This may all sound a bit abstract -- we will go over some examples to make this 
 
 ### Single values and the assignment operator (`<-`)
 
-Let's say we do some calculation in R --- e.g. `5*5` --- and we then want to use the result for another subsequent calculation.
+Let's say we want to use a single number (`25`) in a few different calculations in a row. We could of course type in `25` every time we want to use it --- but we could also make our lives easier by storing it in an object.
 
-If we do what we did above and simply calculate `5*5`, we get the result --- but it does not get stored. To store something in R, you use the *assignment operator*: `<-`
+To store something in R, you use the *assignment operator*: `<-`
 
-For example, if we wanted to store the value `25` for later use, we would *assign* it to an object that we define using the assignment operator `<-`. The code would be `result <- 25`. This means *"take the value of 25 and store it as 'result'"*.
+For example, if we wanted to store the value `25` for later use, we would *assign* it to an object that we define using the assignment operator `<-`. The code would be `x <- 25`. This means *"take the value of 25 and store it as 'x'"*.
 
-If we want to see or use a stored object, we can simply type its name: `result`
+If we want to see or use a stored object, we can simply type its name: `x`
 
-Give it a try! Use the code above to store 25 as 'result'; below, type 'result' to print it out again:
+Give it a try! Use the code above to store 25 as `x`; below, type `x` to print it out again:
 ```{r assign, exercise=T}
 
 ```
@@ -171,9 +171,9 @@ Click 'Continue' to see the solution.
 ###
 
 ```{r assign-a, exercise=T}
-result <- 25
+x <- 25
 
-result
+x
 ```
 
 
