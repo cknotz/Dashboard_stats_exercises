@@ -1,0 +1,389 @@
+---
+title: "Tutorial 1: Installation & First Steps"
+author: "*Kvantitativ forskningsmetode"
+date: "(BST 290)"
+output: 
+  pdf_document:
+    number_sections: true
+urlcolor: blue
+---
+\parindent0pt
+\setlength{\parskip}{2\baselineskip}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+(In case of questions, feel free to contact Carlo via [carlo.knotz@uis.no](mailto:carlo.knotz@uis.no))
+
+# Introduction
+
+To successfully complete the *Kvantitativ forskningsmetode* course, you need to show that you can conduct statistical analyses on your own using `R` and `RStudio`. This first tutorial introduces you to the two applications, helps you install them on your computer, and guides you through some "warm-up" exercises to familiarize yourself with the `R` environment.
+
+
+## About `R`
+`R` is a statistical programming language and currently one of the most widely used applications in quantitative research and data science. Its popularity stems from its power and versatility. `R` can be used for "traditional" quantitative data analysis (e.g., regression analysis), but also much more: Quantitative text analysis, web scraping, interactive data visualization, big data analysis, and machine learning. Last but not least, `R` is open-source and free to use.
+
+**Working with `R` means writing computer code**. You will not be able to run your analyses by clicking your way through menus or dragging-and-dropping things around, as you would do when working with Microsoft Word etc. Obviously, this may come as quite a change for you and may even feel scary, unless you have some prior experience with other programming languages (e.g., Python, LaTeX, HTML, CSS, JavaScript,...). If this is indeed your first time using computer code, there is no reason to worry: You are not the first one, and you are not alone. Many who start using `R` have no prior experience with programming or computer languages. Still, *you will have to take learning `R` seriously and invest time and effort. This cannot be done in a few hours!*
+
+## About `RStudio`
+`R` was long considered to be one of the more difficult statistical programming languages to learn, but this has changed quite a bit with the arrival of `RStudio` some years ago. Where `R` by itself gives you only a bland and empty computer code console and an output window to work with, `RStudio` provides you with a more comfortable interface that shows you which datasets and variables you are currently working with, gives you direct access to help files, and helps you with many other tasks (but you will still have to write code!). `RStudio` can even be used to write reports or course papers (with `Rmarkdown`, which is easy to learn). `RStudio` is also open-source and free to use.
+
+\newpage
+
+# Installing `R` & `RStudio`
+
+You will of course first need to install both `R` and `RStudio` before you can use them. You can download `R` from https://cran.uib.no/index.html and `RStudio` from https://www.rstudio.com/products/rstudio/download/. 
+
+If you like, you can also watch the following two videos that will guide you through the installation process:
+
+* Install `R`: https://vimeo.com/203516510
+* Install `RStudio`: https://vimeo.com/203516968
+
+\newpage
+
+# Your first steps in `R` & `RStudio`
+
+When you are done with the installation, open `RStudio`.
+
+You should now see the `RStudio` interface pop up on your screen, which should look like the screenshot below:
+
+![Your first view of the `RStudio` interface (from https://medium.com/analytics-vidhya/your-first-time-opening-rstudio-cdef8dc8f4b2)](rstudio_firstopen.png)
+
+
+## What you see
+
+Let's quickly walk through what you are seeing here.
+
+1. **The large window on the left** is the *console*. This is where you can enter your commands and this is also where the results of your analyses (other than graphs) will be shown (feel free to ignore the other tabs, "R Markdown" and "Jobs" for now).
+2. **The smaller window in the upper right corner** shows you your current *working environment*. It is currently empty but will later show you a list of all the variables, datasets, and other "objects" that are loaded at any given point. (You may also see that this window has other tabs labeled "History", "Connections", and "Tutorials". You can ignore these for now.)
+3. **The smaller window in the lower right corner** is where any graphs ("plots") you create later will be shown, and this is also where the "Help" files appear if you request them. (You can also access and open "Files" on your computer, and see a list of add-on packages that you can install. These tabs are also not that important right now.)
+
+You can customize how `RStudio` looks via the "Options" menu (yes, there is a regular click-based menu!). You can open the "Options" menu via the taskbar at the top (on Mac: "RStudio" -> "Preferences..."; on Windows: "Tools" -> "Global Options..."). When the menu has popped up, navigate to "Appearance". You can select a different theme and adjust other settings there.
+
+\newpage
+
+## Where is `R`?
+
+You may be wondering why you had to install `R` when you are now working in `RStudio` and not in `R`. Technically, you are already running and working in `R`. You can see that written in the output that appears in the "Console" window. It should read something like:
+
+```{r cons, echo=T, eval=F}
+R version 4.1.1 (2021-08-10) -- "Kick Things"
+Copyright (C) 2021 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin17.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+```
+
+When you run `RStudio`, `R` is running "under the hood". You can think of `RStudio` as the instrument panel and steering wheel in a car, and `R` as the car's engine.
+
+\newpage
+# Some warm-up exercises
+
+This environment on the screen in front of you may seem quite strange at first --- like you are working with software that launches rockets into space or hacks into the CIA's computer system.
+
+No reason to get nervous though. What you are looking at right now is, in essence, only a very fancy, very powerful pocket calculator. And you can in fact use `R` simply as a calculator! 
+
+
+## Calculating things with `R`
+
+Give it a try. Click into the *Console* window so that a small vertical blinking line ("cursor") appears behind the `>` symbol. Then type `1 + 1` and hit the Enter-key. 
+
+The result should similar to this:
+```{r calc1, eval=T, echo=T, collapse=T}
+1+1
+```
+
+You can of course also do more complicated calculations. Try it out by computing something like
+```{r, eval=F, echo=T}
+(12*78)/(0.5-7000)+42.541^23
+```
+
+You see that we can do all common mathematical operations in `R`:
+
+* `+` adds two numbers
+* `-` subtracts one number from another
+* `*` multiplies two numbers
+* `/` divides one number by another
+* `(` and `)` are *parentheses*
+* `^` means "raise to the power of" --- `2^2` means `2*2` (or "two squared"), `2^3` means `2*2*2`, and so on
+
+\newpage
+## Working with text (and your first error message)
+
+You see that `R` can handle numbers quite well --- which is not surprising, given that `R` is a *statistical* programming language.
+
+But `R` can also handle text, as long as you do it correctly. For a start, type the following into the console and hit "Enter":
+```{r texterr, eval=F, echo=T}
+Hello world!
+```
+
+You should now receive your first **error message** (the first of many!): `Error: unexpected symbol in "Hello world"`
+
+Here is what happened: When you enter single letters or words into the `R` console, `R` thinks that you are entering a **command**. It then looks into its internal library of commands. If it does not find a command that corresponds to the word you entered, it gives you an error message. `unexpected symbol` basically means *"I don't know what you want from me."*
+
+We can tell `R` to treat something as text to be printed only by placing it within quotation marks. See what happens when you enter the following into your console:
+```{r textprop, eval=F, echo=T}
+"Hello world!"
+```
+
+\newpage
+
+# Storing things in your work environment
+
+While `R` *can* be used simply as a calculator to add two numbers, you will normally use it to do complex calculations and transformations with large datasets --- i.e., hundreds, thousands, or sometimes millions to billions of numbers. And in this usual scenario, you can obviously not enter these by hand. Sometimes, you may also want to store one more numbers or pieces of text, for instance to be able to the result of one statistical analysis in a subsequent calculation or to re-use an axis label from one graph in another one.
+
+In `R`, you can store numbers, text, and other things into *objects*. You can think of an object as a little container that stores whatever you put into it. Once we have stored something in an object, we can then use it in a later operation.
+
+## The assignment operator (`<-`)
+
+To store things in an object, we use the **assignment operator**: `<-` (the "smaller than" sign `<` plus a dash `-`)
+
+For example, `x <- 5` means "assign the value of `5` to the object `x`".
+
+See for yourself what happens: Type the following into your Console and hit enter:
+```{r stonum, eval=F,echo=T}
+x <- 5
+
+```
+
+You will now not see any output in the Console --- instead, you should see an item appear in your work environment (on the upper right side of your screen). You see that the value of 5 has indeed been stored as the `x` object.
+
+Try storing another number as `y`, for example:
+```{r stonum2, eval=F, echo=T}
+y <- 7
+```
+
+As mentioned before, you can also store text. Run the following in your console:
+```{r stotext, eval=F,echo=T}
+z <- "statistics is pointless"
+
+```
+
+You should now see the `z` object containing the phrase "statistics is pointless" appear in your work environment.
+
+\newpage
+
+## Shortcutting the assignment operator
+
+When working with `R`, you will use the assignment operator a lot. Basically all the time. 
+
+It therefore makes sense to add a *keyboard shortcut* specifically for the assignment operator so that you do not have to twist your fingers into a knot every time you want to store something in an object.
+
+This is easy to do in `RStudio`: Go to "Tools" in the taskbar at the top and choose "Modify keyboard shortcuts"; use the little search/filter field to search for "assignment". The entry "Insert assignment operator" should appear. Use the existing shortcut, or change it to one that suits you (e.g., `command` + `-` on Mac, or `ctrl` + `-` on Windows).
+
+\newpage
+
+## Using stored objects
+
+What if you want to re-use the objects you stored? Easy. You just call for them by typing their name into the console. 
+
+For example, to retrieve the number stored in the `x` object, you just type `x` into the console and hit "Enter".
+
+Try retrieving all the stored values, `x`, `y`, and `z` (one at a time!).
+
+You can also use these stored items, for example in calculations. Try it out, type the following into your console and hit "Enter":
+```{r hitx, eval=F,echo=T}
+x + y
+
+```
+
+Obviously, mathematical operations only make sense if you work with stored *numbers*. This does not work with text. (Feel free to try it anyways! See what happens when you run `y + z`.)
+
+
+\newpage
+
+## Storing sequences of numbers of words with the `c()` function
+
+**Now comes a very important step:** We are moving from storing single items (one "datum") to storing sequences of items ("data"). 
+
+To store multiple items together we use our first **function** (i.e., "command"): `c()`
+
+`c()` stands for "concatenate" (which is a fancy way of saying "combine" or simply "smush together").
+
+The `c()` function is easy to use. You just add the things you want to store *within the parentheses, separated by commas*. For example:
+```{r vec1, echo=T, eval=F}
+a <- c(1,2,3,4)
+
+```
+
+This stores the sequence of the numbers 1 through 4 in the object `a` (or, "assigns" them to the object `a`)
+
+You can do the same with text. You can store a sequence of words as long as you put them into quotation marks and separate them with commas. For example:
+```{r vec2, echo=T, eval=F}
+b <- c("statistics","is","pointless")
+
+```
+
+\newpage
+
+## Briefly on functions
+
+You just used a **function** to combine sets of items into an object: `c()`. 
+
+Functions are a central component of the `R` language. You can think of functions as the language's *verbs* --- the "commands" or "do stuff" words. You can tell that something is a **function** if it contains parentheses: `()`.
+
+For example, 
+
+* `c()` is the command to tell `R`: "combine the following items together"
+* `mean()` is the command to tell `R` to calculate the mean ("average") of a set of numbers
+* `download.file()` is the command to tell `R` --- you guessed it --- to download a file from the internet
+* `rm()` is the command to tell `R` to remove ("delete") an object from the work environment
+
+Functions work by the following principle: 
+
+* The term before the parentheses (`mean`, `download.file`,...) specifies *what operation you want to be done*
+* Within the parentheses, you specify the object(s) that operation should be *done with* (and, if available, any options)
+
+Let's look at two functions in action to clarify (run this code in your own console, if you like!):
+```{r funex, eval=F, echo=T}
+bodyheight_data <- c(187,156,198,183,175,171)
+
+mean(bodyheight_data)
+```
+
+We use two functions here:
+
+* We first use `c()` to store a collection of values, measurements of the body heights of a fictional group of people, as `bodyheight_data`
+* Then we let `R` calculate the average body height in this group using the `mean()` function
+
+There are many, many, many more functions in the `R` language. No reason to worry, you will learn them one at a time.
+
+\newpage
+*"What if I need help with a function?"* If you ever want to look up how a specific function works, you can ask `RStudio` to show you the function's documentation and help file. You do this by typing a question mark plus the function's name into the Console and then running that code. For example, to get the help file for the `mean()` function, you run:
+```{r help, eval=F, echo=T}
+?mean()
+
+```
+
+A heads-up: The `R` help files are notoriously full of jargon. It will take a bit until you will be able to easily read them (but you will be!).
+
+\newpage
+
+# Vectors
+
+If you take another look at your work environment you should see the two objects `a` and `b`, which you created earlier, listed there. You also see their respective contents, and then some gibberish in between:
+
+* `num [1:4]` in the case of `a`
+* `chr [1:3]` in the case of `b`
+
+Here is what this means: The numbers in brackets (`[1:4]` and `[1:3]`) tell you that `a` and `b` are **vectors** --- which is a fancy way to say "collections of things". *Vectors are one of the most important type of objects in `R`.*
+
+These numbers tell us also *how many* different items are stored in each vector. `a` contains four items (the numbers 1 through 4), and the `b` contains three items (the three words "statistics", "is", and "pointless").
+
+The three-letter abbreviations `num` and `chr` tell us more about what is stored in each of our two vectors:
+
+* `num` stands for *numeric*, which means "contains numbers"
+* `chr` stands for *character*, which means "contains characters" (i.e., "single letters or words" or simply "text")
+
+There are also other types of vectors for different types of information. You will learn about them in a later tutorial.
+
+As with the other objects, you can retrieve vectors by typing their name into the console and hitting enter. Give it a try and retrieve the `a` and then the `b` vector.
+
+\newpage
+# Writing and storing your code in a *script file*
+
+Congrats, you have already learned quite a bit about working with `R`! You know:
+
+* What *objects* are and how you can store them with the *assignment operator* (`<-`)
+* What *vectors* (a type of object) are, and that there are different kinds of vectors
+* What *functions* (i.e, "commands") are and how they work at a basic level
+
+In this last part of this introductory turorial, you will learn more about the basic *workflow* of writing and running code in `RStudio`.
+
+## From single commands to script files
+
+So far, you have just entered a few individual functions into the `R` console and then looked at the results. This is fine for a very first introduction, but later on --- when things get serious --- you will write many more and also more complex functions in sequence. Also, you will usually work on any single project for a longer period of time. For example, you will do part of your data management on one day and then do the data analysis on another day. Obviously, you do not want to have to re-enter all the code from the first day when you start again on the following day.
+
+This means you need some place to write longer sequences of code and to store the code you already have so you do not have to start from the beginning every time you need to interrupt your work. This is why you use **script files**.
+
+\newpage
+
+## Writing a script file
+
+Script files simply contain all the code that you wrote for a specific data analysis project. To make this more concrete, **open a script file on your own computer**: In the taskbar at the top of your screen, go to "File" -> "New File" -> "R Script" (alternatively, press "Ctrl+Shift+N" on Windows or "Command+Shift+N" on Mac).
+
+The left-hand side of your screen should now split in two: The Console moves to the bottom half and an entirely empty file with a blinking cursor appears in the top half. *The new file at the top is your script file.*
+
+First, save the file somewhere on your computer where you can easily find it again ("File" -> "Save as") and give it an informative name (e.g., `r_exercise1.R`).
+
+Then start writing some code into your scriptfile. For example, write code to generate a few new vectors:
+```{r script1, eval=F, echo=T}
+bodyweight_data <- c(85.3,75.6,114.2,56.9)
+
+fruit <- c("banana","apple","orange","cherry")
+
+```
+
+Now you have some code --- but how do you run it? You could of course copy-paste it line by line into the Console below, but that would be very cumbersome. 
+
+Instead, select the code either with your mouse or the Shift + arrow keys --- *just like you would select text in a Word document!* The result should look like in the screenshot below:
+
+![Selected code in a script file](code_marked.png)
+
+To run this code, move your mouse to the top right corner of the script file (not the entire window!) --- *there is a little button with a white square and green arrow that says "Run"*. Click on that button to run your code.
+
+Alternatively, and to make your life easier, you can use a keyboard shortcut. To find out what the current shortcut to run selected code is, navigate again to the menu ("Tools" -> "Modify Keyboard Shortcuts"; search for "Run current line or selection"; use the existing shortcut or modify as desired).
+
+Try it out: Write a bit more code and run it with the keyboard shortcut!
+
+\newpage
+
+# Exercises
+
+First exercise: take a quick breather (and maybe get some coffee). *You earned it!* You just took your first steps in a statistical programming language! These first steps might have been a bit wobbly and may have felt weird --- but this is only the beginning. Before you know it, you will be writing and running code without even thinking about it (well, a little bit of thinking probably should be involved...but you get the point).
+
+When you are refreshed, here is a set of exercises to reinforce the things you just learned. 
+
+When you do these exercises:
+
+1. Write the code in a script file (use the existing one, or open and save a new one) and run it from there; do not use the console
+2. When you are done with the exercises, *save your script file!*
+3. Do not copy-paste any code from earlier; always write new code by hand. You will learn more that way
+
+If you feel your working environment is getting cluttered, you can reset `R` and start from a blank slate. Go to "Session" in the taskbar and select "Restart R". (When you work with `R` later on, be **very** careful with this  --- you might lose a lot of work with the push of a single button!).
+
+The first three exercises only repeat things that you already know. The second two go *just a bit* beyond. You may have to puzzle a bit, but they should not be too challenging.
+
+## Exercise 1: Store and use some numbers with `<-`
+
+1. Store the value `10` as `x` 
+2. Store the value `15` as `y`
+3. Add `y` to `x`
+4. Multiply `x` with `y`
+5. Divide `y` by `x`
+
+## Exercise 2: Store some text in a vector
+
+1. Create a vector called `pets` that contains the words `"dog"`, `"cat"`, `"rabbit"`, and `"goldfish"`
+2. Take a look at the working environment: What type of vector is it, and what are its properties?
+
+## Exercise 3: Store some numbers in a vector and use them
+
+1. Create a vector called `vaccine_efficacy` that contains the numbers `0.95`, `0.94`, `0.73`, `0.92`, and `0.74`
+2. What type of vector is it, and what are its properties?
+3. Calculate the average of the numbers in this vector using the `mean()` function
+4. Identify the largest value ("maximum") using the `max()` function
+5. Identify the smallest value ("minimum") using the `min()` function
+
+## Exercise 4: Explorative --- overwriting objects
+
+1. What happens to your existing `x` object from Exercise 1 when you type and run `x <- 17`?
+
+\newpage
+## Exercise 5: Explorative --- combining different objects
+
+You know that you can combine numbers and text into vectors using the `c()` function. But what happens when you use this function to *combine different objects* in your working environment?
+
+1. Create a vector called `new_vec` that contains the objects `x` and `y`, which you created earlier (hint: `c(x,y)`)
+2. Create a vector called `long_vec` that contains `x`, `y`, and all the numbers in `vaccine_efficacy` (hint: you do not have to type in all the numbers again!)
+3. Can you create a new vector called `pets_new` that contains all the contents of the existing `pets` vector plus `"horse"`?
+4. Can you again do the previous task (adding `"horse"` to `pets`) --- but this time without creating a new vector but instead overwriting the existing `pets` vector?
+
+**Hang in there! You can do this!**
+
+
+
+
