@@ -132,13 +132,13 @@ server <- function(input, output, session) {
             summarize(n = n()) %>% 
             ggplot(aes(x=pop,y=n)) +
                 geom_bar(stat = "identity") +
-                geom_vline(xintercept = mean(pop), color = "red") +
+                geom_vline(xintercept = mean(pop), color = "#d95f02", size = 1.25) +
             scale_x_continuous(breaks = seq(1,10,1),
                                limits = c(.5,10.5)) +
             labs(x = "Left-right self-placement",
                  y = "Frequency",
                  title = "The 'true' population data with our target: the population mean",
-                 caption = paste0("The red line indicates the 'true' mean: ",round(mean(pop), digits = 2))) +
+                 caption = paste0("The orange line indicates the 'true' mean: ",round(mean(pop), digits = 2))) +
             theme_bw() +
             theme(aspect.ratio=1/8)
     })
@@ -174,11 +174,11 @@ server <- function(input, output, session) {
                      width = 0.05,
                      position = position_dodge(width=0.01)) +
             geom_vline(xintercept = mean(pop),
-                       color = "red") +
+                       color = "#d95f02", size = 1.25) +
             ylab("Number of samples") +
             xlab("Sample mean(s)") +
-            labs(title = "Our measurement(s) of the population mean",
-                 caption = paste0("The red line indicates the 'true' mean: ",round(mean(pop), digits = 2))) +
+            labs(title = "Our measurement(s) of the population mean: Dark gray line(s)",
+                 caption = paste0("The orange line indicates the 'true' mean: ",round(mean(pop), digits = 2))) +
             scale_x_continuous(limits = c(.5,10.5),
                                breaks = seq(1,10,1)) +
             theme_bw()
@@ -215,15 +215,15 @@ server <- function(input, output, session) {
                              width = 0.05, alpha = .75,
                              position = position_dodge(width=0.01)) +
                     geom_vline(xintercept = mean(pop),
-                               color = "#0F52BA", size = 1.25) +
+                               color = "#7570b3", size = 1.25, linetype = "dashed") +
                     geom_vline(xintercept = mean(sims$means),
-                               color = "red", size = 1.25) +
+                               color = "#d95f02", size = 1.25) +
                     scale_x_continuous(limits = c(.5,10.5),
                                        breaks = seq(1,10,1)) +
                     labs(x = "Left-right self-placement",
                          y = "Number of samples",
-                         caption = paste0("The red line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
-                                          "\n The blue line indicates the MEASURED mean: ",round(mean(pop), digits=2),
+                         caption = paste0("The orange solid line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
+                                          "\n The purple dashed line indicates the MEASURED mean: ",round(mean(pop), digits=2),
                                           "\n Sampling distribution (dark gray) based on 1000 samples")) +
                     theme_bw()
 
@@ -258,15 +258,15 @@ server <- function(input, output, session) {
                      width = 0.05, alpha = .75,
                      position = position_dodge(width=0.01)) +
             geom_vline(xintercept = mean(pop),
-                       color = "#0F52BA", size = 1.25) +
+                       color = "#7570b3", size = 1.25, linetype = "dashed") +
             geom_vline(xintercept = mean(sims$means),
-                       color = "red", size = 1.25) +
+                       color = "#d95f02", size = 1.25) +
             scale_x_continuous(limits = c(.5,10.5),
                                breaks = seq(1,10,1)) +
             labs(x = "Left-right self-placement",
                  y = "Number of samples",
-                 caption = paste0("The red line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
-                                  "\n The blue line indicates the MEASURED mean: ",round(mean(pop), digits=2),
+                 caption = paste0("The orange solid line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
+                                  "\n The purple dashed line indicates the MEASURED mean: ",round(mean(pop), digits=2),
                                   "\n Sampling distribution (dark gray) based on 1000 samples")) +
             theme_bw()
         

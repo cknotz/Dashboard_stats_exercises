@@ -27,4 +27,53 @@ rally %>%
   theme(legend.position = "bottom",
         legend.title = element_blank())
   ggsave("rallygraph.pdf")
+  
+  
+  
+# Example: Normal distribution
+set.seed(42)  
+nodist <- data.frame(vals = rnorm(5000,
+                                  sd = 2),
+                     id = seq(1,5000,1))
 
+nodist %>% 
+  ggplot(aes(x=vals)) +
+    stat_density(adjust = 2,
+                 alpha = .5,
+                 color = "red",
+                 fill = "red") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(),
+        axis.ticks = element_blank())
+  ggsave("snorm.pdf")
+    
+    
+# Visualization, confidence intervals
+set.seed(17)
+cidist <- data.frame(vals1 = rnorm(5000,
+                                   mean = 1.96,
+                                  sd = 1),
+                     id = seq(1,5000,1))
+  
+cidist$vals2 <- cidist$vals1 - 0.6533333
+cidist$vals3 <- cidist$vals2 - 0.6533333
+cidist$vals4 <- cidist$vals3 - 0.6533333
+cidist$vals5 <- cidist$vals4 - 0.6533333
+cidist$vals6 <- cidist$vals5 - 0.6533333
+cidist$vals7 <- cidist$vals6 - 0.6533333
+    
+    
+cidist %>% 
+  pivot_longer(cols = starts_with("vals"),
+               values_to = "vals",
+               names_to = "nums") %>% 
+  ggplot(aes(x=vals,color = nums)) +
+    geom_density(stat = "density",
+                 adjust = 1.5) + 
+    #geom_vline(xintercept = 1.96) +
+    #geom_vline(xintercept = -1.96) +
+    geom_vline(xintercept = 0) +
+  scale_color_manual(values = c("gray","gray","gray","gray","gray","gray","gray")) +
+  theme_bw()
+  
