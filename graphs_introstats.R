@@ -77,3 +77,78 @@ cidist %>%
   scale_color_manual(values = c("gray","gray","gray","gray","gray","gray","gray")) +
   theme_bw()
   
+
+# Graphs to illustrate differences in spread
+############################################
+
+# w/o SD
+set.seed(42)  
+
+for(i in seq(1,5,1)){
+nodist <- data.frame(vals = rnorm(5000,
+                                  sd = i),
+                     id = seq(1,5000,1))
+
+nodist %>% 
+  ggplot(aes(x=vals)) +
+  geom_histogram(bins = 100) +
+  scale_x_continuous(limits = c(-20,20),
+                     breaks = seq(-20,20,5)) +
+  scale_y_continuous(limits = c(0,850),
+                     breaks = seq(0,800,100)) +
+  theme_bw() +
+  theme(axis.title = element_blank())
+ggsave(paste0("sd_",i,".pdf"))
+}
+
+# w/ sd
+for(i in c(1.5,5)){
+nodist <- data.frame(vals = rnorm(5000,
+                                  sd = i,
+                                  mean = 178),
+                     id = seq(1,5000,1))
+
+nodist %>% 
+  ggplot(aes(x=vals)) +
+  geom_histogram(bins = 100) +
+  scale_x_continuous(limits = c(160,200),
+                     breaks = seq(160,200,10)) +
+  scale_y_continuous(limits = c(0,600),
+                     breaks = seq(0,600,100)) +
+  labs(title = paste0("Variance = ",round(var(nodist$vals), digits = 2),
+                      "\n Standard deviation = ",round(sd(nodist$vals), digits = 2)),
+       caption = "N = 5000",
+       x = "Body height (cm)", y = "Observations") +
+  theme_bw() +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size=14))
+ggsave(paste0("sd_",i,"_no.pdf"))
+}
+
+# Temperature distribution
+temp <- data.frame(temp = rnorm(1000,
+                                mean = 36.75,
+                                sd = .25))
+
+temp %>% 
+  ggplot(aes(x=temp)) +
+    geom_histogram(colour = "black", alpha = .8) +
+    geom_vline(xintercept = mean(temp$temp),
+               linetype = "dashed", size = 1.25) +
+    labs(x = "Body temperature (Celsius)",
+         y = "Number of observations",
+         caption = paste0("The vertical dashed line indicates the average measured temperature: ",
+                          round(mean(temp$temp),digits = 1),
+                          "\n N = 1000")) +
+    theme_bw() +
+    theme(axis.text = element_text(size = 14),
+          axis.title = element_text(size=14))
+    ggsave("tempdist.pdf")
+
+
+
+
+
+
+
