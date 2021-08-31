@@ -53,7 +53,30 @@ ui <- navbarPage("Simulations",
         )
     )
     ),
-    tabPanel("Confidence intervals",
+    navbarMenu("What if we do not know the true mean?",
+                tabPanel("Where could it be?",
+                         sidebarLayout(
+                             sidebarPanel(
+                                 sliderInput("loc_size",
+                                             "Size of each sample",
+                                             min = 5,
+                                             max = 125,
+                                             value = 18,
+                                             ticks = F),
+                                 sliderInput("loc_diff",
+                                             "Distance to sample mean",
+                                             min = -2.5,
+                                             max = 2.5,
+                                             value = 0,
+                                             step = 0.1,
+                                             ticks = F)
+                             ),
+                             mainPanel(
+                                 plotOutput("locplot")
+                             )
+                         )
+                         ),
+    tabPanel("More explicit: Confidence intervals",
              sidebarLayout(
                  sidebarPanel(
                      sliderInput("ci_size",
@@ -86,7 +109,7 @@ ui <- navbarPage("Simulations",
                  mainPanel(
                      plotOutput("ciplot")
                  )
-             ))
+             )))
 )
 
 # Server
@@ -165,6 +188,47 @@ server <- function(input, output, session) {
           }
         p
     })
+    })
+    
+    # Simulation & plot output, "where" tab
+    observeEvent(input$loc_size,{
+        # Simulate repeat sampling
+        means <- sapply(seq(1,1000,1),
+                        function(x){
+                            sample <- sample(pop,
+                                             size = input$loc_size,
+                                             replace = F)
+                            return(mean(sample))
+                        })
+        
+        isolate(sims <- data.frame(means = means,
+                                   draws = seq(1,length(means),1)))
+        rm(means)
+        
+        observeEvent(input$loc_diff,{
+            sims$means <- sims$means+input$loc_diff
+            
+            output$locplot <- renderPlot({
+                sims %>% 
+                    ggplot(mapping = aes(x=means)) +
+                    geom_bar(stat = "count",
+                             width = 0.05, alpha = .75,
+                             position = position_dodge(width=0.01)) +
+                    geom_vline(xintercept = mean(pop),
+                               color = "#0F52BA", size = 1.25) +
+                    geom_vline(xintercept = mean(sims$means),
+                               color = "red", size = 1.25) +
+                    scale_x_continuous(limits = c(.5,10.5),
+                                       breaks = seq(1,10,1)) +
+                    labs(x = "Left-right self-placement",
+                         y = "Number of samples",
+                         caption = paste0("The red line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
+                                          "\n The blue line indicates the MEASURED mean: ",round(mean(pop), digits=2))) +
+                    theme_bw()
+
+            })
+        
+        })
     })
     
     # Simulation & plot output, CI tab
