@@ -223,7 +223,8 @@ server <- function(input, output, session) {
                     labs(x = "Left-right self-placement",
                          y = "Number of samples",
                          caption = paste0("The red line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
-                                          "\n The blue line indicates the MEASURED mean: ",round(mean(pop), digits=2))) +
+                                          "\n The blue line indicates the MEASURED mean: ",round(mean(pop), digits=2),
+                                          "\n Sampling distribution (dark gray) based on 1000 samples")) +
                     theme_bw()
 
             })
@@ -265,7 +266,8 @@ server <- function(input, output, session) {
             labs(x = "Left-right self-placement",
                  y = "Number of samples",
                  caption = paste0("The red line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
-                                  "\n The blue line indicates the MEASURED mean: ",round(mean(pop), digits=2))) +
+                                  "\n The blue line indicates the MEASURED mean: ",round(mean(pop), digits=2),
+                                  "\n Sampling distribution (dark gray) based on 1000 samples")) +
             theme_bw()
         
         if(input$show_ci=="TRUE"){
