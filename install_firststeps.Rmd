@@ -1,6 +1,6 @@
 ---
 title: "Tutorial 1: Installation & First Steps"
-author: "*Kvantitativ forskningsmetode"
+author: "*Kvantitativ forskningsmetode*"
 date: "(BST 290)"
 output: 
   pdf_document:
