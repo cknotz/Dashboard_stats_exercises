@@ -126,9 +126,37 @@ nodist %>%
 ggsave(paste0("sd_",i,"_no.pdf"))
 }
 
+# Skewed distributions
+data.frame(vals = rbeta(5000,5,2),
+                   id = seq(1,5000,1)) %>% 
+  ggplot(aes(x=vals)) +
+    geom_histogram(colour = "black", alpha = .8) +
+  labs(x = "", y = "Observations") +
+  theme_bw()
+  ggsave("leftskew.pdf")
+  
+data.frame(vals = rbeta(5000,2,5),
+           id = seq(1,5000,1)) %>% 
+  ggplot(aes(x=vals)) +
+  geom_histogram(colour = "black", alpha = .8) +
+  labs(x = "", y = "Observations") +
+  theme_bw()
+  ggsave("rightskew.pdf")
+  
+data.frame(vals = rnorm(5000),
+           id = seq(1,5000,1)) %>% 
+  ggplot(aes(x=vals)) +
+  geom_histogram(colour = "black", alpha = .8) +
+  labs(x = "", y = "Observations") +
+  theme_bw()
+  ggsave("symmetric.pdf")
+
+
 # Temperature distribution
+##########################
+set.seed(17)
 temp <- data.frame(temp = rnorm(1000,
-                                mean = 36.75,
+                                mean = 37,
                                 sd = .25))
 
 temp %>% 
@@ -136,6 +164,8 @@ temp %>%
     geom_histogram(colour = "black", alpha = .8) +
     geom_vline(xintercept = mean(temp$temp),
                linetype = "dashed", size = 1.25) +
+    scale_x_continuous(limits = c(36,38),
+                     breaks = seq(36,38,.5)) +
     labs(x = "Body temperature (Celsius)",
          y = "Number of observations",
          caption = paste0("The vertical dashed line indicates the average measured temperature: ",
@@ -145,10 +175,108 @@ temp %>%
     theme(axis.text = element_text(size = 14),
           axis.title = element_text(size=14))
     ggsave("tempdist.pdf")
+    
+temp %>% 
+  ggplot(aes(x=temp)) +
+  geom_histogram(colour = "black", alpha = .8) +
+  geom_vline(xintercept = mean(temp$temp),
+             linetype = "dashed", size = 1.25) +
+  geom_vline(xintercept = 36.5, color = "red") +
+  geom_vline(xintercept = 37.5, color = "red") +
+  scale_x_continuous(limits = c(36,38),
+                     breaks = seq(36,38,.5)) +
+  labs(x = "Body temperature (Celsius)",
+       y = "Number of observations") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 14),
+        axis.title = element_text(size=14))
+  ggsave("normalrange.pdf")
 
 
 
+# Difference sampling vs. frequency distribution
+################################################
+
+# Frequency
+pop <- sample(seq(1,10,1),
+              125,
+              replace = T,
+              prob = c(.02,.11,.17,.29,.14,.10,.09,.04,.03,0.01))
+    
+data <- data.frame(pop = pop,
+                   idno = seq(1,length(pop),1))
+
+data %>% 
+  group_by(pop) %>% 
+  summarize(n = n()) %>% 
+  ggplot(aes(x=pop,y=n)) +
+  geom_bar(stat = "identity") +
+  scale_x_continuous(breaks = seq(1,10,1),
+                     limits = c(.5,10.5)) +
+  geom_vline(xintercept = mean(pop), color = "#d95f02", size = 1.25) +
+  labs(x = "Left-right self-placement",
+       y = "Frequency") +
+  theme_bw() 
+  ggsave("freqdist.pdf",
+         width = 10,
+         height = 5,
+         units = "cm")
+    
+# Sampling
+means <- sapply(seq(1,10000,1),
+                function(x){
+                  sample <- sample(pop,
+                                   size = 20,
+                                   replace = F)
+                  return(mean(sample))
+                })
+
+sims <- data.frame(means = means,
+                   draws = seq(1,length(means),1))
+
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 0.05,
+           position = position_dodge(width=0.01)) +
+  # geom_vline(xintercept = mean(pop),
+  #            color = "#d95f02", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("Sample means") +
+  scale_x_continuous(limits = c(.5,10.5),
+                     breaks = seq(1,10,1)) +
+  theme_bw()
+  ggsave("sampdist.pdf",
+       width = 10,
+       height = 5,
+       units = "cm")
+
+    
+# Replication of Logunov et al., Sputnik V trial (Lancet 2021)
+##############################################################
+sputnik <- matrix(c(4840,62,14948,16), ncol = 2, byrow = T)
+
+colnames(sputnik) <- c("Did not get COVID","Got COVID")
+rownames(sputnik) <- c("Did not get vaccine","Got vaccine")
+
+as.table(sputnik) # table
+
+# Percentage difference
+inc_untreat <- round((62/4902)*100, digits = 1) # incidence among untreated
+inc_treat <- round((16/14964)*100, digits = 1) # incidence among treated
+inc_treat-inc_untreat # difference
+round(inc_treat/inc_untreat, digits = 3)*100 # relative risk
 
 
+# odds-ratio
+treat <- 16/14948 # odds in exposed group
+place <- 62/4840 # odds in unexposed group
+
+round(treat/place, digits = 3) # odds-ratio
+
+round(1-(treat/place), digits = 3)*100 # efficacy
+
+# chi-square
+chisq.test(sputnik, correct = F) 
 
 
