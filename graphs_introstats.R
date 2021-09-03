@@ -198,7 +198,7 @@ temp %>%
 ################################################
 
 # Frequency
-pop <- sample(seq(1,10,1),
+pop <- 10*sample(seq(1,10,1),
               125,
               replace = T,
               prob = c(.02,.11,.17,.29,.14,.10,.09,.04,.03,0.01))
@@ -211,8 +211,8 @@ data %>%
   summarize(n = n()) %>% 
   ggplot(aes(x=pop,y=n)) +
   geom_bar(stat = "identity") +
-  scale_x_continuous(breaks = seq(1,10,1),
-                     limits = c(.5,10.5)) +
+  scale_x_continuous(breaks = seq(10,100,10),
+                     limits = c(5,105)) +
   geom_vline(xintercept = mean(pop), color = "#d95f02", size = 1.25) +
   labs(x = "Left-right self-placement",
        y = "Frequency") +
@@ -237,19 +237,374 @@ sims <- data.frame(means = means,
 sims %>%
   ggplot(mapping = aes(x=means)) +
   geom_bar(stat = "count",
-           width = 0.05,
-           position = position_dodge(width=0.01)) +
+           width = 1) + #,
+           #position = position_dodge(width=.1)) +
   # geom_vline(xintercept = mean(pop),
   #            color = "#d95f02", size = 1.25) +
   ylab("Number of samples") +
   xlab("Sample means") +
-  scale_x_continuous(limits = c(.5,10.5),
-                     breaks = seq(1,10,1)) +
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
   theme_bw()
   ggsave("sampdist.pdf",
        width = 10,
        height = 5,
        units = "cm")
+  
+# Without x-scale
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 1) + #,
+  #position = position_dodge(width=.1)) +
+  # geom_vline(xintercept = mean(pop),
+  #            color = "#d95f02", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("") +
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(axis.text.x = element_blank())
+  ggsave("sampdist_square.pdf")
+  
+# With true mean
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = mean(pop),
+             color = "#d95f02", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("Sample means") +
+  labs(caption = "The orange line indicates the 'true' mean.") + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw()
+  ggsave("sampdist_true.pdf",
+       width = 10,
+       height = 5,
+       units = "cm")
+  
+# Different sample sizes
+########################
+  
+# Small
+means <- sapply(seq(1,10000,1),
+                function(x){
+                  sample <- sample(pop,
+                                   size = 10,
+                                   replace = F)
+                  return(mean(sample))
+                })
+
+sims <- data.frame(means = means,
+                   draws = seq(1,length(means),1))
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = mean(pop),
+             color = "#d95f02", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("Sample means") +
+  labs(caption = "The orange line indicates the 'true' mean.") + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw()
+  ggsave("sampdist_small.pdf")
+
+# Large
+means <- sapply(seq(1,10000,1),
+                function(x){
+                  sample <- sample(pop,
+                                   size = 60,
+                                   replace = F)
+                  return(mean(sample))
+                })
+
+sims <- data.frame(means = means,
+                   draws = seq(1,length(means),1))
+
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = mean(pop),
+             color = "#d95f02", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("Sample means") +
+  labs(caption = "The orange line indicates the 'true' mean.") + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw()
+  ggsave("sampdist_large.pdf")
+  
+  
+# With quantiles shaded
+#######################
+  
+# New sampling
+means <- sapply(seq(1,10000,1),
+                function(x){
+                  sample <- sample(pop,
+                                   size = 20,
+                                   replace = F)
+                  return(mean(sample))
+                })
+
+sims <- data.frame(means = means,
+                   draws = seq(1,length(means),1))
+  
+# 95%
+sims_sd <- sd(sims$means)
+sims_mean <- mean(sims$means)
+  
+sims$within <- ifelse(sims$means<=sims_mean + 1.96*sims_sd & sims$means>= sims_mean - 1.96*sims_sd,
+                      "Yes","No")
+
+sims %>%
+  ggplot(mapping = aes(x=means,fill=within)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  scale_fill_manual(values = c("tomato","gray30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  # geom_vline(xintercept = mean(pop),
+  #            color = "#d95f02", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("") +
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom",
+        axis.text.x = element_blank())
+  ggsave("sampling_quantiles_95.pdf")
+
+# 90%
+sims_sd <- sd(sims$means)
+sims_mean <- mean(sims$means)
+
+sims$within <- ifelse(sims$means<=sims_mean + 1.645*sims_sd & sims$means>= sims_mean - 1.645*sims_sd,
+                      "Yes","No")
+
+sims %>%
+  ggplot(mapping = aes(x=means,fill=within)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  scale_fill_manual(values = c("tomato","gray30"),
+                    labels = c("Outer 10%","Inner 90%")) +
+  # geom_vline(xintercept = mean(pop),
+  #            color = "#d95f02", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("Sample means") +
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom")
+  ggsave("sampling_quantiles_90.pdf")
+
+# 99%
+sims_sd <- sd(sims$means)
+sims_mean <- mean(sims$means)
+
+sims$within <- ifelse(sims$means<=sims_mean + 2.576*sims_sd & sims$means>= sims_mean - 2.576*sims_sd,
+                      "Yes","No")
+
+sims %>%
+  ggplot(mapping = aes(x=means,fill=within)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  scale_fill_manual(values = c("tomato","gray30"),
+                    labels = c("Outer 1%","Inner 99%")) +
+  # geom_vline(xintercept = mean(pop),
+  #            color = "#d95f02", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("Sample means") +
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom")
+ggsave("sampling_quantiles_99.pdf")
+
+
+# Only sample mean
+##################
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",alpha=0,
+           width = 1) +
+  geom_vline(xintercept = 34.1,
+             color = "#1b9e77", size = 1.25) +
+  scale_y_continuous(limits = c(0,1),
+                     breaks = seq(0,1,1)) +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+  labs(title = "Our sample mean, 34.1") + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw()
+  ggsave("sampmean.pdf",
+         width = 10,
+         height = 5,
+         units = "cm")
+  
+# Different scenarios for true mean
+###################################
+  
+means <- sapply(seq(1,10000,1),
+                function(x){
+                  sample <- sample(pop,
+                                   size = 20,
+                                   replace = F)
+                  return(mean(sample))
+                })
+
+# Scenario I
+sims <- data.frame(means = means-7.5,
+                   draws = seq(1,length(means),1))
+
+sims_sd <- sd(sims$means)
+sims_mean <- mean(sims$means)
+
+sims$within <- ifelse(sims$means<=sims_mean + 1.96*sims_sd & sims$means>= sims_mean - 1.96*sims_sd,
+                      "Yes","No")
+
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = 34.1,
+             color = "#1b9e77", size = 1.25) +
+  geom_vline(xintercept = mean(sims$means),
+             color = "gray", size = 1.25, linetype = "dashed") +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw()
+  ggsave("truemeanscen_1.pdf")
+  
+#  With quantiles
+sims %>%
+  ggplot(mapping = aes(x=means,fill=within)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = 34.1,
+             color = "#1b9e77", size = 1.25) +
+  geom_vline(xintercept = mean(sims$means),
+             color = "gray", size = 1.25, linetype = "dashed") +
+  scale_fill_manual(values = c("tomato","gray30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom")
+ggsave("truemeanscen_1_quant.pdf")  
+  
+  
+# Scenario II
+sims <- data.frame(means = means-15,
+                   draws = seq(1,length(means),1))
+
+sims_sd <- sd(sims$means)
+sims_mean <- mean(sims$means)
+
+sims$within <- ifelse(sims$means<=sims_mean + 1.96*sims_sd & sims$means>= sims_mean - 1.96*sims_sd,
+                      "Yes","No")
+
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = 34.1,
+             color = "#1b9e77", size = 1.25) +
+  geom_vline(xintercept = mean(sims$means),
+             color = "gray", size = 1.25, linetype = "dashed") +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw()
+  ggsave("truemeanscen_2.pdf")
+  
+  
+#  With quantiles
+sims %>%
+  ggplot(mapping = aes(x=means,fill=within)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = 34.1,
+             color = "#1b9e77", size = 1.25) +
+  geom_vline(xintercept = mean(sims$means),
+             color = "gray", size = 1.25, linetype = "dashed") +
+  scale_fill_manual(values = c("tomato","gray30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom")
+ggsave("truemeanscen_2_quant.pdf")   
+  
+  
+# Scenario III
+sims <- data.frame(means = means,
+                   draws = seq(1,length(means),1))
+
+sims_sd <- sd(sims$means)
+sims_mean <- mean(sims$means)
+
+sims$within <- ifelse(sims$means<=sims_mean + 1.96*sims_sd & sims$means>= sims_mean - 1.96*sims_sd,
+                      "Yes","No")
+
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = 34.1,
+             color = "#1b9e77", size = 1.25) +
+  geom_vline(xintercept = mean(sims$means),
+             color = "gray", size = 1.25, linetype = "dashed") +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw()
+ggsave("truemeanscen_3.pdf")
+  
+  
+#  With quantiles
+sims %>%
+  ggplot(mapping = aes(x=means,fill=within)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = 34.1,
+             color = "#1b9e77", size = 1.25) +
+  geom_vline(xintercept = mean(sims$means),
+             color = "gray", size = 1.25, linetype = "dashed") +
+  scale_fill_manual(values = c("tomato","gray30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom")
+ggsave("truemeanscen_3_quant.pdf")  
 
     
 # Replication of Logunov et al., Sputnik V trial (Lancet 2021)

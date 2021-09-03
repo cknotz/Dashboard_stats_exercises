@@ -5,15 +5,15 @@
 # Carlo Knotz (carlo.knotz@uis.no)
 
 # Checks if packages installed, and installs if not
-if(!require(shiny)){
-    install.packages("shiny")
-}
-if(!require(shinyWidgets)){
-    install.packages("shinyWidgets")
-}
-if(!require(tidyverse)){
-    install.packages("tidyverse")
-}
+# if(!require(shiny)){
+#     install.packages("shiny")
+# }
+# if(!require(shinyWidgets)){
+#     install.packages("shinyWidgets")
+# }
+# if(!require(tidyverse)){
+#     install.packages("tidyverse")
+# }
 
 # Loads packages
 library(shiny)
@@ -53,7 +53,7 @@ ui <- navbarPage("Simulations",
         )
     )
     ),
-    navbarMenu("What if we do not know the true mean?",
+    navbarMenu("Confidence Intervals",
                 tabPanel("Where could it be?",
                          sidebarLayout(
                              sidebarPanel(
@@ -64,11 +64,11 @@ ui <- navbarPage("Simulations",
                                              value = 18,
                                              ticks = F),
                                  sliderInput("loc_diff",
-                                             "Distance to sample mean",
-                                             min = -2.5,
-                                             max = 2.5,
+                                             "Distance of true mean to sample mean",
+                                             min = -25,
+                                             max = 25,
                                              value = 0,
-                                             step = 0.1,
+                                             step = 1,
                                              ticks = F)
                              ),
                              mainPanel(
@@ -86,11 +86,11 @@ ui <- navbarPage("Simulations",
                                  value = 18,
                                  ticks = F),
                      sliderInput("ci_diff",
-                                 "Distance to sample mean",
-                                 min = -2.5,
-                                 max = 2.5,
+                                 "Distance of true mean to sample mean",
+                                 min = -25,
+                                 max = 25,
                                  value = 0,
-                                 step = 0.1,
+                                 step = 1,
                                  ticks = F),
                      radioButtons(inputId = "show_ci",
                                   label = "Use CI",
@@ -116,7 +116,7 @@ ui <- navbarPage("Simulations",
 server <- function(input, output, session) {
     
     # New true population, simulated
-    pop <- sample(seq(1,10,1),
+    pop <- 10*sample(seq(1,10,1),
                   125,
                   replace = T,
                   prob = c(.02,.11,.17,.29,.14,.10,.09,.04,.03,0.01))
@@ -133,8 +133,8 @@ server <- function(input, output, session) {
             ggplot(aes(x=pop,y=n)) +
                 geom_bar(stat = "identity") +
                 geom_vline(xintercept = mean(pop), color = "#d95f02", size = 1.25) +
-            scale_x_continuous(breaks = seq(1,10,1),
-                               limits = c(.5,10.5)) +
+            scale_x_continuous(breaks = seq(10,100,10),
+                               limits = c(5,105)) +
             labs(x = "Left-right self-placement",
                  y = "Frequency",
                  title = "The 'true' population data with our target: the population mean",
@@ -171,16 +171,15 @@ server <- function(input, output, session) {
         p <- sims %>%
           ggplot(mapping = aes(x=means)) +
             geom_bar(stat = "count",
-                     width = 0.05,
-                     position = position_dodge(width=0.01)) +
+                     width = 1) +
             geom_vline(xintercept = mean(pop),
                        color = "#d95f02", size = 1.25) +
             ylab("Number of samples") +
             xlab("Sample mean(s)") +
             labs(title = "Our measurement(s) of the population mean: Dark gray line(s)",
                  caption = paste0("The orange line indicates the 'true' mean: ",round(mean(pop), digits = 2))) +
-            scale_x_continuous(limits = c(.5,10.5),
-                               breaks = seq(1,10,1)) +
+            scale_x_continuous(limits = c(5,105),
+                               breaks = seq(10,100,10)) +
             theme_bw()
           
           if(input$samples<30){
@@ -201,8 +200,17 @@ server <- function(input, output, session) {
                             return(mean(sample))
                         })
         
-        isolate(sims <- data.frame(means = means,
-                                   draws = seq(1,length(means),1)))
+        sims <- data.frame(means = means,
+                           draws = seq(1,length(means),1))
+        
+        sims_sd <- sd(sims$means)
+        sims_mean <- mean(sims$means)
+        
+        sims$within <- ifelse(sims$means<=sims_mean + 1.96*sims_sd & sims$means>= sims_mean - 1.96*sims_sd,
+                              "Yes","No")
+        
+        isolate(sims)
+        
         rm(means)
         
         observeEvent(input$loc_diff,{
@@ -210,22 +218,24 @@ server <- function(input, output, session) {
             
             output$locplot <- renderPlot({
                 sims %>% 
-                    ggplot(mapping = aes(x=means)) +
+                    ggplot(mapping = aes(x=means,fill=within)) +
                     geom_bar(stat = "count",
-                             width = 0.05, alpha = .75,
-                             position = position_dodge(width=0.01)) +
+                             width = 1, alpha = .75) +
+                    scale_fill_manual(values = c("#1b9e77","gray30"),
+                                      labels = c("Outer 5%","Inner 95%")) +
                     geom_vline(xintercept = mean(pop),
                                color = "#7570b3", size = 1.25, linetype = "dashed") +
                     geom_vline(xintercept = mean(sims$means),
                                color = "#d95f02", size = 1.25) +
-                    scale_x_continuous(limits = c(.5,10.5),
-                                       breaks = seq(1,10,1)) +
+                    scale_x_continuous(limits = c(5,105),
+                                       breaks = seq(10,100,10)) +
                     labs(x = "Left-right self-placement",
                          y = "Number of samples",
                          caption = paste0("The orange solid line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
-                                          "\n The purple dashed line indicates the MEASURED mean: ",round(mean(pop), digits=2),
-                                          "\n Sampling distribution (dark gray) based on 1000 samples")) +
-                    theme_bw()
+                                          "\n The purple dashed line indicates the MEASURED mean: ",round(mean(pop), digits=2))) +
+                    theme_bw() +
+                    theme(legend.title = element_blank(),
+                          legend.position = "bottom")
 
             })
         
@@ -244,8 +254,16 @@ server <- function(input, output, session) {
                             return(mean(sample))
                         })
         
-        isolate(sims <- data.frame(means = means,
-                                   draws = seq(1,length(means),1)))
+        sims <- data.frame(means = means,
+                           draws = seq(1,length(means),1))
+        
+        sims_sd <- sd(sims$means)
+        sims_mean <- mean(sims$means)
+        
+        sims$within <- ifelse(sims$means<=sims_mean + 1.96*sims_sd & sims$means>= sims_mean - 1.96*sims_sd,
+                              "Yes","No")
+        
+        isolate(sims)
         rm(means)
         
         observeEvent(input$ci_diff,{
@@ -253,22 +271,24 @@ server <- function(input, output, session) {
         
         output$ciplot <- renderPlot({
         g <- sims %>% 
-            ggplot(mapping = aes(x=means)) +
+            ggplot(mapping = aes(x=means,fill=within)) +
             geom_bar(stat = "count",
-                     width = 0.05, alpha = .75,
-                     position = position_dodge(width=0.01)) +
+                     width = 1, alpha = .75) +
+            scale_fill_manual(values = c("#1b9e77","gray30"),
+                              labels = c("Outer 5%","Inner 95%")) +
             geom_vline(xintercept = mean(pop),
                        color = "#7570b3", size = 1.25, linetype = "dashed") +
             geom_vline(xintercept = mean(sims$means),
                        color = "#d95f02", size = 1.25) +
-            scale_x_continuous(limits = c(.5,10.5),
-                               breaks = seq(1,10,1)) +
+            scale_x_continuous(limits = c(5,105),
+                               breaks = seq(10,100,10)) +
             labs(x = "Left-right self-placement",
                  y = "Number of samples",
                  caption = paste0("The orange solid line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
-                                  "\n The purple dashed line indicates the MEASURED mean: ",round(mean(pop), digits=2),
-                                  "\n Sampling distribution (dark gray) based on 1000 samples")) +
-            theme_bw()
+                                  "\n The purple dashed line indicates the MEASURED mean: ",round(mean(pop), digits=2))) +
+            theme_bw() +
+            theme(legend.title = element_blank(),
+                  legend.position = "bottom")
         
         if(input$show_ci=="TRUE"){
             g +geom_errorbarh(aes(y=30,
