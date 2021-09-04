@@ -197,11 +197,12 @@ temp %>%
 # Difference sampling vs. frequency distribution
 ################################################
 
-# Frequency
+set.seed(42)
+# True population, simulated
 pop <- 10*sample(seq(1,10,1),
-              125,
-              replace = T,
-              prob = c(.02,.11,.17,.29,.14,.10,.09,.04,.03,0.01))
+                 125,
+                 replace = T,
+                 prob = c(.02,.20,.29,.13,.10,.09,.09,.04,.03,0.01))
     
 data <- data.frame(pop = pop,
                    idno = seq(1,length(pop),1))
@@ -226,12 +227,12 @@ data %>%
 means <- sapply(seq(1,10000,1),
                 function(x){
                   sample <- sample(pop,
-                                   size = 20,
+                                   size = 18,
                                    replace = F)
                   return(mean(sample))
                 })
 
-sims <- data.frame(means = means,
+sims <- data.frame(means = means-4,
                    draws = seq(1,length(means),1))
 
 sims %>%
@@ -347,7 +348,7 @@ sims %>%
 means <- sapply(seq(1,10000,1),
                 function(x){
                   sample <- sample(pop,
-                                   size = 20,
+                                   size = 18,
                                    replace = F)
                   return(mean(sample))
                 })
@@ -431,11 +432,11 @@ ggsave("sampling_quantiles_99.pdf")
 
 # Only sample mean
 ##################
+
+# w/o CI
 sims %>%
   ggplot(mapping = aes(x=means)) +
-  geom_bar(stat = "count",alpha=0,
-           width = 1) +
-  geom_vline(xintercept = 34.1,
+  geom_vline(xintercept = 34.1,linetype = "dashed",
              color = "#1b9e77", size = 1.25) +
   scale_y_continuous(limits = c(0,1),
                      breaks = seq(0,1,1)) +
@@ -450,19 +451,57 @@ sims %>%
          height = 5,
          units = "cm")
   
+# w/ CI, no title
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_vline(xintercept = 34.1,linetype = "dashed",
+             color = "#1b9e77", size = 1.25) +
+  geom_errorbarh(aes(y=.75,
+                     xmin = 34.1 - 1.96*(25.32353/sqrt(18)),
+                     xmax = 34.1 + 1.96*(25.32353/sqrt(18))),
+                 size=1.25) +
+  scale_y_continuous(limits = c(0,1),
+                     breaks = seq(0,1,1)) +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw()
+  ggsave("sampmean_ci.pdf")
+  
+# w/ CI
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_vline(xintercept = 34.1,linetype = "dashed",
+             color = "#1b9e77", size = 1.25) +
+  geom_errorbarh(aes(y=.75,
+                     xmin = 34.1 - 1.96*(25.32353/sqrt(18)),
+                     xmax = 34.1 + 1.96*(25.32353/sqrt(18))),
+                 size=1.25) +
+  scale_y_continuous(limits = c(0,1),
+                     breaks = seq(0,1,1)) +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+  labs(title = paste0("Sample mean: 34.1 [",format(round(34.1 - 1.96*(25.32353/sqrt(18)),digits = 1),nsmall = 1),"; ",
+                      format(round(34.1 + 1.96*(25.32353/sqrt(18)),digits=1),nsmall = 1),"]")) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw()
+ggsave("sampmean_ci_ti.pdf")  
+  
 # Different scenarios for true mean
 ###################################
   
 means <- sapply(seq(1,10000,1),
                 function(x){
                   sample <- sample(pop,
-                                   size = 20,
+                                   size = 18,
                                    replace = F)
                   return(mean(sample))
                 })
 
 # Scenario I
-sims <- data.frame(means = means-7.5,
+sims <- data.frame(means = means-3,
                    draws = seq(1,length(means),1))
 
 sims_sd <- sd(sims$means)
@@ -559,7 +598,7 @@ ggsave("truemeanscen_2_quant.pdf")
   
   
 # Scenario III
-sims <- data.frame(means = means,
+sims <- data.frame(means = means+7,
                    draws = seq(1,length(means),1))
 
 sims_sd <- sd(sims$means)
