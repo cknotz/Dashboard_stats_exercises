@@ -3,6 +3,7 @@
 #################################################
 
 library(tidyverse)
+library(xtable)
 
 setwd("/Users/carloknotz/Documents/Work/Stavanger/Teaching/Statistics/Slides")
 
@@ -305,13 +306,15 @@ sims %>%
   geom_bar(stat = "count",
            width = 1) +
   geom_vline(xintercept = mean(pop),
-             color = "#d95f02", size = 1.25) +
+             color = "gray", size = 1.25) +
   ylab("Number of samples") +
   xlab("Sample means") +
-  labs(caption = "The orange line indicates the 'true' mean.") + 
+  labs(caption = "The gray line indicates the 'true' mean.") + 
   scale_x_continuous(limits = c(5,105),
                      breaks = seq(10,100,10)) +
-  theme_bw()
+  theme_bw() +
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_blank())
   ggsave("sampdist_small.pdf")
 
 # Large
@@ -331,13 +334,15 @@ sims %>%
   geom_bar(stat = "count",
            width = 1) +
   geom_vline(xintercept = mean(pop),
-             color = "#d95f02", size = 1.25) +
+             color = "gray", size = 1.25) +
   ylab("Number of samples") +
   xlab("Sample means") +
-  labs(caption = "The orange line indicates the 'true' mean.") + 
+  labs(caption = "The gray line indicates the 'true' mean.") + 
   scale_x_continuous(limits = c(5,105),
                      breaks = seq(10,100,10)) +
-  theme_bw()
+  theme_bw() +
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_blank())
   ggsave("sampdist_large.pdf")
   
   
@@ -515,12 +520,12 @@ sims %>%
   geom_bar(stat = "count",
            width = 1) +
   geom_vline(xintercept = 34.1,
-             color = "#1b9e77", size = 1.25) +
+             color = "#1b9e77", size = 1.25, linetype = "dashed") +
   geom_vline(xintercept = mean(sims$means),
-             color = "gray", size = 1.25, linetype = "dashed") +
+             color = "gray", size = 1.25) +
   ylab("Number of samples") +
   xlab("Sample mean") +
-  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  labs(caption = paste0("Green dashed line: Our sample mean, 34.1\nGray line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
   scale_x_continuous(limits = c(5,105),
                      breaks = seq(10,100,10)) +
   theme_bw()
@@ -532,20 +537,43 @@ sims %>%
   geom_bar(stat = "count",
            width = 1) +
   geom_vline(xintercept = 34.1,
-             color = "#1b9e77", size = 1.25) +
+             color = "#1b9e77", size = 1.25, linetype = "dashed") +
   geom_vline(xintercept = mean(sims$means),
-             color = "gray", size = 1.25, linetype = "dashed") +
+             color = "gray", size = 1.25) +
   scale_fill_manual(values = c("tomato","gray30"),
                     labels = c("Outer 5%","Inner 95%")) +
   ylab("Number of samples") +
   xlab("Sample mean") +
-  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  labs(caption = paste0("Green dashed line: Our sample mean, 34.1\nGray line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
   scale_x_continuous(limits = c(5,105),
                      breaks = seq(10,100,10)) +
   theme_bw() +
   theme(legend.title = element_blank(),
         legend.position = "bottom")
-ggsave("truemeanscen_1_quant.pdf")  
+ggsave("truemeanscen_1_quant.pdf")
+
+sims %>%
+  ggplot(mapping = aes(x=means,fill=within)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = 34.1,
+             color = "#1b9e77", size = 1.25, linetype = "dashed") +
+  geom_vline(xintercept = mean(sims$means),
+             color = "gray", size = 1.25) +
+  scale_fill_manual(values = c("tomato","gray30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  ylab("Number of samples") +
+  xlab("Sample mean") +
+ # labs(caption = paste0("Green dashed line: Our sample mean, 34.1\nGray line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "none")
+ggsave("truemeanscen_1_quant_wide.pdf",
+       width = 10,
+       height = 5,
+       units = "cm")
   
   
 # Scenario II
@@ -563,12 +591,12 @@ sims %>%
   geom_bar(stat = "count",
            width = 1) +
   geom_vline(xintercept = 34.1,
-             color = "#1b9e77", size = 1.25) +
+             color = "#1b9e77", size = 1.25, linetype = "dashed") +
   geom_vline(xintercept = mean(sims$means),
-             color = "gray", size = 1.25, linetype = "dashed") +
+             color = "gray", size = 1.25) +
   ylab("Number of samples") +
   xlab("Sample mean") +
-  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  labs(caption = paste0("Green dashed line: Our sample mean, 34.1\nGray line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
   scale_x_continuous(limits = c(5,105),
                      breaks = seq(10,100,10)) +
   theme_bw()
@@ -581,14 +609,14 @@ sims %>%
   geom_bar(stat = "count",
            width = 1) +
   geom_vline(xintercept = 34.1,
-             color = "#1b9e77", size = 1.25) +
+             color = "#1b9e77", size = 1.25, linetype = "dashed") +
   geom_vline(xintercept = mean(sims$means),
-             color = "gray", size = 1.25, linetype = "dashed") +
+             color = "gray", size = 1.25) +
   scale_fill_manual(values = c("tomato","gray30"),
                     labels = c("Outer 5%","Inner 95%")) +
   ylab("Number of samples") +
   xlab("Sample mean") +
-  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  labs(caption = paste0("Green dashed line: Our sample mean, 34.1\nGray line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
   scale_x_continuous(limits = c(5,105),
                      breaks = seq(10,100,10)) +
   theme_bw() +
@@ -612,12 +640,12 @@ sims %>%
   geom_bar(stat = "count",
            width = 1) +
   geom_vline(xintercept = 34.1,
-             color = "#1b9e77", size = 1.25) +
+             color = "#1b9e77", size = 1.25, linetype = "dashed") +
   geom_vline(xintercept = mean(sims$means),
-             color = "gray", size = 1.25, linetype = "dashed") +
+             color = "gray", size = 1.25) +
   ylab("Number of samples") +
   xlab("Sample mean") +
-  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  labs(caption = paste0("Green dashed line: Our sample mean, 34.1\nGray line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
   scale_x_continuous(limits = c(5,105),
                      breaks = seq(10,100,10)) +
   theme_bw()
@@ -630,14 +658,14 @@ sims %>%
   geom_bar(stat = "count",
            width = 1) +
   geom_vline(xintercept = 34.1,
-             color = "#1b9e77", size = 1.25) +
+             color = "#1b9e77", size = 1.25, linetype = "dashed") +
   geom_vline(xintercept = mean(sims$means),
-             color = "gray", size = 1.25, linetype = "dashed") +
+             color = "gray", size = 1.25) +
   scale_fill_manual(values = c("tomato","gray30"),
                     labels = c("Outer 5%","Inner 95%")) +
   ylab("Number of samples") +
   xlab("Sample mean") +
-  labs(caption = paste0("Green solid line: Our sample mean, 34.1\nGray dashed line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
+  labs(caption = paste0("Green dashed line: Our sample mean, 34.1\nGray line: Possible true mean, ",round(mean(sims$means),digits = 1))) + 
   scale_x_continuous(limits = c(5,105),
                      breaks = seq(10,100,10)) +
   theme_bw() +
@@ -645,6 +673,9 @@ sims %>%
         legend.position = "bottom")
 ggsave("truemeanscen_3_quant.pdf")  
 
+
+# Clear working memory/de-clutter
+rm(list = ls())
     
 # Replication of Logunov et al., Sputnik V trial (Lancet 2021)
 ##############################################################
@@ -653,11 +684,47 @@ sputnik <- matrix(c(4840,62,14948,16), ncol = 2, byrow = T)
 colnames(sputnik) <- c("Did not get COVID","Got COVID")
 rownames(sputnik) <- c("Did not get vaccine","Got vaccine")
 
-as.table(sputnik) # table
+# Frequency table
+freq <- as.table(t(sputnik))
+freq <- addmargins(freq)
+
+freq <- xtable(freq,
+       caption = "Frequencies: Vaccine receipt and COVID-19 incidences",
+       align = c("l","c","c","c"),
+       digits = 0)
+
+align(freq) <- xalign(freq)
+digits(freq) <- xdigits(freq)
+display(freq) <- xdisplay(freq)
+
+print(freq,file="sputnik_freq.tex",table.placement = "h",booktabs = T,
+      caption.placement="bottom")
+
+# Percentages
+propsput <- t(rbind(sputnik,sputnik[1,] + sputnik[2,]))
+colnames(propsput) <- c("Did not get vaccine","Got vaccine","Sum")
+
+prop <- 100*prop.table(propsput,2) # Column percentages
+prop <- addmargins(prop, 1)
+
+prop <- xtable(prop,
+               caption = "Percentages: Vaccine receipt and COVID-19 incidences",
+               align = c("l","c","c","c"),
+               digits = 1)
+
+align(prop) <- xalign(prop)
+display(prop) <- xdisplay(prop)
+
+print(prop,file="sputnik_prop.tex",table.placement = "h",booktabs = T,
+      caption.placement="bottom")
 
 # Percentage difference
 inc_untreat <- round((62/4902)*100, digits = 1) # incidence among untreated
+inc_untreat
+
 inc_treat <- round((16/14964)*100, digits = 1) # incidence among treated
+inc_treat
+
 inc_treat-inc_untreat # difference
 round(inc_treat/inc_untreat, digits = 3)*100 # relative risk
 
