@@ -3,7 +3,6 @@
 #################################################
 
 library(tidyverse)
-library(xtable)
 
 setwd("/Users/carloknotz/Documents/Work/Stavanger/Teaching/Statistics/Slides")
 
@@ -677,67 +676,3 @@ ggsave("truemeanscen_3_quant.pdf")
 # Clear working memory/de-clutter
 rm(list = ls())
     
-# Replication of Logunov et al., Sputnik V trial (Lancet 2021)
-##############################################################
-sputnik <- matrix(c(4840,62,14948,16), ncol = 2, byrow = T)
-
-colnames(sputnik) <- c("Did not get COVID","Got COVID")
-rownames(sputnik) <- c("Did not get vaccine","Got vaccine")
-
-# Frequency table
-freq <- as.table(t(sputnik))
-freq <- addmargins(freq)
-
-freq <- xtable(freq,
-       caption = "Frequencies: Vaccine receipt and COVID-19 incidences",
-       align = c("l","c","c","c"),
-       digits = 0)
-
-align(freq) <- xalign(freq)
-digits(freq) <- xdigits(freq)
-display(freq) <- xdisplay(freq)
-
-print(freq,file="sputnik_freq.tex",table.placement = "h",booktabs = T,
-      caption.placement="bottom")
-
-# Percentages
-propsput <- t(rbind(sputnik,sputnik[1,] + sputnik[2,]))
-colnames(propsput) <- c("Did not get vaccine","Got vaccine","Sum")
-
-prop <- 100*prop.table(propsput,2) # Column percentages
-prop <- addmargins(prop, 1)
-
-prop <- xtable(prop,
-               caption = "Percentages: Vaccine receipt and COVID-19 incidences",
-               align = c("l","c","c","c"),
-               digits = 1)
-
-align(prop) <- xalign(prop)
-display(prop) <- xdisplay(prop)
-
-print(prop,file="sputnik_prop.tex",table.placement = "h",booktabs = T,
-      caption.placement="bottom")
-
-# Percentage difference
-inc_untreat <- round((62/4902)*100, digits = 1) # incidence among untreated
-inc_untreat
-
-inc_treat <- round((16/14964)*100, digits = 1) # incidence among treated
-inc_treat
-
-inc_treat-inc_untreat # difference
-round(inc_treat/inc_untreat, digits = 3)*100 # relative risk
-
-
-# odds-ratio
-treat <- 16/14948 # odds in exposed group
-place <- 62/4840 # odds in unexposed group
-
-round(treat/place, digits = 3) # odds-ratio
-
-round(1-(treat/place), digits = 3)*100 # efficacy
-
-# chi-square
-chisq.test(sputnik, correct = F) 
-
-
