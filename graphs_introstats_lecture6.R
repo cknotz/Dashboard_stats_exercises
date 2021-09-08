@@ -6,6 +6,7 @@
 
 library(tidyverse)
 library(xtable)
+library(viridis)
 
 setwd("/Users/carloknotz/Documents/Work/Stavanger/Teaching/Statistics/Slides")
 
@@ -102,86 +103,91 @@ treat_prob/place_prob
 
 
 # chi-square
-chisq.test(sputnik, correct = F) 
+Xsq <- chisq.test(sputnik, correct = F) 
+  Xsq$observed
+  Xsq$expected
+
 
 # Generate chi-squared distributions
 ####################################
+  
+# df=1, shaded
+data.frame(chisq = 0:7000 / 100) %>% 
+  mutate(density = dchisq(x = chisq, df = 1)) %>% 
+  mutate(within = ifelse(chisq>=3.841,"no","yes")) %>% 
+  filter(chisq<=12) %>% 
+  ggplot(aes(x=chisq,y=density)) +
+  geom_area(fill="grey30") +
+  scale_x_continuous(limits = c(0,12),
+                     breaks = seq(0,12,2)) +
+  scale_y_continuous(limits = c(0,1)) +
+  ylab("Density") +
+  xlab(~ paste(chi ^ 2, "-value")) +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.text = element_text(size=14))
+  ggsave("chidist.pdf")
 
-# df=1
-data.frame(dist = rchisq(10000,1),
-           id = seq(1,10000,1)) %>% 
-  ggplot(aes(x=dist)) +
-    geom_density(fill = "grey30",
-                 color = "grey15") +
-  scale_x_continuous(limits = c(0,10)) +
+# df=1:10
+data.frame(chisq = 0:7000 / 100) %>% 
+  mutate(df_01 = dchisq(x = chisq, df = 1),
+         df_03 = dchisq(x = chisq, df = 3),
+         df_05 = dchisq(x = chisq, df = 5),
+         df_10 = dchisq(x = chisq, df = 10)) %>% 
+  pivot_longer(cols = starts_with("df_"),
+               names_to = "dist",
+               values_to = "density") %>% 
+  ggplot(aes(x=chisq,y=density,color=factor(dist))) +
+    geom_line(size = 1.5) +
+  scale_x_continuous(limits = c(0,20)) +
+  scale_y_continuous(limits = c(0,.5)) +
+  scale_color_viridis(discrete = T,option = "turbo",
+                      labels = c("df=1","df=3","df=5","df=10")) +
   ylab("Density") +
   xlab(~ paste(chi ^ 2, "-value")) +
   theme_bw() +
-  theme(axis.text = element_text(size=14))
-  ggsave("chi_1.pdf")
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.text = element_text(size=14))
+  ggsave("chidist_dfs.pdf")
 
-# df=2
-data.frame(dist = rchisq(10000,2),
-           id = seq(1,10000,1)) %>% 
-  ggplot(aes(x=dist)) +
-  geom_density(fill = "grey30",
-               color = "grey15") +
-  #scale_x_continuous(limits = c(0,10)) +
-  ylab("Density") +
-  xlab(~ paste(chi ^ 2, "-value")) +
-  theme_bw() +
-  theme(axis.text = element_text(size=14))
-  ggsave("chi_2.pdf")
-  
-  
-# df=5
-data.frame(dist = rchisq(10000,5),
-           id = seq(1,10000,1)) %>% 
-  ggplot(aes(x=dist)) +
-  geom_density(fill = "grey30",
-               color = "grey15") +
-  #scale_x_continuous(limits = c(0,10)) +
-  ylab("Density") +
-  xlab(~ paste(chi ^ 2, "-value")) +
-  theme_bw() +
-  theme(axis.text = element_text(size=14))
-  ggsave("chi_5.pdf")  
-  
-  
-# df=50
-data.frame(dist = rchisq(10000,50),
-           id = seq(1,10000,1)) %>% 
-  ggplot(aes(x=dist)) +
-  geom_density(fill = "grey30",
-               color = "grey15") +
-  #scale_x_continuous(limits = c(0,10)) +
-  ylab("Density") +
-  xlab(~ paste(chi ^ 2, "-value")) +
-  theme_bw() +
-  theme(axis.text = element_text(size=14))
-  ggsave("chi_50.pdf")   
-  
-# df=120
-data.frame(dist = rchisq(10000,120),
-           id = seq(1,10000,1)) %>% 
-  ggplot(aes(x=dist)) +
-  geom_density(fill = "grey30",
-               color = "grey15") +
-  #scale_x_continuous(limits = c(0,10)) +
-  ylab("Density") +
-  xlab(~ paste(chi ^ 2, "-value")) +
-  theme_bw() +
-  theme(axis.text = element_text(size=14))
-  ggsave("chi_120.pdf")   
   
   
 # df=1, with 95% quantile shaded
+data.frame(chisq = 0:7000 / 100) %>% 
+  mutate(density = dchisq(x = chisq, df = 1)) %>% 
+  mutate(within = ifelse(chisq>=3.841,"no","yes")) %>% 
+  filter(chisq<=12) %>% 
+  ggplot(aes(x=chisq,y=density,fill=within)) +
+    geom_area() +
+    geom_vline(xintercept = 3.841, color = "#ff8633",
+               linetype = "dashed", size = 1.5) +
+  scale_x_continuous(limits = c(0,12),
+                     breaks = seq(0,12,2)) +
+  scale_y_continuous(limits = c(0,1)) +
+  scale_fill_manual(values = c("#ff8633","grey30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  ylab("Density") +
+  xlab(~ paste(chi ^ 2, "-value")) +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.text = element_text(size=14))
+  ggsave("chi_crit.pdf")
+  
+  
+  
+  
+  
+  
+  
 pdf("chi_crit.pdf")
-dist <- rchisq(10000,2)
+dist <- rchisq(10000,1)
   dens <- density(dist)
-  plot(dens,xlim = c(0,20),
+  plot(dens,xlim = c(0,12),
        main = "", xlab = expression(chi^2-value))
-  value <- 5.991
+  value <- 3.841
   polygon(c(dens$x[dens$x >= value ], value),
           c(dens$y[dens$x >= value ], 0),
           col = "#ff8633",
@@ -194,3 +200,5 @@ dist <- rchisq(10000,2)
   dev.off()
 
   
+  data.frame(dist = dchisq(10000,1),
+             id = seq(1,10000,1))
