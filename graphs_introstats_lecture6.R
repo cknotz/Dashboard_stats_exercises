@@ -54,7 +54,23 @@ print(prop,file="sputnik_prop.tex",table.placement = "h",booktabs = T,
                         command = paste0("\\bottomrule \n \\multicolumn{4}{l}",
                                        "{\\scriptsize{Note: Table shows column percentages.}} \n")))
 
-# Percentages, graphically
+# Percentages, graphically - w/ null result
+data.frame(group = c("Unvaccinated","Vaccinated"),
+           prob = c(1.3,0.1)) %>% 
+  ggplot(aes(x=group,y=prob)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(limits = c(0,1.5),
+                     breaks = seq(0,1.5,.25)) +
+  labs(y="Share of COVID-19 diagnoses",
+       x = "Treatment group") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.text = element_text(size=14))
+ggsave("sputnik_probs.pdf")
+
+
+# Percentages, graphically - w/ null result
 data.frame(group = c("Unvaccinated","Vaccinated"),
                       prob = c(1.3,0.1),
            null = rep(0.4,2)) %>% 
@@ -71,7 +87,7 @@ data.frame(group = c("Unvaccinated","Vaccinated"),
   theme_bw() +
   theme(legend.position = "bottom",
         legend.title = element_blank())
-  ggsave("sputnik_probs.pdf")
+  ggsave("sputnik_probs_null.pdf")
 
 # Percentage difference
 inc_untreat <- round((62/4902)*100, digits = 1) # incidence among untreated
@@ -107,6 +123,15 @@ Xsq <- chisq.test(sputnik, correct = F)
   Xsq$observed
   Xsq$expected
 
+# Exact p-value, computed chi-stat
+pchisq(Xsq$statistic,
+       df = 1,
+       lower.tail = F)
+
+# Exact p-value, chi-stat by hand
+pchisq(124.266,
+       df = 1,
+       lower.tail = F)
 
 # Generate chi-squared distributions
 ####################################
@@ -177,8 +202,35 @@ data.frame(chisq = 0:7000 / 100) %>%
   ggsave("chi_crit.pdf")
   
   
-  
-  
+# Different thresholds indicated
+data.frame(chisq = 0:7000 / 100) %>% 
+  mutate(density = dchisq(x = chisq, df = 1)) %>% 
+  filter(chisq<=12) %>% 
+  ggplot(aes(x=chisq,y=density)) +
+  geom_area(fill = "grey30") +
+  geom_vline(aes(xintercept = 2.706, color = "0.1"),
+             linetype = "dashed", size = 1.5) +
+  geom_vline(aes(xintercept = 3.841, color = "0.05"),
+             linetype = "dashed", size = 1.5) +
+  geom_vline(aes(xintercept = 5.024, color = "0.025"),
+             linetype = "dashed", size = 1.5) +
+  geom_vline(aes(xintercept = 6.635, color = "0.01"),
+             linetype = "dashed", size = 1.5) +
+  geom_vline(aes(xintercept = 10.828, color = "0.001"),
+             linetype = "dashed", size = 1.5) +
+  scale_x_continuous(limits = c(0,12),
+                     breaks = seq(0,12,2)) +
+  scale_y_continuous(limits = c(0,1)) +
+  scale_color_viridis(discrete = T,guide = guide_legend(reverse = T),
+                      direction = -1) +
+  ylab("Density") +
+  xlab(~ paste(chi ^ 2, "-value")) +
+  labs(color = "Level of significance") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size=12),
+        axis.text = element_text(size=14))
+  ggsave("chi_diffsig.pdf")
   
   
   
