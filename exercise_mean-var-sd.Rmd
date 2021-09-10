@@ -1,0 +1,46 @@
+---
+title: "Exercises -- Mean, variance & standard deviation"
+author: "Carlo Knotz"
+date: "9/10/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Some of you may struggle to really understand what the variance and standard deviation statistics are, and how you are supposed to interpret and use them. The description and explanation in Kellstedt & Whitten (2018, Chapter 6) should make things clearer, but it can also be helpful to calculate a few of these statistics by hand (using a pocket calculator, or similar). **If you do struggle with understanding the variance, you should make sure that you work on this -- otherwise week 7 and everthing after will become very challenging for you!**
+
+Below you find a set of exercises you can do to get a better grasp of the variance and standard deviation and what they mean. Do not hesitate to get in touch if you have further questions!
+
+### Exercise 1: Body height
+
+Here is a set of body height measurements in cm: `(167,189,210,154,178,186,161)`
+
+1. Using the formulas in Kellstedt & Whitten, calculate the mean, the variance, and the standard deviation of this variable. 
+2. Explain, in a sentence or two, what each of these statistics really mean.
+
+### Exercise 2: Left-right self-placement
+
+Imagine some persons were asked to indicate their political ideological orientation on a 0-10 scale, where 0 means "extreme left", 10 means "extreme right" and 5 means "centrist": `(2,5,9,4,5,4,3,7,1,10)`
+
+1. Using the formulas in Kellstedt & Whitten, calculate the mean, the variance, and the standard deviation of this variable. 
+2. Explain, in a sentence or two, what each of these statistics really mean.
+
+### Exercise 3: Unemployment rates
+
+Now imagine you have data on the unemployment rates (percent unemployed) for a set of countries: `(3.4,12.5,25.2,8.9,6.4,5.1)`
+
+1. Using the formulas in Kellstedt & Whitten, calculate the mean, the variance, and the standard deviation of this variable. 
+2. Explain, in a sentence or two, what each of these statistics really mean.
+
+### Exercise 4: Income
+
+Finally, you have information about the monthly incomes (in US Dollars) of a group of people: `(4987,3691,1634,956,8721,2782)`
+
+1. Using the formulas in Kellstedt & Whitten, calculate the mean, the variance, and the standard deviation of this variable. 
+2. Explain, in a sentence or two, what each of these statistics really mean.
+
+
