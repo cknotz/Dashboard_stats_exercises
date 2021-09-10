@@ -1,7 +1,7 @@
 ---
-title: "Tutorial 1: Installation & First Steps"
-author: "*Kvantitativ forskningsmetode*"
-date: "(BST 290)"
+title: "*R* Tutorial 1: Installation & First Steps"
+author: "Carlo Knotz"
+date: ""
 output: 
   pdf_document:
     number_sections: true
@@ -18,11 +18,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-To successfully complete the *Kvantitativ forskningsmetode* course, you need to show that you can conduct statistical analyses on your own using `R` and `RStudio`. This first tutorial introduces you to the two applications, helps you install them on your computer, and guides you through some "warm-up" exercises to familiarize yourself with the `R` environment.
+<!-- To successfully complete the *Kvantitativ forskningsmetode* course, you need to show that you can conduct statistical analyses on your own using `R` and `RStudio`. -->
+
+This tutorial introduces you to *R* and *RStudio*, two applications that are used by professional data analysts and data scientists around the globe --- the BBC's data visualization team, for instance, uses *R* (https://bbc.github.io/rcookbook). The tutorial guides you through the very first steps in the *R* environment: It helps you install both applications on your computer and guides you through some "warm-up" exercises. 
 
 
 ## About `R`
-`R` is a statistical programming language and currently one of the most widely used applications in quantitative research and data science. Its popularity stems from its power and versatility. `R` can be used for "traditional" quantitative data analysis (e.g., regression analysis), but also much more: Quantitative text analysis, web scraping, interactive data visualization, big data analysis, and machine learning. Last but not least, `R` is open-source and free to use.
+`R` is a statistical programming language and currently one of the most widely used applications in quantitative research and data science. Its popularity stems from its power and versatility. `R` can be used for "traditional" quantitative data analysis (e.g., regression analysis), but also much more: **Quantitative text analysis, web scraping, interactive data visualization, big data analysis, and machine learning**. Last but not least, `R` is open-source and free to use.
 
 **Working with `R` means writing computer code**. You will not be able to run your analyses by clicking your way through menus or dragging-and-dropping things around, as you would do when working with Microsoft Word etc. Obviously, this may come as quite a change for you and may even feel scary, unless you have some prior experience with other programming languages (e.g., Python, LaTeX, HTML, CSS, JavaScript,...). If this is indeed your first time using computer code, there is no reason to worry: You are not the first one, and you are not alone. Many who start using `R` have no prior experience with programming or computer languages. Still, *you will have to take learning `R` seriously and invest time and effort. This cannot be done in a few hours!*
 
@@ -91,7 +93,7 @@ No reason to get nervous though. What you are looking at right now is, in essenc
 
 Give it a try. Click into the *Console* window so that a small vertical blinking line ("cursor") appears behind the `>` symbol. Then type `1 + 1` and hit the Enter-key. 
 
-The result should similar to this:
+The result should look somewhat like this:
 ```{r calc1, eval=T, echo=T, collapse=T}
 1+1
 ```
