@@ -232,8 +232,6 @@ data.frame(chisq = 0:7000 / 100) %>%
         axis.text = element_text(size=14))
   ggsave("chi_diffsig.pdf")
   
-  
-  
 pdf("chi_crit.pdf")
 dist <- rchisq(10000,1)
   dens <- density(dist)
@@ -251,6 +249,95 @@ dist <- rchisq(10000,1)
   abline(v=value,col = "#ff8633",lty=2, lwd=3)
   dev.off()
 
+# Larger table
+##############
   
-  data.frame(dist = dchisq(10000,1),
-             id = seq(1,10000,1))
+ltab <- matrix(c(587,398,116,423,756,178,265,934,512), ncol = 3, byrow = T)
+  
+ltab  
+
+colnames(ltab) <- c("Y_1","Y_2","Y_3")
+rownames(ltab) <- c("X_1","X_2","X_3")
+
+# Frequency table
+ltab <- as.table(ltab)
+
+ltab <- xtable(ltab,
+               caption = "A fictional 3x3 table",
+               align = c("l","c","c","c"),
+               digits = 0)
+
+align(ltab) <- xalign(ltab)
+digits(ltab) <- xdigits(ltab)
+display(ltab) <- xdisplay(ltab)
+
+print(ltab,file="largertab.tex",table.placement = "h",booktabs = T,
+      caption.placement="bottom")
+  
+
+# Exercise solutions, as graphs
+###############################
+
+# Case 1
+nrow  <-  2
+ncol <- 4
+
+df <- (nrow-1)*(ncol-1)
+siglev <-  0.95
+xmax <- 15
+
+ggplot(NULL, aes(c(0,xmax))) + 
+  geom_area(stat = "function", fun = dchisq, fill = "grey30", xlim = c(0, qchisq(siglev, df=df)), args = list(df=df)) +
+  geom_area(stat = "function", fun = dchisq, fill = "#d95f02", xlim = c(qchisq(siglev, df=df), xmax), args = list(df=df)) +
+  geom_vline(xintercept = qchisq(siglev, df=df), color = "#d95f02", linetype = "dashed", size = 1.25) +
+  labs(y = "Density",
+       title = paste0("Critical value = ",round(qchisq(siglev, df=df),digits = 3)," (df=",df,")")) +
+  xlab(~ paste(chi ^ 2, "-value")) +
+  theme_bw() +
+  theme(axis.text = element_text(size=14))
+  ggsave("chi_case1.pdf")
+
+# Case 2
+nrow  <-  4
+ncol <- 6
+
+df <- (nrow-1)*(ncol-1)
+siglev <- 0.99
+xmax <- 40
+
+ggplot(NULL, aes(c(0,xmax))) + 
+  geom_area(stat = "function", fun = dchisq, fill = "grey30", xlim = c(0, qchisq(siglev, df=df)), args = list(df=df)) +
+  geom_area(stat = "function", fun = dchisq, fill = "#d95f02", xlim = c(qchisq(siglev, df=df), xmax), args = list(df=df)) +
+  geom_vline(xintercept = qchisq(siglev, df=df), color = "#d95f02", linetype = "dashed", size = 1.25) +
+  labs(y = "Density",
+       title = paste0("Critical value = ",round(qchisq(siglev, df=df),digits = 3)," (df=",df,")")) +
+  xlab(~ paste(chi ^ 2, "-value")) +
+  theme_bw() +
+  theme(axis.text = element_text(size=14))
+ggsave("chi_case2.pdf")
+
+# Case 3
+nrow  <-  12
+ncol <- 3
+
+df <- (nrow-1)*(ncol-1)
+siglev <- 0.90
+xmax <- 50
+
+ggplot(NULL, aes(c(0,xmax))) + 
+  geom_area(stat = "function", fun = dchisq, fill = "grey30", xlim = c(0, qchisq(siglev, df=df)), args = list(df=df)) +
+  geom_area(stat = "function", fun = dchisq, fill = "#d95f02", xlim = c(qchisq(siglev, df=df), xmax), args = list(df=df)) +
+  geom_vline(xintercept = qchisq(siglev, df=df), color = "#d95f02", linetype = "dashed", size = 1.25) +
+  labs(y = "Density",
+       title = paste0("Critical value = ",round(qchisq(siglev, df=df),digits = 3)," (df=",df,")")) +
+  xlab(~ paste(chi ^ 2, "-value")) +
+  theme_bw() +
+  theme(axis.text = element_text(size=14))
+ggsave("chi_case3.pdf")
+
+
+
+
+
+
+
