@@ -57,6 +57,78 @@ ggplot(NULL, aes(c(-5,5))) +
   theme(axis.text = element_text(size=12))
 ggsave("tdist_95per.pdf")
   
+# Distributions around equal group means
+########################################
+
+set.seed(42)
+mean_1 <- 30
+mean_2 <- 40
+
+# Equal & small sd
+sd_1 <- 2.5
+sd_2 <- 2.5
+
+data.frame(group = c(rep(1,20),rep(2,20)),
+           score = c(rnorm(n=20,mean=mean_1,sd=sd_1),rnorm(n=20,mean=mean_2,sd=sd_2))) %>% 
+  ggplot(aes(x=group,y=score,fill=factor(group))) +
+    geom_point(shape=21,size=6, alpha = .5) +
+    geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
+    geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
+    scale_fill_manual(values = c("#ffae42","#007ba7")) +
+    scale_y_continuous(limits = c(0,100)) +
+    scale_x_continuous(limits = c(.5,2.5),
+                       breaks = c(1,2)) +
+  labs(x = "Group", y = "Score",
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "none")
+  ggsave("grdist_case1.pdf")
   
   
+# Equal & large sd
+sd_1 <- 15
+sd_2 <- 15
+
+data.frame(group = c(rep(1,20),rep(2,20)),
+           score = c(rnorm(n=20,mean=mean_1,sd=sd_1),rnorm(n=20,mean=mean_2,sd=sd_2))) %>% 
+  ggplot(aes(x=group,y=score,fill=factor(group))) +
+  geom_point(shape=21,size=6, alpha = .5) +
+  geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
+  geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
+  scale_fill_manual(values = c("#ffae42","#007ba7")) +
+  scale_y_continuous(limits = c(0,100)) +
+  scale_x_continuous(limits = c(.5,2.5),
+                     breaks = c(1,2)) +
+  labs(x = "Group", y = "Score",
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "none")
+ggsave("grdist_case2.pdf")  
+
+
+# Unequal sd
+sd_1 <- 5
+sd_2 <- 25
+
+data.frame(group = c(rep(1,20),rep(2,20)),
+           score = c(rnorm(n=20,mean=mean_1,sd=sd_1),rnorm(n=20,mean=mean_2,sd=sd_2))) %>% 
+  ggplot(aes(x=group,y=score,fill=factor(group))) +
+  geom_point(shape=21,size=6, alpha = .5) +
+  geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
+  geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
+  scale_fill_manual(values = c("#ffae42","#007ba7")) +
+  scale_y_continuous(limits = c(0,100)) +
+  scale_x_continuous(limits = c(.5,2.5),
+                     breaks = c(1,2)) +
+  labs(x = "Group", y = "Score",
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "none")
+ggsave("grdist_case3.pdf")
 
