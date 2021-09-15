@@ -63,24 +63,27 @@ ggsave("tdist_95per.pdf")
 set.seed(42)
 mean_1 <- 30
 mean_2 <- 40
+N_1 <- 20
+N_2 <- 20
 
 # Equal & small sd
 sd_1 <- 2.5
 sd_2 <- 2.5
 
-data.frame(group = c(rep(1,20),rep(2,20)),
-           score = c(rnorm(n=20,mean=mean_1,sd=sd_1),rnorm(n=20,mean=mean_2,sd=sd_2))) %>% 
+data.frame(group = c(rep(1,N_1),rep(2,N_2)),
+           score = c(rnorm(n=N_1,mean=mean_1,sd=sd_1),rnorm(n=N_2,mean=mean_2,sd=sd_2))) %>% 
   ggplot(aes(x=group,y=score,fill=factor(group))) +
     geom_point(shape=21,size=6, alpha = .5) +
     geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
     geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
     scale_fill_manual(values = c("#ffae42","#007ba7")) +
-    scale_y_continuous(limits = c(0,100)) +
+    scale_y_continuous(limits = c(0,100),
+                     breaks = seq(0,100,10)) +
     scale_x_continuous(limits = c(.5,2.5),
                        breaks = c(1,2)) +
   labs(x = "Group", y = "Score",
-       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,
-                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2)) +
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,"; N = ",N_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2,"; N = ",N_2)) +
   theme_bw() +
   theme(axis.text = element_text(size=12),
         legend.position = "none")
@@ -91,19 +94,20 @@ data.frame(group = c(rep(1,20),rep(2,20)),
 sd_1 <- 15
 sd_2 <- 15
 
-data.frame(group = c(rep(1,20),rep(2,20)),
-           score = c(rnorm(n=20,mean=mean_1,sd=sd_1),rnorm(n=20,mean=mean_2,sd=sd_2))) %>% 
+data.frame(group = c(rep(1,N_1),rep(2,N_2)),
+           score = c(rnorm(n=N_1,mean=mean_1,sd=sd_1),rnorm(n=N_2,mean=mean_2,sd=sd_2))) %>% 
   ggplot(aes(x=group,y=score,fill=factor(group))) +
   geom_point(shape=21,size=6, alpha = .5) +
   geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
   geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
   scale_fill_manual(values = c("#ffae42","#007ba7")) +
-  scale_y_continuous(limits = c(0,100)) +
+  scale_y_continuous(limits = c(0,100),
+                     breaks = seq(0,100,10)) +
   scale_x_continuous(limits = c(.5,2.5),
                      breaks = c(1,2)) +
   labs(x = "Group", y = "Score",
-       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,
-                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2)) +
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,"; N = ",N_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2,"; N = ",N_2)) +
   theme_bw() +
   theme(axis.text = element_text(size=12),
         legend.position = "none")
@@ -114,21 +118,371 @@ ggsave("grdist_case2.pdf")
 sd_1 <- 5
 sd_2 <- 25
 
-data.frame(group = c(rep(1,20),rep(2,20)),
-           score = c(rnorm(n=20,mean=mean_1,sd=sd_1),rnorm(n=20,mean=mean_2,sd=sd_2))) %>% 
+data.frame(group = c(rep(1,N_1),rep(2,N_2)),
+           score = c(rnorm(n=N_1,mean=mean_1,sd=sd_1),rnorm(n=N_2,mean=mean_2,sd=sd_2))) %>% 
   ggplot(aes(x=group,y=score,fill=factor(group))) +
   geom_point(shape=21,size=6, alpha = .5) +
   geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
   geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
   scale_fill_manual(values = c("#ffae42","#007ba7")) +
-  scale_y_continuous(limits = c(0,100)) +
+  scale_y_continuous(limits = c(0,100),
+                     breaks = seq(0,100,10)) +
   scale_x_continuous(limits = c(.5,2.5),
                      breaks = c(1,2)) +
   labs(x = "Group", y = "Score",
-       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,
-                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2)) +
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,"; N = ",N_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2,"; N = ",N_2)) +
   theme_bw() +
   theme(axis.text = element_text(size=12),
         legend.position = "none")
 ggsave("grdist_case3.pdf")
 
+
+# Unequal N
+sd_1 <- 15
+sd_2 <- 15
+N_1 <- 5
+N_2 <- 40
+
+data.frame(group = c(rep(1,N_1),rep(2,N_2)),
+           score = c(rnorm(n=N_1,mean=mean_1,sd=sd_1),rnorm(n=N_2,mean=mean_2,sd=sd_2))) %>% 
+  ggplot(aes(x=group,y=score,fill=factor(group))) +
+  geom_point(shape=21,size=6, alpha = .5) +
+  geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
+  geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
+  scale_fill_manual(values = c("#ffae42","#007ba7")) +
+  scale_y_continuous(limits = c(0,100),
+                     breaks = seq(0,100,10)) +
+  scale_x_continuous(limits = c(.5,2.5),
+                     breaks = c(1,2)) +
+  labs(x = "Group", y = "Score",
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,"; N = ",N_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2,"; N = ",N_2)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "none")
+  ggsave("grdist_case4.pdf")
+  
+  
+# Simulate sampling dist of independent means under ideal conditions
+####################################################################
+  
+N_1 <- 2000
+N_2 <- 2000
+mean_1 <- 60
+mean_2 <- 30
+sd_1 <- 5
+sd_2 <- 5
+nsamples <- 10000
+samsize <- 50
+  
+pop <- data.frame(group = c(rep(1,N_1),rep(2,N_2)),
+           score = c(rnorm(n=N_1,mean=mean_1,sd=sd_1),
+                     rnorm(n=N_2,mean=mean_2,sd=sd_2)))  
+
+pop %>% 
+  ggplot(aes(x=group,y=score,fill=factor(group))) +
+  geom_point(shape=21,size=6, alpha = .5) +
+  geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
+  geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
+  scale_fill_manual(values = c("#ffae42","#007ba7")) +
+  scale_y_continuous(limits = c(0,100),
+                     breaks = seq(0,100,10)) +
+  scale_x_continuous(limits = c(.5,2.5),
+                     breaks = c(1,2)) +
+  labs(x = "Group", y = "Score",
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,"; N = ",N_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2,"; N = ",N_2)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "none")
+  ggsave("meandiff_sim_pop.pdf")
+  
+pop %>% 
+  ggplot(aes(x=group,y=score,fill=factor(group))) +
+  geom_point(shape=21,size=6, alpha = .5) +
+  geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
+  geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
+  scale_fill_manual(values = c("#ffae42","#007ba7")) +
+  scale_y_continuous(limits = c(0,100),
+                     breaks = seq(0,100,10)) +
+  scale_x_continuous(limits = c(.5,2.5),
+                     breaks = c(1,2)) +
+  labs(x = "Group", y = "Score") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "none")
+ggsave("meandiff_sim_pop_wide.pdf",
+       width=10,
+       height=5,
+       units = "cm")  
+  
+# Draw random samples
+diffs <- sapply(seq(1,nsamples,1),
+                function(x){
+                  sample <- dplyr::sample_n(pop,
+                                            size = samsize,
+                                            replace = F)
+                  smean1 <- mean(sample$score[which(sample$group==1)])
+                  smean2 <- mean(sample$score[which(sample$group==2)])
+                  return(smean1-smean2)
+                })
+
+data.frame(diffs = diffs,
+                    snum = seq(1,length(diffs),1)) %>% 
+  ggplot(aes(x=diffs)) +
+    geom_histogram(color="black", bins = 200, alpha = .7) +
+    geom_vline(xintercept = 30, size = 1, linetype = "solid",
+               color = "Orange") +
+    scale_x_continuous(limits = c(0,50),
+                       breaks = seq(0,50,10)) +
+    labs(x = "Measured difference between group means",
+         y = "Number of samples",
+         title = paste0(nsamples," random samples; ",samsize," observations per sample.")) +
+    theme_bw() +
+    theme(axis.text = element_text(size=12))
+  ggsave("meandiff_sim.pdf")
+    
+# Again under H_0 
+N_1 <- 2000
+N_2 <- 2000
+mean_1 <- 50
+mean_2 <- 50
+sd_1 <- 5
+sd_2 <- 5
+nsamples <- 10000
+samsize <- 50
+
+pop <- data.frame(group = c(rep(1,N_1),rep(2,N_2)),
+                  score = c(rnorm(n=N_1,mean=mean_1,sd=sd_1),
+                            rnorm(n=N_2,mean=mean_2,sd=sd_2)))  
+
+pop %>% 
+  ggplot(aes(x=group,y=score,fill=factor(group))) +
+  geom_point(shape=21,size=6, alpha = .5) +
+  geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
+  geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
+  scale_fill_manual(values = c("#ffae42","#007ba7")) +
+  scale_y_continuous(limits = c(0,100),
+                     breaks = seq(0,100,10)) +
+  scale_x_continuous(limits = c(.5,2.5),
+                     breaks = c(1,2)) +
+  labs(x = "Group", y = "Score",
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,"; N = ",N_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2,"; N = ",N_2)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "none")
+ggsave("meandiff_sim_pop_h0.pdf")
+
+# Draw random samples
+diffs <- sapply(seq(1,nsamples,1),
+                function(x){
+                  sample <- dplyr::sample_n(pop,
+                                            size = samsize,
+                                            replace = F)
+                  smean1 <- mean(sample$score[which(sample$group==1)])
+                  smean2 <- mean(sample$score[which(sample$group==2)])
+                  return(smean1-smean2)
+                })
+
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  ggplot(aes(x=diffs)) +
+  geom_histogram(color="black", bins = 200, alpha = .7) +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  scale_x_continuous(limits = c(-20,20),
+                     breaks = seq(-20,20,5)) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples",
+       title = paste0(nsamples," random samples; ",samsize," observations per sample.")) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+ggsave("meandiff_sim_h0.pdf")
+
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  ggplot(aes(x=diffs)) +
+  geom_histogram(color="black", bins = 200, alpha = .7) +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  scale_x_continuous(limits = c(-20,20),
+                     breaks = seq(-20,20,5)) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+  ggsave("meandiff_sim_h0_wide.pdf",
+         width=10,
+         height=5,
+         units = "cm")
+
+
+# Measured, H_0 confirmed
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  mutate(within = ifelse(diffs<=mean(diffs)-1.96*sd(diffs) | diffs>=mean(diffs)+1.96*sd(diffs),
+                         "no","yes")) %>% 
+  ggplot(aes(x=diffs)) +
+  geom_histogram(aes(fill=within),color="black", bins = 200) +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  geom_vline(xintercept = 1.5,size = 1.5, linetype = "dashed",
+             color = "#00AB08") +
+  scale_x_continuous(limits = c(-20,20),
+                     breaks = seq(-20,20,5)) +
+  scale_fill_manual(values = c("#FFAE42","gray30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples",
+       title = "Green dashed line: Measured difference = 1.5") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.title = element_blank(),
+        legend.position = "bottom")
+  ggsave("meandiff_h0_confirm.pdf")
+  
+  
+# Measured, H_0 rejected
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  mutate(within = ifelse(diffs<=mean(diffs)-1.96*sd(diffs) | diffs>=mean(diffs)+1.96*sd(diffs),
+                         "no","yes")) %>% 
+  ggplot(aes(x=diffs)) +
+  geom_histogram(aes(fill=within),color="black", bins = 200) +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  geom_vline(xintercept = 10,size = 1.5, linetype = "dashed",
+             color = "#00AB08") +
+  scale_x_continuous(limits = c(-20,20),
+                     breaks = seq(-20,20,5)) +
+  scale_fill_manual(values = c("#FFAE42","gray30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples",
+       title = "Green dashed line: Measured difference = 10") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.title = element_blank(),
+        legend.position = "bottom")
+ggsave("meandiff_h0_reject.pdf")
+
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  mutate(within = ifelse(diffs<=mean(diffs)-1.96*sd(diffs) | diffs>=mean(diffs)+1.96*sd(diffs),
+                         "no","yes")) %>% 
+  ggplot(aes(x=diffs)) +
+  geom_histogram(aes(fill=within),color="black", bins = 200) +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  geom_vline(xintercept = 10,size = 1.5, linetype = "dashed",
+             color = "#00AB08") +
+  scale_x_continuous(limits = c(-20,20),
+                     breaks = seq(-20,20,5)) +
+  scale_fill_manual(values = c("#FFAE42","gray30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.title = element_blank(),
+        legend.position = "none")
+ggsave("meandiff_H0_rejected_wide.pdf",
+       width = 10,
+       height = 5,
+       units = "cm")
+
+
+# Large variance, smaller difference
+####################################
+N_1 <- 2000
+N_2 <- 2000
+mean_1 <- 45
+mean_2 <- 30
+sd_1 <- 40
+sd_2 <- 40
+nsamples <- 10000
+samsize <- 50
+
+pop <- data.frame(group = c(rep(1,N_1),rep(2,N_2)),
+                  score = c(rnorm(n=N_1,mean=mean_1,sd=sd_1),
+                            rnorm(n=N_2,mean=mean_2,sd=sd_2)))  
+
+
+pop %>% 
+  ggplot(aes(x=group,y=score,fill=factor(group))) +
+  geom_point(shape=21,size=6, alpha = .5) +
+  geom_segment(aes(x=.85,xend=1.15, y=mean_1,yend=mean_1)) +
+  geom_segment(aes(x=1.85,xend=2.15, y=mean_2,yend=mean_2)) +
+  scale_fill_manual(values = c("#ffae42","#007ba7")) +
+  scale_y_continuous(limits = c(0,100),
+                     breaks = seq(0,100,10)) +
+  scale_x_continuous(limits = c(.5,2.5),
+                     breaks = c(1,2)) +
+  labs(x = "Group", y = "Score",
+       title = paste0("Group 1: Mean = ",mean_1,"; St.Dev. = ",sd_1,"; N = ",N_1,
+                      "\nGroup 2: Mean = ",mean_2,"; St.Dev. = ",sd_2,"; N = ",N_2)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "none")
+ggsave("meandiff_sim_pop_largevar.pdf")
+
+# Draw random samples - for H_0! 
+N_1 <- 2000
+N_2 <- 2000
+mean_1 <- 50
+mean_2 <- 50
+sd_1 <- 30
+sd_2 <- 30
+nsamples <- 10000
+samsize <- 50
+
+pop <- data.frame(group = c(rep(1,N_1),rep(2,N_2)),
+                  score = c(rnorm(n=N_1,mean=mean_1,sd=sd_1),
+                            rnorm(n=N_2,mean=mean_2,sd=sd_2)))
+
+diffs <- sapply(seq(1,nsamples,1),
+                function(x){
+                  sample <- dplyr::sample_n(pop,
+                                            size = samsize,
+                                            replace = F)
+                  smean1 <- mean(sample$score[which(sample$group==1)])
+                  smean2 <- mean(sample$score[which(sample$group==2)])
+                  return(smean1-smean2)
+                })
+
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  ggplot(aes(x=diffs)) +
+  geom_histogram(color="black", bins = 200, alpha = .7) +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  geom_vline(xintercept = 15, size = 1, linetype = "dashed",
+             color = "#00AB08") +
+  scale_x_continuous(limits = c(-30,30),
+                     breaks = seq(-30,30,10)) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples",
+       title = paste0(nsamples," random samples; ",samsize," observations per sample.")) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+ggsave("meandiff_sim_largevar.pdf")
+
+
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  ggplot(aes(x=diffs)) +
+  geom_histogram(color="black", bins = 200, alpha = .7) +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  geom_vline(xintercept = 1.51*sd(diffs), size = 1, linetype = "dashed",
+             color = "#00AB08") +
+  annotate("text",x = 7.5, y=25, label = "1.51", color = "#00AB08") +
+  scale_x_continuous(limits = c(-30,30),
+                     breaks = seq(-30,30,10)) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+ggsave("meandiff_sim_example.pdf")
