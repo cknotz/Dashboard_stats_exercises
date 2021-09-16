@@ -315,6 +315,24 @@ sims %>%
   theme(axis.ticks.x = element_blank(),
         axis.text.x = element_blank())
   ggsave("sampdist_small.pdf")
+  
+  
+# With SD (SE) in title
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = mean(pop),
+             color = "gray", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("Sample means") +
+  labs(caption = "The gray line indicates the 'true' mean.",
+       title = paste0("Standard deviation/standard error = ",round(sd(means),digits = 2))) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+  ggsave("sampdist_small_w-se.pdf")
 
 # Large
 means <- sapply(seq(1,10000,1),
@@ -336,14 +354,29 @@ sims %>%
              color = "gray", size = 1.25) +
   ylab("Number of samples") +
   xlab("Sample means") +
+  labs(caption = "The gray line indicates the 'true' mean.",
+       title = paste0("Standard deviation/standard error = ",round(sd(means),digits = 2))) + 
+  scale_x_continuous(limits = c(5,105),
+                     breaks = seq(10,100,10)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+  ggsave("sampdist_large_w-se.pdf")
+  
+# With SE in title  
+sims %>%
+  ggplot(mapping = aes(x=means)) +
+  geom_bar(stat = "count",
+           width = 1) +
+  geom_vline(xintercept = mean(pop),
+             color = "gray", size = 1.25) +
+  ylab("Number of samples") +
+  xlab("Sample means") +
   labs(caption = "The gray line indicates the 'true' mean.") + 
   scale_x_continuous(limits = c(5,105),
                      breaks = seq(10,100,10)) +
   theme_bw() +
   theme(axis.ticks.x = element_blank(),
         axis.text.x = element_blank())
-  ggsave("sampdist_large.pdf")
-  
   
 # With quantiles shaded
 #######################

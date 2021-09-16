@@ -301,6 +301,21 @@ data.frame(diffs = diffs,
   theme(axis.text = element_text(size=12))
 ggsave("meandiff_sim_h0.pdf")
 
+# w/o title
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  ggplot(aes(x=diffs)) +
+  geom_histogram(color="black", bins = 200, alpha = .7) +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  scale_x_continuous(limits = c(-20,20),
+                     breaks = seq(-20,20,5)) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+  ggsave("meandiff_sim_h0_notitle.pdf")
+
 data.frame(diffs = diffs,
            snum = seq(1,length(diffs),1)) %>% 
   ggplot(aes(x=diffs)) +
@@ -318,6 +333,29 @@ data.frame(diffs = diffs,
          height=5,
          units = "cm")
 
+  
+# quantiles indicated
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  mutate(within = ifelse(diffs<=mean(diffs)-1.96*sd(diffs) | diffs>=mean(diffs)+1.96*sd(diffs),
+                         "no","yes")) %>% 
+  ggplot(aes(x=diffs)) +
+  geom_histogram(aes(fill=within), bins = 200) +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  scale_x_continuous(limits = c(-7.5,7.5),
+                     breaks = seq(-7.5,7.5,2.5)) +
+  scale_fill_manual(values = c("red","gray30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.title = element_blank(),
+        legend.position = "bottom")  
+  ggsave("meandiff_quantiles.pdf")
+  
+  
 
 # Measured, H_0 confirmed
 data.frame(diffs = diffs,
@@ -470,19 +508,80 @@ data.frame(diffs = diffs,
 ggsave("meandiff_sim_largevar.pdf")
 
 
+# With quantile value
 data.frame(diffs = diffs,
            snum = seq(1,length(diffs),1)) %>% 
   ggplot(aes(x=diffs)) +
-  geom_histogram(color="black", bins = 200, alpha = .7) +
+  geom_histogram(color="black", bins = 200, fill = "black") +
   geom_vline(xintercept = 0, size = 1, linetype = "solid",
              color = "Orange") +
-  geom_vline(xintercept = 1.51*sd(diffs), size = 1, linetype = "dashed",
+  geom_vline(xintercept = 15, size = 1.5, linetype = "dashed",
              color = "#00AB08") +
-  annotate("text",x = 7.5, y=25, label = "1.51", color = "#00AB08") +
+  annotate("segment", x = 0, xend = 15, y = 20, yend = 20,size=1.5,
+           arrow = arrow(ends='both'), color = "#00AB08") + 
+  annotate("text",x=15/2,y=30,color="#00AB08",size=10,
+           label = paste0(round(15/(sd(diffs)),digits = 2))) +
   scale_x_continuous(limits = c(-30,30),
                      breaks = seq(-30,30,10)) +
   labs(x = "Measured difference between group means",
-       y = "Number of samples") +
+       y = "Number of samples",
+       title = paste0("Our result is Z = ",round(15/(sd(diffs)),digits = 2)," standard deviations from the center.")) +
   theme_bw() +
   theme(axis.text = element_text(size=12))
-ggsave("meandiff_sim_example.pdf")
+  ggsave("meandiff_sim_largevar_quant1.pdf")
+
+# with 95% shaded
+data.frame(diffs = diffs,
+           snum = seq(1,length(diffs),1)) %>% 
+  mutate(within = ifelse(diffs<=mean(diffs)-1.96*sd(diffs) | diffs>=mean(diffs)+1.96*sd(diffs),
+                         "no","yes")) %>% 
+  ggplot(aes(x=diffs,fill=within)) +
+  geom_histogram(bins = 200, color = "black") +
+  geom_vline(xintercept = 0, size = 1, linetype = "solid",
+             color = "Orange") +
+  geom_vline(xintercept = 15, size = 1.5, linetype = "dashed",
+             color = "#00AB08") +
+  scale_fill_manual(values = c("#FFAE42","black"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  annotate("segment", x = 0, xend = 15, y = 22, yend = 22,size=1.5,
+           arrow = arrow(ends='both'), color = "#00AB08") + 
+  annotate("text",x=15/2,y=30,color="#00AB08",size=9,
+           label = paste0(round(15/(sd(diffs)),digits = 2))) +
+  annotate("segment", x = 0, xend = mean(diffs)+1.96*sd(diffs), y = 2, yend = 2,size=1.5,
+           arrow = arrow(ends='both'), color = "#FFAE42") + 
+  annotate("text",x=15/2,y=10,color="#FFAE42",size=9,
+           label = "1.96") +
+  scale_x_continuous(limits = c(-30,30),
+                     breaks = seq(-30,30,10)) +
+  labs(x = "Measured difference between group means",
+       y = "Number of samples",
+       title = paste0("Our result is ",round(15/(sd(diffs)),digits = 2)," standard deviations from the center.")) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "bottom", legend.title = element_blank())
+  ggsave("meandiff_sim_largevar_quant2.pdf")
+
+  
+# Calculate p-value: 
+round(2*(1-pnorm(1.76)),
+      digits = 3)  
+  
+  
+# t-distribution for 17 df
+ggplot(NULL, aes(c(-5,5))) + 
+  geom_area(stat = "function", fun = dt, args = list(df=17), fill = "#d95f02", 
+            xlim = c(-5, qt(.025, df=17))) +
+  geom_area(stat = "function", fun = dt, args = list(df=17), fill = "grey30", 
+            xlim = c(qt(.025, df=17), qt(.975, df=17))) +
+  geom_area(stat = "function", fun = dt, args = list(df=17), fill = "#d95f02", 
+            xlim = c(qt(.975, df=17), 5)) +
+  scale_y_continuous(limits = c(0,.4)) +
+  scale_x_continuous(breaks = seq(-5,5,1)) +
+  labs(y = "Density", x = "",
+       title = paste0("For df = 17, the 2.5 & 97.5 percentiles are ",round(qt(0.025, df=17),digits = 3)," & ",round(qt(0.975, df=17),digits = 3))) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+
+
+
+
