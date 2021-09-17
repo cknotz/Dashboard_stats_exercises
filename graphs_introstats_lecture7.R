@@ -563,24 +563,10 @@ data.frame(diffs = diffs,
 
   
 # Calculate p-value: 
-round(2*(1-pnorm(1.76)),
+round(2*(pnorm(-abs(1.76))),
       digits = 3)  
   
-  
-# t-distribution for 17 df
-ggplot(NULL, aes(c(-5,5))) + 
-  geom_area(stat = "function", fun = dt, args = list(df=17), fill = "#d95f02", 
-            xlim = c(-5, qt(.025, df=17))) +
-  geom_area(stat = "function", fun = dt, args = list(df=17), fill = "grey30", 
-            xlim = c(qt(.025, df=17), qt(.975, df=17))) +
-  geom_area(stat = "function", fun = dt, args = list(df=17), fill = "#d95f02", 
-            xlim = c(qt(.975, df=17), 5)) +
-  scale_y_continuous(limits = c(0,.4)) +
-  scale_x_continuous(breaks = seq(-5,5,1)) +
-  labs(y = "Density", x = "",
-       title = paste0("For df = 17, the 2.5 & 97.5 percentiles are ",round(qt(0.025, df=17),digits = 3)," & ",round(qt(0.975, df=17),digits = 3))) +
-  theme_bw() +
-  theme(axis.text = element_text(size=12))
+
 
 
 

@@ -3,8 +3,40 @@
 ####################################################
 
 library(tidyverse)
+library(essurvey)
 
 setwd("/Users/carloknotz/Documents/Work/Stavanger/Teaching/Statistics/Slides")
+
+# Empty graph for tennis sampling distribution example
+ggplot(NULL,aes(x=c(50,150),y=c(0,400))) +
+    scale_x_continuous(limits = c(50,200),
+                     breaks = seq(50,200,50)) +
+    scale_y_continuous(limits = c(0,400),
+                       breaks = seq(0,400,50)) +
+    #geom_vline(xintercept = 120, linetype="dashed") +
+    labs(x = "Serve speed (km/h)", y = "Number of serves") +
+    theme_bw()
+  ggsave("ex_tennis-serve.pdf",
+         width=15,
+         height = 10,
+         units = "cm")
+    
+# Household time
+ggplot(NULL,aes(x=c(50,150),y=c(0,400))) +
+  scale_x_continuous(limits = c(0,40),
+                     breaks = seq(0,40,10)) +
+  scale_y_continuous(limits = c(0,400),
+                     breaks = seq(0,400,50)) +
+  #geom_vline(xintercept = 120, linetype="dashed") +
+  labs(x = "Results: Average time spent on household work", y = "Number of samples") +
+  theme_bw()
+ggsave("ex_housetime_sampling.pdf",
+       width=15,
+       height = 10,
+       units = "cm")
+
+## Distributions & percentiles
+##############################
 
 # Normal with median
 ggplot(NULL, aes(c(-2,2))) + 
@@ -64,17 +96,46 @@ ggplot(NULL, aes(c(-2,2))) +
 ggsave("dist_95.pdf")
 
 # 5%, two-tailed
+zscore <- .025
+
 ggplot(NULL, aes(c(-2,2))) + 
-  geom_area(stat = "function", fun = dnorm, fill = "#d95f02", xlim = c(-4, qnorm(.025))) +
-  geom_area(stat = "function", fun = dnorm, fill = "grey30", xlim = c(qnorm(.025), qnorm(.975))) +
-  geom_area(stat = "function", fun = dnorm, fill = "#d95f02", xlim = c(qnorm(.975), 4)) +
+  geom_area(stat = "function", fun = dnorm, fill = "#d95f02", xlim = c(-4, qnorm(zscore))) +
+  geom_area(stat = "function", fun = dnorm, fill = "grey30", xlim = c(qnorm(zscore), qnorm(1-zscore))) +
+  geom_area(stat = "function", fun = dnorm, fill = "#d95f02", xlim = c(qnorm(1-zscore), 4)) +
   labs(y = "Density", x = "",
        title = "2.5th & 97.5th percentiles") +
   theme_bw() +
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank())
   ggsave("dist_5twotail.pdf")
+  
+# 90%
+zscore <- 0.05
 
+ggplot(NULL, aes(c(-2,2))) + 
+  geom_area(stat = "function", fun = dnorm, fill = "#d95f02", xlim = c(-4, qnorm(zscore))) +
+  geom_area(stat = "function", fun = dnorm, fill = "grey30", xlim = c(qnorm(zscore), qnorm(1-zscore))) +
+  geom_area(stat = "function", fun = dnorm, fill = "#d95f02", xlim = c(qnorm(1-zscore), 4)) +
+  labs(y = "Density", x = "",
+       title = "5th & 95th percentiles") +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())  
+  ggsave("dist_10twotail.pdf")
+
+# 99%
+zscore <- 0.005
+
+ggplot(NULL, aes(c(-2,2))) + 
+  geom_area(stat = "function", fun = dnorm, fill = "#d95f02", xlim = c(-4, qnorm(zscore))) +
+  geom_area(stat = "function", fun = dnorm, fill = "grey30", xlim = c(qnorm(zscore), qnorm(1-zscore))) +
+  geom_area(stat = "function", fun = dnorm, fill = "#d95f02", xlim = c(qnorm(1-zscore), 4)) +
+  labs(y = "Density", x = "",
+       title = "0.5th & 99.5th percentiles") +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) 
+  ggsave("dist_1twotail.pdf")
 
 # Percentiles, with z-scores
 ############################
@@ -135,6 +196,46 @@ ggplot(NULL, aes(c(-3,3))) +
         plot.title = element_text(face = "bold"))
 ggsave(paste0("zscores_",100*(1-2*zlev),".pdf"))  
   
+
+
+# ESS survey example
+####################
+
+essurvey::set_email("carlo.knotz@gmail.com")
+
+ess <- import_country(country = "Norway",
+                        rounds = 5) %>% 
+  recode_missings() %>% 
+  select(idno,cntry,hwwkhs,gndr)
+
+
+summary(ess$hwwkhs)
+malemean <- mean(ess$hwwkhs[which(ess$gndr==1)], na.rm = T)
+malesd <- sd(ess$hwwkhs[which(ess$gndr==1)], na.rm = T)
+maleobs <- length(ess$hwwkhs[which(ess$gndr==1)])
+
+femalemean <- mean(ess$hwwkhs[which(ess$gndr==2)], na.rm = T)
+
+# Graph
+ess %>% 
+  filter(gndr==1) %>% 
+  filter(hwwkhs<50) %>% 
+  ggplot(aes(x=hwwkhs)) +
+    geom_histogram(color="black",fill = "grey40",
+                   aes(y=..density..)) +
+    geom_vline(xintercept = malemean, linetype="dashed", size= 1.5) +
+    scale_x_continuous(limits = c(0,40),
+                       breaks = seq(0,40,5)) +
+    # annotate("segment", x = malemean-malesd,xend = malemean+malesd,
+    #          y = 0.025, yend = 0.025, arrow = arrow(ends = "both"), size = 1.5) +
+  labs(x = "Time spent on household work per week", y = "Density",
+       caption = paste0("Dashed vertical line indicates mean: ",round(malemean,digits=1)," hours/week")) + 
+  theme_bw()
+  ggsave("ess_menhhtime.pdf",
+         width=15,
+         height = 10,
+         units = "cm")
+
 
 
 
