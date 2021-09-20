@@ -5,15 +5,15 @@
 # Carlo Knotz (carlo.knotz@uis.no)
 
 # Checks if packages installed, and installs if not
-# if(!require(shiny)){
-#     install.packages("shiny")
-# }
-# if(!require(shinyWidgets)){
-#     install.packages("shinyWidgets")
-# }
-# if(!require(tidyverse)){
-#     install.packages("tidyverse")
-# }
+if(!require(shiny)){
+    install.packages("shiny")
+}
+if(!require(shinyWidgets)){
+    install.packages("shinyWidgets")
+}
+if(!require(tidyverse)){
+    install.packages("tidyverse")
+}
 
 # Loads packages
 library(shiny)
@@ -202,11 +202,11 @@ server <- function(input, output, session) {
             ggplot(mapping = aes(x=means,fill=within)) +
             geom_bar(stat = "count",
                      width = 1) +
-            scale_fill_manual(values = c("#1b9e77","gray30"),
+            scale_fill_manual(values = c("orange","gray30"),
                               labels = c(paste0("Outer ",round(200*(1-pnorm(as.numeric(input$ci_level))),digits = 1),"%")
                                          ,paste0("Inner ",100-round(200*(1-pnorm(as.numeric(input$ci_level))),digits = 1),"%"))) +
             geom_vline(xintercept = 34.1,
-                       color = "orange", size = 1.25, linetype = "dashed") +
+                       color = "#1b9e77", size = 1.25, linetype = "dashed") +
             geom_vline(xintercept = mean(sims$means),
                        color = "gray", size = 1.25) +
             scale_x_continuous(limits = c(5,105),
@@ -214,7 +214,7 @@ server <- function(input, output, session) {
             labs(x = "Left-right self-placement",
                  y = "Number of samples",
                  caption = paste0("The gray solid line indicates the TRUE population mean: ",round(mean(sims$means), digits = 2),
-                                  "\n The orange dashed line indicates the MEASURED mean: 34.1")) +
+                                  "\n The green dashed line indicates the MEASURED mean: 34.1")) +
             theme_bw() +
             theme(legend.title = element_blank(),
                   legend.position = "bottom")
