@@ -122,6 +122,20 @@ treat_prob/place_prob
 Xsq <- chisq.test(sputnik, correct = F) 
   Xsq$observed
   Xsq$expected
+  
+# by hand:
+c_1 <- (4840-4882.39)^2/4882.39
+c_2 <- (62-19.61)^2/19.61
+c_3 <- (14948-14904.14)^2/14904.14
+c_4 <- (16-59.86)^2/59.86
+
+round(c_1, digits = 3)
+round(c_2, digits = 3)
+round(c_3, digits = 3)
+round(c_4, digits = 3)
+
+chistat <- c_1 + c_2 + c_3 + c_4
+chistat
 
 # Exact p-value, computed chi-stat
 pchisq(Xsq$statistic,
@@ -154,6 +168,33 @@ data.frame(chisq = 0:7000 / 100) %>%
         axis.text = element_text(size=14))
   ggsave("chidist.pdf")
 
+  
+# df=1, with arrow for p-value
+data.frame(chisq = 0:7000 / 100) %>% 
+  mutate(density = dchisq(x = chisq, df = 1)) %>% 
+  mutate(within = ifelse(chisq>=3.841,"no","yes")) %>% 
+  filter(chisq<=12) %>% 
+  ggplot(aes(x=chisq,y=density)) +
+  geom_area(fill="grey30") +
+  geom_vline(xintercept = 124.266, linetype = "dashed", color = "#222222", size=1.5) +
+  annotate("segment",x=124.266,xend = 154,y=.25,yend = .25,
+           color = "#222222", size = 1.5, arrow = arrow()) +
+  annotate("text", x = 150-124.266/2, y=.3, label="How many are higher?", size = 8, color = "#222222") +
+  scale_x_continuous(limits = c(0,155),
+                     breaks = seq(0,150,25)) +
+  scale_y_continuous(limits = c(0,1)) +
+  ylab("Density") +
+  xlab(~ paste(chi ^ 2, "-value")) +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.text = element_text(size=14))
+  ggsave("chidist_pval.pdf",
+         height = 10,
+         width = 15,
+         units = "cm")
+  
+  
 # df=1:10
 data.frame(chisq = 0:7000 / 100) %>% 
   mutate(df_01 = dchisq(x = chisq, df = 1),
@@ -188,6 +229,9 @@ data.frame(chisq = 0:7000 / 100) %>%
     geom_area() +
     geom_vline(xintercept = 3.841, color = "#ff8633",
                linetype = "dashed", size = 1.5) +
+  annotate("segment",x=0,xend = 3.841,y=.25,yend = .25,
+           color = "#d3d3d3", size = 1.5, arrow = arrow(ends = "both")) +
+  annotate("text", x = 3.841/2, y=.3, label="95%", size = 8, color = "#222222") +
   scale_x_continuous(limits = c(0,12),
                      breaks = seq(0,12,2)) +
   scale_y_continuous(limits = c(0,1)) +
@@ -291,7 +335,7 @@ ggplot(NULL, aes(c(0,xmax))) +
   geom_area(stat = "function", fun = dchisq, fill = "#d95f02", xlim = c(qchisq(siglev, df=df), xmax), args = list(df=df)) +
   geom_vline(xintercept = qchisq(siglev, df=df), color = "#d95f02", linetype = "dashed", size = 1.25) +
   labs(y = "Density",
-       title = paste0("Critical value = ",round(qchisq(siglev, df=df),digits = 3)," (df=",df,")")) +
+       title = paste0("Critical value = ",round(qchisq(siglev, df=df),digits = 3)," for df=",df," and a ",100*siglev,"% level of confidence")) +
   xlab(~ paste(chi ^ 2, "-value")) +
   theme_bw() +
   theme(axis.text = element_text(size=14))
@@ -310,7 +354,7 @@ ggplot(NULL, aes(c(0,xmax))) +
   geom_area(stat = "function", fun = dchisq, fill = "#d95f02", xlim = c(qchisq(siglev, df=df), xmax), args = list(df=df)) +
   geom_vline(xintercept = qchisq(siglev, df=df), color = "#d95f02", linetype = "dashed", size = 1.25) +
   labs(y = "Density",
-       title = paste0("Critical value = ",round(qchisq(siglev, df=df),digits = 3)," (df=",df,")")) +
+       title = paste0("Critical value = ",round(qchisq(siglev, df=df),digits = 3)," for df=",df," and a ",100*siglev,"% level of confidence")) +
   xlab(~ paste(chi ^ 2, "-value")) +
   theme_bw() +
   theme(axis.text = element_text(size=14))
@@ -329,7 +373,7 @@ ggplot(NULL, aes(c(0,xmax))) +
   geom_area(stat = "function", fun = dchisq, fill = "#d95f02", xlim = c(qchisq(siglev, df=df), xmax), args = list(df=df)) +
   geom_vline(xintercept = qchisq(siglev, df=df), color = "#d95f02", linetype = "dashed", size = 1.25) +
   labs(y = "Density",
-       title = paste0("Critical value = ",round(qchisq(siglev, df=df),digits = 3)," (df=",df,")")) +
+       title = paste0("Critical value = ",round(qchisq(siglev, df=df),digits = 3)," for df=",df," and a ",100*siglev,"% level of confidence")) +
   xlab(~ paste(chi ^ 2, "-value")) +
   theme_bw() +
   theme(axis.text = element_text(size=14))

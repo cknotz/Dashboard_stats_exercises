@@ -21,19 +21,6 @@ ggplot(NULL,aes(x=c(50,150),y=c(0,400))) +
          height = 10,
          units = "cm")
     
-# Household time
-ggplot(NULL,aes(x=c(50,150),y=c(0,400))) +
-  scale_x_continuous(limits = c(0,40),
-                     breaks = seq(0,40,10)) +
-  scale_y_continuous(limits = c(0,400),
-                     breaks = seq(0,400,50)) +
-  #geom_vline(xintercept = 120, linetype="dashed") +
-  labs(x = "Results: Average time spent on household work", y = "Number of samples") +
-  theme_bw()
-ggsave("ex_housetime_sampling.pdf",
-       width=15,
-       height = 10,
-       units = "cm")
 
 ## Distributions & percentiles
 ##############################
@@ -196,45 +183,6 @@ ggplot(NULL, aes(c(-3,3))) +
         plot.title = element_text(face = "bold"))
 ggsave(paste0("zscores_",100*(1-2*zlev),".pdf"))  
   
-
-
-# ESS survey example
-####################
-
-essurvey::set_email("carlo.knotz@gmail.com")
-
-ess <- import_country(country = "Norway",
-                        rounds = 5) %>% 
-  recode_missings() %>% 
-  select(idno,cntry,hwwkhs,gndr)
-
-
-summary(ess$hwwkhs)
-malemean <- mean(ess$hwwkhs[which(ess$gndr==1)], na.rm = T)
-malesd <- sd(ess$hwwkhs[which(ess$gndr==1)], na.rm = T)
-maleobs <- length(ess$hwwkhs[which(ess$gndr==1)])
-
-femalemean <- mean(ess$hwwkhs[which(ess$gndr==2)], na.rm = T)
-
-# Graph
-ess %>% 
-  filter(gndr==1) %>% 
-  filter(hwwkhs<50) %>% 
-  ggplot(aes(x=hwwkhs)) +
-    geom_histogram(color="black",fill = "grey40",
-                   aes(y=..density..)) +
-    geom_vline(xintercept = malemean, linetype="dashed", size= 1.5) +
-    scale_x_continuous(limits = c(0,40),
-                       breaks = seq(0,40,5)) +
-    # annotate("segment", x = malemean-malesd,xend = malemean+malesd,
-    #          y = 0.025, yend = 0.025, arrow = arrow(ends = "both"), size = 1.5) +
-  labs(x = "Time spent on household work per week", y = "Density",
-       caption = paste0("Dashed vertical line indicates mean: ",round(malemean,digits=1)," hours/week")) + 
-  theme_bw()
-  ggsave("ess_menhhtime.pdf",
-         width=15,
-         height = 10,
-         units = "cm")
 
 
 
