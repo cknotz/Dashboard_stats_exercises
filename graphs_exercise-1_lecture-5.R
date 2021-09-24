@@ -355,3 +355,34 @@ ggsave("result_task4_3.pdf",
        width=15,
        height = 10,
        units = "cm")
+
+
+# Simulation: Close to 0
+########################
+
+pop <- rchisq(n=90000,df=1)
+
+hist(pop)
+mean(pop)
+
+# This does the 1000 "surveys" & calculates results
+means <- sapply(seq(1,1000,1),
+                function(x){
+                  sample <- sample(pop,
+                                   size = 50,
+                                   replace = F)
+                  return(mean(sample, na.rm = T))
+                })
+
+
+sims <- data.frame(means = means,
+                   draws = seq(1,length(means),1))
+
+# Zoomed in graph
+sims %>% 
+  ggplot(aes(x=means)) +
+  geom_histogram(color = "black") +
+  geom_vline(xintercept = 0, color = "orange") +
+  labs(x = "", y = "") + 
+  theme_bw()
+
