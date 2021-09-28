@@ -567,7 +567,79 @@ round(2*(pnorm(-abs(1.76))),
       digits = 3)  
   
 
+# Different hypotheses for t-test
+#################################
 
+# Two-sided
+ggplot(NULL, aes(c(-10,10))) + 
+  geom_area(stat = "function", fun = dt, args = list(df=3), fill = "#d95f02", 
+            xlim = c(-5, qt(.025, df=3))) +
+  geom_area(stat = "function", fun = dt, args = list(df=3), fill = "grey30", 
+            xlim = c(qt(.025, df=3), qt(.975, df=3))) +
+  geom_area(stat = "function", fun = dt, args = list(df=3), fill = "#d95f02", 
+            xlim = c(qt(.975, df=3), 5)) +
+  geom_vline(color = "#7570b3", size = 1.5,
+             aes(xintercept = 6.5, linetype = "Scenario 1")) +
+  geom_vline(color = "#7570b3", size = 1.5, 
+             aes(xintercept = -6.5, linetype = "Scenario 2")) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = qt(.975, df=3), color = "#d95f02", linetype = "dashed",size=1.5) +
+  geom_vline(xintercept = qt(.025, df=3), color = "#d95f02", linetype = "dashed",size=1.5) +
+  scale_y_continuous(limits = c(0,.4)) +
+  scale_x_continuous(limits = c(-7.5,7.5)) +
+  scale_linetype_manual(guide = guide_legend(reverse = T),
+                        values = c("dotted","solid"),
+                        labels = c("Scenario 2","Scenario 1")) +
+  labs(y = "Density", x = "",
+       title = paste0("Critical values for 95% = [",round(qt(.025, df=3),digits = 3),"; ",round(qt(.975, df=3),digits = 3),"]")) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "bottom",
+        legend.title = element_blank())
+  ggsave("ttest_twosided.pdf")
 
+# Larger
+ggplot(NULL, aes(c(-10,10))) + 
+  # geom_area(stat = "function", fun = dt, args = list(df=3), fill = "#d95f02", 
+  #           xlim = c(-5, qt(.025, df=3))) +
+  geom_area(stat = "function", fun = dt, args = list(df=3), fill = "grey30", 
+            xlim = c(-5, qt(.95, df=3))) +
+  geom_area(stat = "function", fun = dt, args = list(df=3), fill = "#d95f02", 
+            xlim = c(qt(.95, df=3), 5)) +
+  geom_vline(xintercept = 6.5, color = "#7570b3", size = 1.5) +
+  geom_vline(xintercept = qt(.95, df=3), color = "#d95f02", linetype = "dashed",size=1.5) +
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(limits = c(0,.4)) +
+  scale_x_continuous(limits = c(-8,8),
+                     breaks = seq(-8,8,2)) +
+  labs(y = "Density", x = "",
+       title = paste0("Critical value for 95% = ",round(qt(.95, df=3),digits = 3)),
+       caption = "Purple solid line: Possible 'true' difference") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "bottom",
+        legend.title = element_blank())
+ggsave("ttest_larger.pdf")
 
-
+# Smaller
+ggplot(NULL, aes(c(-10,10))) + 
+  geom_area(stat = "function", fun = dt, args = list(df=3), fill = "#d95f02",
+            xlim = c(-5, qt(.05, df=3))) +
+  geom_area(stat = "function", fun = dt, args = list(df=3), fill = "grey30", 
+            xlim = c(qt(.05, df=3),5)) +
+  # geom_area(stat = "function", fun = dt, args = list(df=3), fill = "#d95f02", 
+  #           xlim = c(qt(.95, df=3), 5)) +
+  geom_vline(xintercept = -6.5, color = "#7570b3", size = 1.5) +
+  geom_vline(xintercept = qt(.05, df=3), color = "#d95f02", linetype = "dashed",size=1.5) +
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(limits = c(0,.4)) +
+  scale_x_continuous(limits = c(-8,8),
+                     breaks = seq(-8,8,2)) +
+  labs(y = "Density", x = "",
+       title = paste0("Critical value for 95% = ",round(qt(.05, df=3),digits = 3)),
+       caption = "Purple solid line: Possible 'true' difference") +
+  theme_bw() +
+  theme(axis.text = element_text(size=12),
+        legend.position = "bottom",
+        legend.title = element_blank())
+ggsave("ttest_smaller.pdf")
