@@ -431,7 +431,6 @@ ggsave("meandiff_H0_rejected_wide.pdf",
        height = 5,
        units = "cm")
 
-
 # Large variance, smaller difference
 ####################################
 N_1 <- 2000
@@ -566,6 +565,72 @@ data.frame(diffs = diffs,
 round(2*(pnorm(-abs(1.76))),
       digits = 3)  
   
+# Signal vs. noise illustrations
+################################
+
+# Strong signal, weak noise
+data.frame(vals = rnorm(1000, mean = 0, sd = 1),
+           id = seq(1,1000,1)) %>% 
+  ggplot(aes(x=vals)) +
+    geom_histogram(color="black", binwidth = .2) +
+    geom_vline(xintercept = 10, color = "#FFAE42", size = 1.5,
+               linetype = "dashed") +
+    scale_x_continuous(limits = c(-15,15),
+                       breaks = seq(-15,15,5)) +
+    labs(x = "", y = "") +
+    theme_bw() +
+  theme(axis.text.x = element_text(size = 12),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())
+  ggsave("ttest_strsig-weaknoi.pdf")
+
+# Strong signal, strong noise
+data.frame(vals = rnorm(1000, mean = 0, sd = 5),
+           id = seq(1,1000,1)) %>% 
+  ggplot(aes(x=vals)) +
+  geom_histogram(color="black", binwidth = .2) +
+  geom_vline(xintercept = 10, color = "#FFAE42", size = 1.5,
+             linetype = "dashed") +
+  scale_x_continuous(limits = c(-15,15),
+                     breaks = seq(-15,15,5)) +
+  labs(x = "Mean differences", y = "") +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 12),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())
+  ggsave("ttest_strsig-strnoi.pdf")
+  
+# Weak signal, strong noise
+data.frame(vals = rnorm(1000, mean = 0, sd = 5),
+           id = seq(1,1000,1)) %>% 
+  ggplot(aes(x=vals)) +
+  geom_histogram(color="black", binwidth = .2) +
+  geom_vline(xintercept = 2.5, color = "#FFAE42", size = 1.5,
+             linetype = "dashed") +
+  scale_x_continuous(limits = c(-15,15),
+                     breaks = seq(-15,15,5)) +
+  labs(x = "Mean differences", y = "") +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 12),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())
+ggsave("ttest_weaksig-strnoi.pdf")
+
+# Weak signal, weak noise
+data.frame(vals = rnorm(1000, mean = 0, sd = 1),
+           id = seq(1,1000,1)) %>% 
+  ggplot(aes(x=vals)) +
+  geom_histogram(color="black", binwidth = .2) +
+  geom_vline(xintercept = 2.5, color = "#FFAE42", size = 1.5,
+             linetype = "dashed") +
+  scale_x_continuous(limits = c(-15,15),
+                     breaks = seq(-15,15,5)) +
+  labs(x = "Mean differences", y = "") +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 12),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())
+ggsave("ttest_weaksig-weaknoi.pdf")
 
 # Different hypotheses for t-test
 #################################
@@ -585,6 +650,10 @@ ggplot(NULL, aes(c(-10,10))) +
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = qt(.975, df=3), color = "#d95f02", linetype = "dashed",size=1.5) +
   geom_vline(xintercept = qt(.025, df=3), color = "#d95f02", linetype = "dashed",size=1.5) +
+  annotate("segment", x = qt(0.025, df=3), xend = qt(0.975, df=3), y = dt(qt(0.025, df=3),df=3), yend = dt(-qt(0.025, df=3),df=3),
+           arrow = arrow(ends='both'),
+           size = 1.5, color = "#d3d3d3") +
+  annotate("text", x=0, y=dt(qt(0.025, df=3),df=3)+.015,label = paste0(100*(1-2*0.025),"% of data"), color="#d3d3d3", fontface = "bold") +
   scale_y_continuous(limits = c(0,.4)) +
   scale_x_continuous(limits = c(-7.5,7.5)) +
   scale_linetype_manual(guide = guide_legend(reverse = T),
@@ -609,6 +678,10 @@ ggplot(NULL, aes(c(-10,10))) +
   geom_vline(xintercept = 6.5, color = "#7570b3", size = 1.5) +
   geom_vline(xintercept = qt(.95, df=3), color = "#d95f02", linetype = "dashed",size=1.5) +
   geom_hline(yintercept = 0) +
+  annotate("segment", x = -8, xend = qt(0.95, df=3), y = dt(qt(0.05, df=3),df=3), yend = dt(-qt(0.05, df=3),df=3),
+           arrow = arrow(ends='both'),
+           size = 1.5, color = "#d3d3d3") +
+  annotate("text", x=-2, y=dt(qt(0.05, df=3),df=3)+.015,label = paste0(100*(1-2*0.025),"% of data"), color="#d3d3d3", fontface = "bold") +
   scale_y_continuous(limits = c(0,.4)) +
   scale_x_continuous(limits = c(-8,8),
                      breaks = seq(-8,8,2)) +
@@ -632,6 +705,10 @@ ggplot(NULL, aes(c(-10,10))) +
   geom_vline(xintercept = -6.5, color = "#7570b3", size = 1.5) +
   geom_vline(xintercept = qt(.05, df=3), color = "#d95f02", linetype = "dashed",size=1.5) +
   geom_hline(yintercept = 0) +
+  annotate("segment", x = 8, xend = qt(0.05, df=3), y = dt(qt(0.05, df=3),df=3), yend = dt(-qt(0.05, df=3),df=3),
+           arrow = arrow(ends='both'),
+           size = 1.5, color = "#d3d3d3") +
+  annotate("text", x=2, y=dt(qt(0.05, df=3),df=3)+.015,label = paste0(100*(1-2*0.025),"% of data"), color="#d3d3d3", fontface = "bold") +
   scale_y_continuous(limits = c(0,.4)) +
   scale_x_continuous(limits = c(-8,8),
                      breaks = seq(-8,8,2)) +
@@ -643,3 +720,300 @@ ggplot(NULL, aes(c(-10,10))) +
         legend.position = "bottom",
         legend.title = element_blank())
 ggsave("ttest_smaller.pdf")
+
+
+# t-test critical values exercises
+##################################
+
+# Exercise 1: One-sided, 95%, 6 df
+
+df <- 6
+alpha <- .05
+
+ggplot(NULL, aes(c(-10,10))) + 
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
+            xlim = c(-7.5, qt(alpha, df=df))) +
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30", 
+            xlim = c(qt(alpha, df=df),7.5)) +
+  labs(x = "", y = "Density",
+       title = paste0("One-sided ('smaller than') at ",alpha," significance level & df = ",df)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+  ggsave("ttest_ex1_task.pdf")
+  
+ggplot(NULL, aes(c(-10,10))) + 
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
+            xlim = c(-7.5, qt(alpha, df=df))) +
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30", 
+            xlim = c(qt(alpha, df=df),7.5)) +
+  geom_vline(xintercept = qt(alpha, df=df), color = "#d95f02", linetype = "dashed",
+             size=1.5) +
+  labs(x = "", y = "Density",
+       title = paste0("One-sided ('smaller than') at ",alpha," significance level & df = ",df,": ",round(qt(alpha,df=df), digits = 3))) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+  ggsave("ttest_ex1_solu.pdf")
+  
+  
+# Exercise 2: One-sided, 99%, 12 df
+
+df <- 12
+alpha <- .99
+
+ggplot(NULL, aes(c(-10,10))) + 
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30",
+            xlim = c(-7.5, qt(alpha, df=df))) +
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02", 
+            xlim = c(qt(alpha, df=df),7.5)) +
+  labs(x = "", y = "Density",
+       title = paste0("One-sided ('larger than') at ",alpha," significance level & df = ",df)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+ggsave("ttest_ex2_task.pdf")
+
+ggplot(NULL, aes(c(-10,10))) + 
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30",
+            xlim = c(-7.5, qt(alpha, df=df))) +
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02", 
+            xlim = c(qt(alpha, df=df),7.5)) +
+  geom_vline(xintercept = qt(alpha, df=df), color = "#d95f02", linetype = "dashed",
+             size=1.5) +
+  labs(x = "", y = "Density",
+       title = paste0("One-sided ('larger than') at ",alpha," significance level & df = ",df,": ",round(qt(alpha,df=df), digits = 3))) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+ggsave("ttest_ex2_solu.pdf")  
+
+
+# Exercise 3: Two-sided, 90%, df = 5
+
+df <- 5
+alpha <- .99
+
+ggplot(NULL, aes(c(-10,10))) + 
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
+            xlim = c(-7.5, qt(1-alpha, df=df))) +
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30", 
+            xlim = c(qt(1-alpha, df=df),qt(alpha,df=df))) +
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
+            xlim = c(qt(alpha, df=df),7.5)) +
+  labs(x = "", y = "Density",
+       title = paste0("Two-sided at ",1-alpha," significance level & df = ",df)) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+ggsave("ttest_ex3_task.pdf")
+
+ggplot(NULL, aes(c(-10,10))) + 
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
+            xlim = c(-7.5, qt(1-alpha, df=df))) +
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30", 
+            xlim = c(qt(1-alpha, df=df),qt(alpha,df=df))) +
+  geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
+            xlim = c(qt(alpha, df=df),7.5)) +
+  geom_vline(xintercept = qt(alpha, df=df), color = "#d95f02", linetype = "dashed",
+             size=1.5) +
+  geom_vline(xintercept = qt(1-alpha, df=df), color = "#d95f02", linetype = "dashed",
+             size=1.5) +
+  labs(x = "", y = "Density",
+       title = paste0("Two-sided at ",alpha," significance level & df = ",df,": [",
+                      round(qt(1-alpha,df=df), digits = 3),"; ",round(qt(alpha,df=df), digits = 3),"]")) +
+  theme_bw() +
+  theme(axis.text = element_text(size=12))
+  ggsave("ttest_ex3_solu.pdf")
+
+
+
+
+
+# Covariance & correlation
+##########################
+
+
+# Scatterplots (with simulated data)
+
+library(MASS)
+
+# ! select!
+
+set.seed(17)
+
+# Simulate data
+cordat <- as.data.frame(mvrnorm(n = 25,
+                mu = c(22.6,38.1),
+                Sigma = matrix(c(1,.75,.75,1),nrow = 2),
+                empirical = T))
+# Empty plot
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_rug() +
+  labs(x = "X", y = "Y",
+       title = "Simulated data!") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+ggsave("corplot_empty.pdf")
+
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_rug() +
+  geom_vline(xintercept = mean(cordat$V1), color = "gray55", linetype = "dashed") +
+  geom_hline(yintercept = mean(cordat$V2), color = "gray55", linetype = "dashed") +
+  labs(x = "X", y = "Y",caption = "Thin vertical/horizontal lines indicate variable means.",
+       title = "Simulated data!") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+ggsave("corplot_empty_means.pdf")
+
+# Positive relationship
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+    geom_point(shape = 3, size=2, stroke = 1.5) +
+    geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+    geom_rug() + 
+  labs(x = "X", y = "Y",
+       title = "Simulated data!") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+  ggsave("corplot_pos.pdf")
+  
+  
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_point(shape = 3, size=2, stroke = 1.5) +
+  geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+  geom_vline(xintercept = mean(cordat$V1), color = "gray55", linetype = "dashed") +
+  geom_hline(yintercept = mean(cordat$V2), color = "gray55", linetype = "dashed") +
+  geom_rug() + 
+  labs(x = "X", y = "Y",caption = "Thin vertical/horizontal lines indicate variable means.",
+       title = "Simulated data!") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+ggsave("corplot_pos_means.pdf")  
+
+# Negative relationship
+cordat <- as.data.frame(mvrnorm(n = 25,
+                                mu = c(22.6,38.1),
+                                Sigma = matrix(c(1,-.75,-.75,1),nrow = 2),
+                                empirical = T))
+
+
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_point(shape = 3, size=2, stroke = 1.5) +
+  geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+  geom_rug() +
+  labs(x = "X", y = "Y",
+       title = "Simulated data!") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+ggsave("corplot_neg.pdf")
+
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_point(shape = 3, size=2, stroke = 1.5) +
+  geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+  geom_vline(xintercept = mean(cordat$V1), color = "gray55", linetype = "dashed") +
+  geom_hline(yintercept = mean(cordat$V2), color = "gray55", linetype = "dashed") +
+  geom_rug() + 
+  labs(x = "X", y = "Y",caption = "Thin vertical/horizontal lines indicate variable means.",
+       title = "Simulated data!") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+ggsave("corplot_neg_means.pdf")  
+
+
+# Null relationship
+cordat <- as.data.frame(mvrnorm(n = 25,
+                                mu = c(22.6,38.1),
+                                Sigma = matrix(c(1,0,0,1),nrow = 2),
+                                empirical = T))
+
+
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_point(shape = 3, size=2, stroke = 1.5) +
+  geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+  geom_rug() +
+  labs(x = "X", y = "Y",
+       title = "Simulated data!") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+ggsave("corplot_null.pdf")
+
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_point(shape = 3, size=2, stroke = 1.5) +
+  geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+  geom_vline(xintercept = mean(cordat$V1), color = "gray55", linetype = "dashed") +
+  geom_hline(yintercept = mean(cordat$V2), color = "gray55", linetype = "dashed") +
+  geom_rug() + 
+  labs(x = "X", y = "Y",caption = "Thin vertical/horizontal lines indicate variable means.",
+       title = "Simulated data!") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+ggsave("corplot_null_means.pdf")  
+
+# Correlation
+#############
+
+# Strongly negative
+cordat <- as.data.frame(mvrnorm(n = 25,
+                                mu = c(22.6,38.1),
+                                Sigma = matrix(c(1,-.98,-.98,1),nrow = 2),
+                                empirical = T))
+
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_point(shape = 3, size=2, stroke = 1.5) +
+  geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+  geom_rug() +
+  labs(x = "X", y = "Y",
+       title = "Simulated data; r = -.98") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+  ggsave("cor_strneg.pdf")
+
+# Strongly positive
+cordat <- as.data.frame(mvrnorm(n = 25,
+                                mu = c(22.6,38.1),
+                                Sigma = matrix(c(1,.98,.98,1),nrow = 2),
+                                empirical = T))
+
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_point(shape = 3, size=2, stroke = 1.5) +
+  geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+  geom_rug() +
+  labs(x = "X", y = "Y",
+       title = "Simulated data; r = .98") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+  ggsave("cor_strpos.pdf")
+
+
+# Weak relationship
+cordat <- as.data.frame(mvrnorm(n = 25,
+                                mu = c(22.6,38.1),
+                                Sigma = matrix(c(1,.15,.15,1),nrow = 2),
+                                empirical = T))
+
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_point(shape = 3, size=2, stroke = 1.5) +
+  geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+  geom_rug() +
+  labs(x = "X", y = "Y",
+       title = "Simulated data; r = .15") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+  ggsave("cor_weak.pdf")
