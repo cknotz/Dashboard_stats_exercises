@@ -324,7 +324,7 @@ print(ltab,file="largertab.tex",table.placement = "h",booktabs = T,
 
 # Case 1
 nrow  <-  2
-ncol <- 4
+ncol <- 2
 
 df <- (nrow-1)*(ncol-1)
 siglev <-  0.95
