@@ -792,37 +792,38 @@ alpha <- .99
 
 ggplot(NULL, aes(c(-10,10))) + 
   geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
-            xlim = c(-7.5, qt(1-alpha, df=df))) +
+            xlim = c(-7.5, qt((1-alpha)/2, df=df))) +
   geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30", 
-            xlim = c(qt(1-alpha, df=df),qt(alpha,df=df))) +
+            xlim = c(qt((1-alpha)/2, df=df),qt(1-(1-alpha)/2,df=df))) +
   geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
-            xlim = c(qt(alpha, df=df),7.5)) +
+            xlim = c(qt(1-(1-alpha)/2, df=df),7.5)) +
+  geom_vline(xintercept = qt(1-(1-alpha)/2, df=df), color = "#d95f02", linetype = "dashed",
+             size=1.5) +
+  geom_vline(xintercept = qt((1-alpha)/2, df=df), color = "#d95f02", linetype = "dashed",
+             size=1.5) +
   labs(x = "", y = "Density",
-       title = paste0("Two-sided at ",1-alpha," significance level & df = ",df)) +
+       title = paste0("One-sided ('larger than') at ",alpha," significance level & df = ",df)) +
   theme_bw() +
   theme(axis.text = element_text(size=12))
 ggsave("ttest_ex3_task.pdf")
 
 ggplot(NULL, aes(c(-10,10))) + 
   geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
-            xlim = c(-7.5, qt(1-alpha, df=df))) +
+            xlim = c(-7.5, qt((1-alpha)/2, df=df))) +
   geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30", 
-            xlim = c(qt(1-alpha, df=df),qt(alpha,df=df))) +
+            xlim = c(qt((1-alpha)/2, df=df),qt(1-(1-alpha)/2,df=df))) +
   geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d95f02",
-            xlim = c(qt(alpha, df=df),7.5)) +
-  geom_vline(xintercept = qt(alpha, df=df), color = "#d95f02", linetype = "dashed",
+            xlim = c(qt(1-(1-alpha)/2, df=df),7.5)) +
+  geom_vline(xintercept = qt(1-(1-alpha)/2, df=df), color = "#d95f02", linetype = "dashed",
              size=1.5) +
-  geom_vline(xintercept = qt(1-alpha, df=df), color = "#d95f02", linetype = "dashed",
+  geom_vline(xintercept = qt((1-alpha)/2, df=df), color = "#d95f02", linetype = "dashed",
              size=1.5) +
   labs(x = "", y = "Density",
        title = paste0("Two-sided at ",alpha," significance level & df = ",df,": [",
-                      round(qt(1-alpha,df=df), digits = 3),"; ",round(qt(alpha,df=df), digits = 3),"]")) +
+                      round(qt((1-alpha)/2,df=df), digits = 3),"; ",round(qt(1-(1-alpha)/2,df=df), digits = 3),"]")) +
   theme_bw() +
   theme(axis.text = element_text(size=12))
   ggsave("ttest_ex3_solu.pdf")
-
-
-
 
 
 # Covariance & correlation
@@ -846,7 +847,7 @@ cordat <- as.data.frame(mvrnorm(n = 25,
 cordat %>% 
   ggplot(aes(x=V1,y=V2)) +
   geom_rug() +
-  labs(x = "X", y = "Y",
+  labs(x = "Ideology", y = "Willingness to punish",
        title = "Simulated data!") +
   theme_bw() +
   theme(axis.text = element_blank(),
@@ -858,7 +859,8 @@ cordat %>%
   geom_rug() +
   geom_vline(xintercept = mean(cordat$V1), color = "gray55", linetype = "dashed") +
   geom_hline(yintercept = mean(cordat$V2), color = "gray55", linetype = "dashed") +
-  labs(x = "X", y = "Y",caption = "Thin vertical/horizontal lines indicate variable means.",
+  labs(x = "Ideology", y = "Willingness to punish",
+       caption = "Thin vertical/horizontal lines indicate variable means.",
        title = "Simulated data!") +
   theme_bw() +
   theme(axis.text = element_blank(),
@@ -871,7 +873,7 @@ cordat %>%
     geom_point(shape = 3, size=2, stroke = 1.5) +
     geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
     geom_rug() + 
-  labs(x = "X", y = "Y",
+  labs(x = "Ideology", y = "Willingness to punish",
        title = "Simulated data!") +
   theme_bw() +
   theme(axis.text = element_blank(),
@@ -886,7 +888,8 @@ cordat %>%
   geom_vline(xintercept = mean(cordat$V1), color = "gray55", linetype = "dashed") +
   geom_hline(yintercept = mean(cordat$V2), color = "gray55", linetype = "dashed") +
   geom_rug() + 
-  labs(x = "X", y = "Y",caption = "Thin vertical/horizontal lines indicate variable means.",
+  labs(x = "Ideology", y = "Willingness to punish",
+       caption = "Thin vertical/horizontal lines indicate variable means.",
        title = "Simulated data!") +
   theme_bw() +
   theme(axis.text = element_blank(),
@@ -905,7 +908,7 @@ cordat %>%
   geom_point(shape = 3, size=2, stroke = 1.5) +
   geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
   geom_rug() +
-  labs(x = "X", y = "Y",
+  labs(x = "Ideology", y = "Willingness to punish",
        title = "Simulated data!") +
   theme_bw() +
   theme(axis.text = element_blank(),
@@ -919,7 +922,8 @@ cordat %>%
   geom_vline(xintercept = mean(cordat$V1), color = "gray55", linetype = "dashed") +
   geom_hline(yintercept = mean(cordat$V2), color = "gray55", linetype = "dashed") +
   geom_rug() + 
-  labs(x = "X", y = "Y",caption = "Thin vertical/horizontal lines indicate variable means.",
+  labs(x = "Ideology", y = "Willingness to punish",
+       caption = "Thin vertical/horizontal lines indicate variable means.",
        title = "Simulated data!") +
   theme_bw() +
   theme(axis.text = element_blank(),
@@ -939,7 +943,7 @@ cordat %>%
   geom_point(shape = 3, size=2, stroke = 1.5) +
   geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
   geom_rug() +
-  labs(x = "X", y = "Y",
+  labs(x = "Ideology", y = "Willingness to punish",
        title = "Simulated data!") +
   theme_bw() +
   theme(axis.text = element_blank(),
@@ -953,7 +957,8 @@ cordat %>%
   geom_vline(xintercept = mean(cordat$V1), color = "gray55", linetype = "dashed") +
   geom_hline(yintercept = mean(cordat$V2), color = "gray55", linetype = "dashed") +
   geom_rug() + 
-  labs(x = "X", y = "Y",caption = "Thin vertical/horizontal lines indicate variable means.",
+  labs(x = "Ideology", y = "Willingness to punish",
+       caption = "Thin vertical/horizontal lines indicate variable means.",
        title = "Simulated data!") +
   theme_bw() +
   theme(axis.text = element_blank(),
@@ -1017,3 +1022,17 @@ cordat %>%
   theme(axis.text = element_blank(),
         axis.ticks = element_blank())
   ggsave("cor_weak.pdf")
+  
+  
+# Null hypothesis
+cordat %>% 
+  ggplot(aes(x=V1,y=V2)) +
+  geom_point(shape = 3, size=2, stroke = 1.5) +
+  geom_smooth(method = "lm", linetype = "dashed", color = "red", se = F) +
+  geom_rug() +
+  labs(x = "X", y = "Y",
+       title = "Simulated data; r = .15") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+  

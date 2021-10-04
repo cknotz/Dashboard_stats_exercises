@@ -246,6 +246,41 @@ data.frame(chisq = 0:7000 / 100) %>%
   ggsave("chi_crit.pdf")
   
   
+# Illustration: p-value
+empscore <- 5.87
+
+data.frame(chisq = 0:7000 / 100) %>% 
+  mutate(density = dchisq(x = chisq, df = 1)) %>% 
+  mutate(within = ifelse(chisq>=3.841,"no","yes")) %>% 
+  filter(chisq<=12) %>% 
+  ggplot(aes(x=chisq,y=density,fill=within)) +
+  geom_area() +
+  geom_vline(xintercept = 3.841, color = "#ff8633",
+             linetype = "dashed", size = 1.5) +
+  geom_vline(xintercept = empscore, color = "Cornflowerblue",
+             linetype = "dashed", size = 1.5) +
+  annotate("segment",x=0,xend = 3.841,y=.25,yend = .25,
+           color = "#d3d3d3", size = 1.5, arrow = arrow(ends = "both")) +
+  annotate("text", x = 3.841/2, y=.3, label="95%", size = 8, color = "#222222") +
+  annotate("text", x = empscore+(12-empscore)/2, y=.3, label="?? %", size = 8, color = "Cornflowerblue") +
+  annotate("segment",x=empscore,xend = 12,y=.25,yend = .25,
+           color = "Cornflowerblue", size = 1.5, arrow = arrow(ends = "both")) +
+  scale_x_continuous(limits = c(0,12),
+                     breaks = seq(0,12,2)) +
+  scale_y_continuous(limits = c(0,1)) +
+  scale_fill_manual(values = c("#ff8633","grey30"),
+                    labels = c("Outer 5%","Inner 95%")) +
+  ylab("Density") +
+  xlab(~ paste(chi ^ 2, "-value")) +
+  labs(title = paste0("Assume we have a score of ",empscore,"...")) +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.text = element_text(size=14))
+  ggsave("chisq_pval.pdf")
+  
+  
+  
 # Different thresholds indicated
 data.frame(chisq = 0:7000 / 100) %>% 
   mutate(density = dchisq(x = chisq, df = 1)) %>% 
