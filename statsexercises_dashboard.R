@@ -22,10 +22,11 @@ ui <- dashboardPage(
       menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
-      menuItem("The Central Limit Theorrem", tabName = "clt"),
+      menuItem("The Central Limit Theorem", tabName = "clt"),
+      menuItem("Statistical distributions", tabName = "dist", selected = T),
       menuItem("Chi-squared test",tabName = "chi"),
       menuItem("Difference of means test",tabName = "ttest"),
-      menuItem("Correlation",tabName = "corr", selected = T),
+      menuItem("Correlation",tabName = "corr"),
       menuItem("Linear regression",tabName = "ols")
     )
   ),
@@ -34,6 +35,48 @@ ui <- dashboardPage(
     shinyDashboardThemes(theme="grey_light"),
     tabItems(
       tabItem(tabName = "start"),
+      tabItem(tabName = "dist",
+              fluidRow(
+                column(width = 4,
+                       box(width = NULL, title = "Statistical distributions",
+                           collapsible = F,solidHeader = F,
+                           HTML("<p>When you do statistical tests, you always work with different
+                                statistical distributions: the normal distribution, the <i>t</i>-distribution,
+                                or the &chi;&sup2;-distribution.</p>
+                                
+                                <p>Here you can visualize these three distributions (for different degrees of
+                                freedom, where applicable) as well as the location of critical values for
+                                your chosen level of significance.</p>")),
+                       box(width=NULL,title = "Controls",collapsible = F,solidHeader = F,
+                           pickerInput(inputId = "dist_distselect",
+                                       label = "Select a distribution",
+                                       choices = c("Normal","t","Chi-squared")),
+                           pickerInput(inputId = "dist_signselect",
+                                       label = "Select a level of significance",
+                                       choices = c(0.1,0.05,0.025,0.01,0.005)),
+                           numericInput(inputId = "dist_valselect",
+                                        label = "Enbter your test statistic",
+                                        value = NULL),
+                           pickerInput(inputId = "dist_hypselect",
+                                       label = "Select type of hypothesis",
+                                       choices = c("Two-sided","Larger than","Smaller than")),
+                           numericInput(inputId = "dist_dfselect",
+                                        label = "Enter your degrees of freedom",
+                                        value = NULL,
+                                        min = 0,
+                                        step = 1),
+                           actionBttn(inputId = "dist_show",
+                                      label = "Show graph",
+                                      style = "material-flat",
+                                      color = "success")
+                           )),
+                column(width = 8,
+                       box(width = NULL,title = "", collapsible = F,solidHeader = T,
+                           plotOutput("distplot")
+                           ))
+              )
+              
+              ),
       tabItem(tabName = "corr",
               fluidRow(
                 column(width = 4,
@@ -106,6 +149,90 @@ server <- function(input,output,session){
   
   vals <- reactiveValues()
   
+  
+# Statistical distributions
+  
+observeEvent(input$dist_show,{
+  print(input$dist_signselect)
+  
+  
+  output$distplot <- renderPlot({
+  
+  if(input$dist_distselect=="Normal"){
+    
+    if(input$dist_hypselect=="Two-sided"){
+    ggplot(NULL, aes(c(-4,4))) + 
+      geom_area(stat = "function", fun = dnorm, fill = "#d3d3d3",
+                xlim = c(-4, qnorm(as.numeric(input$dist_signselect)/2)), color = "black") +
+      geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30", 
+                xlim = c(qnorm(as.numeric(input$dist_signselect)/2),qnorm(1-(as.numeric(input$dist_signselect)/2))), color = "black") +
+      geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d3d3d3",
+                xlim = c(qnorm(1-(as.numeric(input$dist_signselect)/2)),4), color = "black") +
+      geom_vline(xintercept = qnorm(as.numeric(input$dist_signselect)/2), color = "#d3d3d3", linetype = "dashed",
+                 size=1.5) +
+      geom_vline(xintercept = qnorm(1-as.numeric(input$dist_signselect)/2), color = "#d3d3d3", linetype = "dashed",
+                 size=1.5) +
+      geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
+                 size=1.5) +
+      # scale_x_continuous(limits = c(-4,4),
+      #                    breaks = seq(-4,4,1)) +
+      labs(x = "", y = "Density",
+           title = paste0("Normal distribution with percentiles for a ",as.numeric(input$dist_signselect)," significance level (two-sided): ",
+                          round(qnorm(as.numeric(input$dist_signselect)/2), digits = 3)," & ",
+                          round(qnorm(1-as.numeric(input$dist_signselect)/2), digits = 3))) +
+      theme_bw() +
+      theme(axis.text = element_text(size=12))
+    }
+    else if(input$dist_hypselect=="Larger than"){
+      ggplot(NULL, aes(c(-4,4))) + 
+        geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30", 
+                  xlim = c(-4,qnorm(1-(as.numeric(input$dist_signselect)))), color = "black") +
+        geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d3d3d3",
+                  xlim = c(qnorm(1-(as.numeric(input$dist_signselect))),4), color = "black") +
+        geom_vline(xintercept = qnorm(1-as.numeric(input$dist_signselect)), color = "#d3d3d3", linetype = "dashed",
+                   size=1.5) +
+        geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
+                   size=1.5) +
+        # scale_x_continuous(limits = c(-4,4),
+        #                    breaks = seq(-4,4,1)) +
+        labs(x = "", y = "Density",
+             title = paste0("Normal distribution with percentile for a ",as.numeric(input$dist_signselect)," significance level (larger than): ",
+                            round(qnorm(1-as.numeric(input$dist_signselect)), digits = 3))) +
+        theme_bw() +
+        theme(axis.text = element_text(size=12))
+    }
+    else if(input$dist_hypselect=="Smaller than"){
+      ggplot(NULL, aes(c(-4,4))) + 
+        geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d3d3d3", 
+                  xlim = c(-4,qnorm((as.numeric(input$dist_signselect)))), color = "black") +
+        geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30",
+                  xlim = c(qnorm((as.numeric(input$dist_signselect))),4), color = "black") +
+        geom_vline(xintercept = qnorm(as.numeric(input$dist_signselect)), color = "#d3d3d3", linetype = "dashed",
+                   size=1.5) +
+        geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
+                   size=1.5) +
+        # scale_x_continuous(limits = c(-4,4),
+        #                    breaks = seq(-4,4,1)) +
+        labs(x = "", y = "Density",
+             title = paste0("Normal distribution with percentile for a ",as.numeric(input$dist_signselect)," significance level (smaller than): ",
+                            round(qnorm(as.numeric(input$dist_signselect)), digits = 3))) +
+        theme_bw() +
+        theme(axis.text = element_text(size=12))
+    }
+      
+  }else if(input$dist_distselect=="t"){
+  
+    
+  }else if(input$dist_distselect=="Chi-squared"){
+    
+  }
+  })
+  
+})  
+  
+  
+  
+# Correlation coefficient
 observeEvent(input$sim, {
   
   rho <- runif(n=1,
@@ -268,6 +395,9 @@ output$cor_detail10 <- renderUI({
 
 })
   
+# 
+
+
 }
 
 shinyApp(ui = ui, server = server)
