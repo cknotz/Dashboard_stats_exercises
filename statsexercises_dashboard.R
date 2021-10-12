@@ -13,6 +13,7 @@ library(MASS)
   library(shinyjs)
   library(ggplot2)
   library(tidyverse)
+  library(xtable)
 
 
 ui <- dashboardPage(
@@ -40,6 +41,7 @@ ui <- dashboardPage(
       ###############
       
       ###############
+      
       tabItem(tabName = "clt",
       ###############      
               fluidRow(
@@ -83,6 +85,7 @@ ui <- dashboardPage(
                            ))
               )),
       ###############
+      
       tabItem(tabName = "ci",
       ###############
               fluidRow(
@@ -152,6 +155,7 @@ ui <- dashboardPage(
               ),
       
       ###############
+      
       tabItem(tabName = "dist",
       ###############
               fluidRow(
@@ -198,6 +202,35 @@ ui <- dashboardPage(
               ),
       ###############
       
+      tabItem(tabName = "ttest",
+      ###############
+              fluidRow(
+                column(width = 4,
+                       box(width = NULL, title = "Difference-of-means t-test",
+                           collapsible = T, collapsed = F, solidHeader = F),
+                       box(width = NULL, collapsible = T, collapsed = F,
+                           solidHeader = F, title = "Controls",
+                           actionBttn(inputId = "tt_sim",
+                                      label = "Give me some Data!",
+                                      style="material-flat",
+                                      color="success",
+                                      size = "xs"),
+                           br(),br(),
+                           disabled(actionBttn(inputId = "tt_solution",
+                                               label = "Show me the solution!",
+                                               style = "material-flat",
+                                               color = "warning",
+                                               size = "xs")))),
+                column(width = 8,
+                       box(width = 0, title = "Data", collapsible = F, solidHeader = F,
+                           tableOutput("tt_table")
+                           ),
+                       box(width = NULL, title = "The result in brief", collapsible = F, 
+                           solidHeader = F,
+                           textOutput("tt_result_brief")))
+              )
+              ),
+      
       tabItem(tabName = "corr",
       ###############        
               fluidRow(
@@ -223,14 +256,14 @@ ui <- dashboardPage(
                          by clicking on the 'plus' symbol on the right. See also the explanation in 
                          Kellstedt & Whitten.</p>")),
                 box(width=NULL,title = "Controls",collapsible = T,solidHeader = F, collapsed = T,
-                    actionBttn(inputId = "sim",
-                               label = "Gimme some numbers!",
+                    actionBttn(inputId = "cor_sim",
+                               label = "Give me some data!",
                                style="material-flat",
                                color="success",
                                size = "xs"),
                     br(),br(),
-                    disabled(actionBttn(inputId = "solution",
-                                        label = "Gimme the solution!",
+                    disabled(actionBttn(inputId = "cor_solution",
+                                        label = "Show me the solution!",
                                         style = "material-flat",
                                         color = "warning",
                                         size = "xs"))
@@ -273,10 +306,8 @@ server <- function(input,output,session){
   vals <- reactiveValues()
 
   
-# Central Limit Theorem  
-  
+# Central Limit Theorem - population data
 set.seed(42)
-# New true population, simulated
 vals$cltpop <- 10*sample(seq(1,10,1),
                  125,
                  replace = T,
@@ -618,10 +649,72 @@ output$distplot <- renderPlot({
   })
   
   
+# t-test - data
+observeEvent(input$tt_sim,{
+  enable("tt_solution")
+set.seed(NULL)
+n_1 <- format(sample(seq(75,150,1),1), nsmall = 0) # "sample" sizes
+n_2 <- format(sample(seq(75,150,1),1), nsmall = 0)
+
+m_1 <- sample(seq(100,500,.1),1)
+m_2 <- sample(c(m_1 + sample(seq(0.3,92.17,.1),1),
+                m_1 - sample(seq(0.3,92.17,.1),1)),
+              1)
+format(m_1, nsmall = 1)
+format(m_2, nsmall = 1)
+
+sd_1 <- sample(seq(75,225,.1),1) # "sample" SDs
+sd_2 <- sd_1 + round(runif(1),digits = 1)
+format(sd_1, nsmall = 1)
+format(sd_2, nsmall = 1)
+
+vals$mat <- matrix(data = c(n_1,n_2,m_1,m_2,sd_1,sd_2),
+              nrow = 2,byrow = F)
+colnames(vals$mat) <- c("Observations","Mean","Standard deviation")
+rownames(vals$mat) <- c("Group 1", "Group 2")
+
+output$tt_table <- renderTable({
+  vals$mat
+},align = c('c'), rownames = T, colnames = T)
+
+})
+
+# t-test - solution, brief
+observeEvent(input$tt_solution,{
+  
+# Calculation
+ttdiff <- as.numeric(vals$mat[1,2]) - as.numeric(vals$mat[2,2]) # difference
+  
+tt_se <- sqrt(((as.numeric(vals$mat[1,1])-1)*as.numeric(vals$mat[1,3])^2 + (as.numeric(vals$mat[2,1])-1)*as.numeric(vals$mat[2,3])^2)/(as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2)) * sqrt((1/as.numeric(vals$mat[1,1])) + (1/as.numeric(vals$mat[2,1])))
+
+tt_tval <- ttdiff/tt_se
+
+tt_df <- as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2
+
+tt_pval <- 2*pt(abs(tt_tval), df = tt_df,
+                lower.tail = F)
+
+tt_pval_sm <- pt(tt_tval, df = tt_df,
+                 lower.tail = T)
+
+tt_pval_la <- pt(tt_tval, df = tt_df,
+                 lower.tail = F)
+  
+  output$tt_result_brief <- renderText({
+    paste0("The difference between the two group means is: ",vals$mat[1,2]," - ",vals$mat[2,2]," = ",round(ttdiff,digits = 1),".\n
+           The standard error of this difference is: ",round(tt_se, digits = 3),".\n
+           The corresponding p-value for a two-tailed test (the group means are different) is: ",format(round(tt_pval, digits=3), nsmall = 3),".\n
+           If we would instead do a one-sided test if the mean in Group 1 is smaller than the mean in Group 2, the
+           p-value would be: ",format(round(tt_pval_sm, digits=3), nsmall = 3),".\n
+           And if we would test the hypothesis that the mean in Group 1 is larger than the mean in Group 2, the 
+           corresponding one-sided p-value would be: ",format(round(tt_pval_la, digits=3), nsmall = 3))
+  })
+})
   
 # Correlation coefficient
-observeEvent(input$sim, {
+observeEvent(input$cor_sim, {
   
+  set.seed(NULL)
   rho <- runif(n=1,
                min=-1,
                max=1)
@@ -636,17 +729,18 @@ observeEvent(input$sim, {
   output$tab <- renderTable(vals$data[,c("X","Y")],
                             digits = 0,
                             rownames = T)
-  enable("solution")
+  enable("cor_solution")
   
   output$plot <- renderPlot({
     ggplot(vals$data,aes(x=X,y=Y)) +
       geom_point() +
-      geom_smooth(method='lm',se=F,color="gray",linetype="dashed")
+      geom_smooth(method='lm',se=F,color="gray",linetype="dashed") +
+      theme_bw()
   })
  
 })
   
-observeEvent(input$solution,{
+observeEvent(input$cor_solution,{
 
 # Simple solution
   res <- isolate(round(cor(vals$data$X,vals$data$Y,
