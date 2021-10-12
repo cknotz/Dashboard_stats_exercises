@@ -25,9 +25,9 @@ ui <- dashboardPage(
       menuItem("Measures of spread",tabName = "spread"),
       menuItem("Statistical distributions", tabName = "dist"),
       menuItem("The Central Limit Theorem", tabName = "clt"),
-      menuItem("Confidence intervals", tabName = "ci", selected = T),
+      menuItem("Confidence intervals", tabName = "ci"),
       menuItem("Chi-squared test",tabName = "chi"),
-      menuItem("Difference of means test",tabName = "ttest"),
+      menuItem("Difference of means test",tabName = "ttest", selected = T),
       menuItem("Correlation",tabName = "corr"),
       menuItem("Linear regression",tabName = "ols")
     )
@@ -45,13 +45,14 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 4,
                        box(width = NULL, title = "The Central Limit Theorem",
-                           collapsible = T,solidHeader = F, collapsed = T,
+                           collapsible = T,solidHeader = F, collapsed = F,
                            HTML("<p>The Central Limit Theorem is a central concept
                            in most areas of applied statistics. Understanding it is
                            therefore obviously important &mdash; but can also be
                                 challenging.</p>
                                 <p>This module allows you to approach the Central
-                                Limit Theorem via a simulation.</p>
+                                Limit Theorem via a simulation (of the ideological
+                                left-right self-placement of a population of 125 individuals).</p>
                                 <p>Specifically, you can simulate drawing samples
                                 from a hypothetical population and calculating a 
                                 sample mean. You can adjust the number of samples
@@ -59,7 +60,7 @@ ui <- dashboardPage(
                                 sample to see how the result (the sampling distribution)
                                 changes.</p>")),
                        box(width = NULL, title = "Controls",
-                           collapsible = T, solidHeader = F, collapsed = F,
+                           collapsible = T, solidHeader = F, collapsed = T,
                            sliderInput("clt_size",
                                        "Size of each sample:",
                                        min = 5,
@@ -94,14 +95,15 @@ ui <- dashboardPage(
                                 it differently, they are very easy to misunderstand
                                 and misinterpret.</p>
                                 <p>This module allows you to visualize a confidence
-                                interval around a fixed sample mean (using simulated data) 
+                                interval around a fixed sample mean (using simulated data
+                                about people's left-right self-placement) 
                                 and how the confidence interval is related to 
                                 sampling distributions.</p>
                                 <p>You can also change the size of the sample that
                                 you work with or the level of confidence to see how
                                 this changes the size of the confidence interval.</p>")),
                        box(width = NULL, title = "Controls", collapsible = T,
-                           collapsed = F,
+                           collapsed = T,
                            sliderInput("ci_size",
                                        "Size of each sample",
                                        min = 5,
@@ -321,7 +323,6 @@ observeEvent(input$button_clt,{
   
   isolate(sims <- data.frame(means = vals$means,
                              draws = seq(1,length(vals$means),1)))
-  rm(means)
   
   if(input$clt_samples>=10000){
     removeModal()
