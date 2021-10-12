@@ -122,50 +122,50 @@ server <- function(input, output, session) {
     })
     
     # Simulation & plot output, CLT tab
-    observeEvent(input$button_clt,{
-        
-        if(input$samples>=10000){
-            showModal(modalDialog("Simulation is running, please wait...", footer=NULL)) 
-        }
-        
-        # Simulate repeat sampling
-        means <- sapply(seq(1,input$samples,1),
-                        function(x){
-                            sample <- sample(pop,
-                                             size = input$size,
-                                             replace = F)
-                            return(mean(sample))
-                        })
-        
-        isolate(sims <- data.frame(means = means,
-                                   draws = seq(1,length(means),1)))
-        rm(means)
-
+observeEvent(input$button_clt,{
+    
     if(input$samples>=10000){
-        removeModal()
+        showModal(modalDialog("Simulation is running, please wait...", footer=NULL)) 
     }
-        
-    output$distPlot <- renderPlot({
-        p <- sims %>%
-          ggplot(mapping = aes(x=means)) +
-            geom_bar(stat = "count",
-                     width = 1) +
-            geom_vline(xintercept = mean(pop),
-                       color = "#d95f02", size = 1.25) +
-            ylab("Number of samples") +
-            xlab("Sample mean(s)") +
-            labs(title = "Our measurement(s) of the population mean: Dark gray line(s)",
-                 caption = paste0("The orange line indicates the 'true' mean: ",round(mean(pop), digits = 2))) +
-            scale_x_continuous(limits = c(5,105),
-                               breaks = seq(10,100,10)) +
-            theme_bw()
-          
-          if(input$samples<30){
-              p <- p + scale_y_continuous(breaks = function(x) seq(ceiling(x[1]), floor(x[2]), by = 1))
-          }
-        p
-    })
-    })
+    
+    # Simulate repeat sampling
+    means <- sapply(seq(1,input$samples,1),
+                    function(x){
+                        sample <- sample(pop,
+                                         size = input$size,
+                                         replace = F)
+                        return(mean(sample))
+                    })
+    
+    isolate(sims <- data.frame(means = means,
+                               draws = seq(1,length(means),1)))
+    rm(means)
+
+if(input$samples>=10000){
+    removeModal()
+}
+    
+output$distPlot <- renderPlot({
+    p <- sims %>%
+      ggplot(mapping = aes(x=means)) +
+        geom_bar(stat = "count",
+                 width = 1) +
+        geom_vline(xintercept = mean(pop),
+                   color = "#d95f02", size = 1.25) +
+        ylab("Number of samples") +
+        xlab("Sample mean(s)") +
+        labs(title = "Our measurement(s) of the population mean: Dark gray line(s)",
+             caption = paste0("The orange line indicates the 'true' mean: ",round(mean(pop), digits = 2))) +
+        scale_x_continuous(limits = c(5,105),
+                           breaks = seq(10,100,10)) +
+        theme_bw()
+      
+      if(input$samples<30){
+          p <- p + scale_y_continuous(breaks = function(x) seq(ceiling(x[1]), floor(x[2]), by = 1))
+      }
+    p
+})
+})
     
     # Simulation & plot output, CI tab
     observeEvent(input$ci_size,{
