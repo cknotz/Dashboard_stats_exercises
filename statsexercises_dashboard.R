@@ -12,6 +12,7 @@ library(MASS)
   library(dashboardthemes)
   library(shinyjs)
   library(ggplot2)
+  library(tidyverse)
 
 
 ui <- dashboardPage(
@@ -22,8 +23,9 @@ ui <- dashboardPage(
       menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
+      menuItem("Statistical distributions", tabName = "dist"),
       menuItem("The Central Limit Theorem", tabName = "clt"),
-      menuItem("Statistical distributions", tabName = "dist", selected = T),
+      menuItem("Confidence intervals", tabName = "ci", selected = T),
       menuItem("Chi-squared test",tabName = "chi"),
       menuItem("Difference of means test",tabName = "ttest"),
       menuItem("Correlation",tabName = "corr"),
@@ -35,11 +37,125 @@ ui <- dashboardPage(
     shinyDashboardThemes(theme="grey_light"),
     tabItems(
       tabItem(tabName = "start"),
+      ###############
+      
+      ###############
+      tabItem(tabName = "clt",
+      ###############      
+              fluidRow(
+                column(width = 4,
+                       box(width = NULL, title = "The Central Limit Theorem",
+                           collapsible = T,solidHeader = F, collapsed = T,
+                           HTML("<p>The Central Limit Theorem is a central concept
+                           in most areas of applied statistics. Understanding it is
+                           therefore obviously important &mdash; but can also be
+                                challenging.</p>
+                                <p>This module allows you to approach the Central
+                                Limit Theorem via a simulation.</p>
+                                <p>Specifically, you can simulate drawing samples
+                                from a hypothetical population and calculating a 
+                                sample mean. You can adjust the number of samples
+                                that are drawn simultaneously and the size of each
+                                sample to see how the result (the sampling distribution)
+                                changes.</p>")),
+                       box(width = NULL, title = "Controls",
+                           collapsible = T, solidHeader = F, collapsed = F,
+                           sliderInput("clt_size",
+                                       "Size of each sample:",
+                                       min = 5,
+                                       max = 125,
+                                       value = 18,
+                                       ticks = F),
+                           sliderTextInput(
+                             inputId = "clt_samples",
+                             label = "Number of samples:", 
+                             choices = c(1, 10, 100, 1000, 10000, 100000),
+                             grid = T),
+                           actionButton("button_clt",
+                                        "Simulate")
+                           )),
+                column(width = 8,
+                       box(width = NULL, title = "", collapsible = F, solidHeader = F,
+                           plotOutput("clt_popplot",
+                                      height = "200px"),
+                           plotOutput("clt_distPlot")
+                           ))
+              )),
+      ###############
+      tabItem(tabName = "ci",
+      ###############
+              fluidRow(
+                column(width = 4,
+                       box(width = NULL,title = "Confidence intervals", collapsible = T, 
+                           collapsed = F, solidHeader = F,
+                           HTML("<p>Confidence intervals are a very important tool in
+                                statistical analysis. Unfortunately, they are also
+                                difficult to really understand &mdash; or, to put
+                                it differently, they are very easy to misunderstand
+                                and misinterpret.</p>
+                                <p>This module allows you to visualize a confidence
+                                interval around a fixed sample mean (using simulated data) 
+                                and how the confidence interval is related to 
+                                sampling distributions.</p>
+                                <p>You can also change the size of the sample that
+                                you work with or the level of confidence to see how
+                                this changes the size of the confidence interval.</p>")),
+                       box(width = NULL, title = "Controls", collapsible = T,
+                           collapsed = F,
+                           sliderInput("ci_size",
+                                       "Size of each sample",
+                                       min = 5,
+                                       max = 125,
+                                       value = 18,
+                                       ticks = F),
+                           sliderInput("ci_diff",
+                                       "Move location of true population mean",
+                                       min = -25,
+                                       max = 25,
+                                       value = 0,
+                                       step = 1,
+                                       ticks = F),
+                           radioButtons("ci_level",
+                                        label = "Level",
+                                        choices = c("90%" = 1.645,
+                                                    "95%" = 1.960,
+                                                    "99%" = 2.576),
+                                        selected = 1.960,
+                                        inline = T),
+                           radioButtons(inputId = "show_ci",
+                                        label = "Show confidence interval",
+                                        choices = c("No" = F,
+                                                    "Yes" = T),
+                                        selected = F,
+                                        inline = T))),
+                column(width = 8,
+                       box(width = NULL, title = "Making sense of what you see", collapsible = T, solidHeader = T,
+                           collapsed = T,
+                           HTML("<p>If you move the slider on the left ('Move location of population mean')
+                                to the left and right,
+                                you can simulate different scenarios for where the 'true'
+                                population mean is located. As you move the slider, 
+                                ask yourself: If the 'true' population mean were located
+                                at this point, would it be likely or unlikely that we
+                                measured our given sample mean (given the chosen confidence level)?</p>
+                                <p>If you then let the graph show the confidence interval, 
+                                you should notice that this interval corresponds to
+                                those possible true population means where you said they are
+                                plausible given our sample mean and the sampling distribution. In other words,
+                                you should notice that the confidence interval includes the 
+                                <strong>range of potential 'true' population values
+                                that are plausible, given the sample size and level of confidence.</strong></p>")),
+                       plotOutput("ci_plot"))
+              )
+              ),
+      
+      ###############
       tabItem(tabName = "dist",
+      ###############
               fluidRow(
                 column(width = 4,
                        box(width = NULL, title = "Statistical distributions",
-                           collapsible = F,solidHeader = F,
+                           collapsible = T,solidHeader = F, collapsed = F,
                            HTML("<p>When you do statistical tests, you always work with different
                                 statistical distributions: the normal distribution, the <i>t</i>-distribution,
                                 or the &chi;&sup2;-distribution.</p>
@@ -51,7 +167,7 @@ ui <- dashboardPage(
                                 <p>If you like, you can also enter a test value (from a t- or chi-squared test)
                                 into the box below. This indicates where your test result is relative to the 
                                 distribution - which should you help you make sense of your test result.</p>")),
-                       box(width=NULL,title = "Controls",collapsible = F,solidHeader = F,
+                       box(width=NULL,title = "Controls",collapsible = T,solidHeader = F, collapsed = T,
                            selectInput(inputId = "dist_distselect",
                                        label = "Select a distribution",
                                        choices = c("Normal","t","Chi-squared")),
@@ -78,11 +194,14 @@ ui <- dashboardPage(
               )
               
               ),
+      ###############
+      
       tabItem(tabName = "corr",
+      ###############        
               fluidRow(
                 column(width = 4,
-                box(width=NULL,title = "Correlation coefficient",collapsible = F,
-                    solidHeader = F,
+                box(width=NULL,title = "Correlation coefficient",collapsible = T,
+                    solidHeader = F, collapsed = F,
                     HTML("<p>The correlation coefficient is a measure of how strongly
                          two metric (or continuous, linear) variables are associated
                          with each other. In this exercise, you calculate some correlation
@@ -101,7 +220,7 @@ ui <- dashboardPage(
                          <p>If you want a more detailed step-by-step explanation, you can expand the box below 
                          by clicking on the 'plus' symbol on the right. See also the explanation in 
                          Kellstedt & Whitten.</p>")),
-                box(width=NULL,title = "Controls",collapsible = F,solidHeader = F,
+                box(width=NULL,title = "Controls",collapsible = T,solidHeader = F, collapsed = T,
                     actionBttn(inputId = "sim",
                                label = "Gimme some numbers!",
                                style="material-flat",
@@ -143,6 +262,7 @@ ui <- dashboardPage(
                 
               )
     )
+      ###############
   )
 ))
 
@@ -151,8 +271,154 @@ server <- function(input,output,session){
   vals <- reactiveValues()
 
   
+# Central Limit Theorem  
+  
+set.seed(42)
+# New true population, simulated
+vals$cltpop <- 10*sample(seq(1,10,1),
+                 125,
+                 replace = T,
+                 prob = c(.02,.20,.29,.13,.10,.09,.09,.04,.03,0.01))  
+
+# "True" population - plot
+output$clt_popplot <- renderPlot({
+  
+  vals$cltdata <- data.frame(pop = vals$cltpop,
+                     idno = seq(1,length(vals$cltpop),1))
+  
+  vals$cltdata %>% 
+    group_by(pop) %>% 
+    summarize(n = n()) %>% 
+    ggplot(aes(x=pop,y=n)) +
+    geom_bar(stat = "identity") +
+    geom_vline(xintercept = mean(vals$cltpop), color = "#d95f02", size = 1.25) +
+    scale_x_continuous(breaks = seq(10,100,10),
+                       limits = c(5,105)) +
+    labs(x = "Left-right self-placement",
+         y = "Frequency",
+         title = "The 'true' population (N=125) with our target: the population mean",
+         caption = paste0("The orange line indicates the 'true' mean: ",round(mean(vals$cltpop), digits = 2))) +
+    theme_bw() +
+    theme(aspect.ratio=1/8)
+})
+
+  
+# Simulation graph, CLT
+observeEvent(input$button_clt,{
+  
+  if(input$clt_samples>=10000){
+    showModal(modalDialog("Simulation is running, please wait...", footer=NULL)) 
+  }
+  
+  # Simulate repeat sampling
+  vals$means <- sapply(seq(1,input$clt_samples,1),
+                  function(x){
+                    sample <- sample(vals$cltpop,
+                                     size = input$clt_size,
+                                     replace = F)
+                    return(mean(sample))
+                  })
+  
+  isolate(sims <- data.frame(means = vals$means,
+                             draws = seq(1,length(vals$means),1)))
+  rm(means)
+  
+  if(input$clt_samples>=10000){
+    removeModal()
+  }
+  
+  output$clt_distPlot <- renderPlot({
+    p <- sims %>%
+      ggplot(mapping = aes(x=means)) +
+      geom_bar(stat = "count",
+               width = 1) +
+      geom_vline(xintercept = mean(vals$cltpop),
+                 color = "#d95f02", size = 1.25) +
+      ylab("Number of samples") +
+      xlab("Sample mean(s)") +
+      labs(title = "Our measurement(s) of the population mean: Dark gray line(s)",
+           caption = paste0("The orange line indicates the 'true' mean: ",round(mean(vals$cltpop), digits = 2))) +
+      scale_x_continuous(limits = c(5,105),
+                         breaks = seq(10,100,10)) +
+      theme_bw()
+    
+    if(input$clt_samples<30){
+      p <- p + scale_y_continuous(breaks = function(x) seq(ceiling(x[1]), floor(x[2]), by = 1))
+    }
+    p
+  })
+})
+
+
+# Simulation graph, CI
+observeEvent(input$ci_size,{
+  
+  # Simulate repeat sampling
+  vals$means <- sapply(seq(1,2500,1),
+                  function(x){
+                    sample <- sample(vals$cltpop,
+                                     size = input$ci_size,
+                                     replace = F)
+                    return(mean(sample))
+                  })
+  
+  sims <- data.frame(means = vals$means-10,
+                     draws = seq(1,length(vals$means),1))
+  
+  sims_sd <- sd(sims$means)
+  sims_mean <- mean(sims$means)
+  
+  
+  
+  isolate(sims)
+  #rm(vals$means)
+  
+  observeEvent(input$ci_level,{
+    sims$within <- ifelse(sims$means<=sims_mean + as.numeric(input$ci_level)*sims_sd & 
+                            sims$means>= sims_mean - as.numeric(input$ci_level)*sims_sd,
+                          "Yes","No")
+    observeEvent(input$ci_diff,{
+      sims$means <- sims$means+input$ci_diff    
+      
+      output$ci_plot <- renderPlot({
+        g <- sims %>% 
+          ggplot(mapping = aes(x=means,fill=within)) +
+          geom_bar(stat = "count",
+                   width = 1) +
+          scale_fill_manual(values = c("orange","gray30"),
+                            labels = c(paste0("Outer ",round(200*(1-pnorm(as.numeric(input$ci_level))),digits = 1),"%")
+                                       ,paste0("Inner ",100-round(200*(1-pnorm(as.numeric(input$ci_level))),digits = 1),"%"))) +
+          geom_vline(xintercept = 34.1,
+                     color = "#1b9e77", size = 1.25, linetype = "dashed") +
+          geom_vline(xintercept = mean(sims$means),
+                     color = "gray", size = 1.25) +
+          scale_x_continuous(limits = c(5,105),
+                             breaks = seq(10,100,10)) +
+          labs(x = "Left-right self-placement",
+               y = "Number of samples",
+               caption = paste0("The gray solid line indicates the POSSIBLE true population mean: ",round(mean(sims$means), digits = 2),
+                                "\n The green dashed line indicates the MEASURED sample mean: 34.1")) +
+          theme_bw() +
+          theme(legend.title = element_blank(),
+                legend.position = "bottom")
+        
+        if(input$show_ci=="TRUE"){
+          g +geom_errorbarh(size = 1, height = 10, aes(y=30,
+                                xmin = 34.1 - as.numeric(input$ci_level)*(sd(sims$means)/sqrt(length(input$ci_size))),
+                                xmax = 34.1 + as.numeric(input$ci_level)*(sd(sims$means)/sqrt(length(input$ci_size)))
+          ))
+        }else{
+          g
+        }
+      })        
+    })
+  })
+})
+
+
+
 # Statistical distributions
-  output$distplot <- renderPlot({
+output$distplot <- renderPlot({
   
   if(input$dist_distselect=="Normal"){
     disable(id = "dist_dfselect")
@@ -515,7 +781,6 @@ output$cor_detail10 <- renderUI({
 
 })
   
-# 
 
 
 }
