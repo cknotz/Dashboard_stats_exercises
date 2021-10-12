@@ -46,20 +46,25 @@ ui <- dashboardPage(
                                 
                                 <p>Here you can visualize these three distributions (for different degrees of
                                 freedom, where applicable) as well as the location of critical values for
-                                your chosen level of significance.</p>")),
+                                your chosen level of significance.</p>
+                                
+                                <p>If you like, you can also enter a test value (from a t- or chi-squared test)
+                                into the box below. This indicates where your test result is relative to the 
+                                distribution - which should you help you make sense of your test result.</p>")),
                        box(width=NULL,title = "Controls",collapsible = F,solidHeader = F,
                            selectInput(inputId = "dist_distselect",
                                        label = "Select a distribution",
                                        choices = c("Normal","t","Chi-squared")),
                            selectInput(inputId = "dist_signselect",
                                        label = "Select a level of significance",
-                                       choices = c(0.1,0.05,0.025,0.01,0.005)),
+                                       choices = c(0.1,0.05,0.025,0.01,0.005),
+                                       selected = 0.05),
                            selectInput(inputId = "dist_hypselect",
                                        label = "Select type of hypothesis",
                                        choices = c("Two-sided","Larger than","Smaller than")),
                            numericInput(inputId = "dist_dfselect",
                                         label = "Enter your degrees of freedom",
-                                        value = 1,
+                                        value = 3,
                                         min = 1,
                                         step = 1),
                            numericInput(inputId = "dist_valselect",
