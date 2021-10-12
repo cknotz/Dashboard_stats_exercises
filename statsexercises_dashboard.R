@@ -164,10 +164,14 @@ observeEvent(input$dist_show,{
     ggplot(NULL, aes(c(-4,4))) + 
       geom_area(stat = "function", fun = dnorm, fill = "#d3d3d3",
                 xlim = c(-4, qnorm(as.numeric(input$dist_signselect)/2)), color = "black") +
-      geom_area(stat = "function", fun = dt, args = list(df=df), fill = "grey30", 
+      geom_area(stat = "function", fun = dnorm, fill = "grey30", 
                 xlim = c(qnorm(as.numeric(input$dist_signselect)/2),qnorm(1-(as.numeric(input$dist_signselect)/2))), color = "black") +
-      geom_area(stat = "function", fun = dt, args = list(df=df), fill = "#d3d3d3",
+      geom_area(stat = "function", fun = dnorm, fill = "#d3d3d3",
                 xlim = c(qnorm(1-(as.numeric(input$dist_signselect)/2)),4), color = "black") +
+      annotate("segment", x = qnorm(as.numeric(input$dist_signselect)/2), xend = qnorm(1-as.numeric(input$dist_signselect)/2), 
+               y = dnorm(qnorm(as.numeric(input$dist_signselect)/2)), yend = dnorm(-qnorm(as.numeric(input$dist_signselect)/2)), arrow = arrow(ends='both'),
+               size = 1.5, color = "#d3d3d3") +
+      annotate("text", x=0, y=dnorm(qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="#d3d3d3", fontface = "bold") +
       geom_vline(xintercept = qnorm(as.numeric(input$dist_signselect)/2), color = "#d3d3d3", linetype = "dashed",
                  size=1.5) +
       geom_vline(xintercept = qnorm(1-as.numeric(input$dist_signselect)/2), color = "#d3d3d3", linetype = "dashed",
@@ -177,11 +181,58 @@ observeEvent(input$dist_show,{
       # scale_x_continuous(limits = c(-4,4),
       #                    breaks = seq(-4,4,1)) +
       labs(x = "", y = "Density",
-           title = paste0("Normal distribution with percentiles for a ",as.numeric(input$dist_signselect)," significance level (two-sided): ",
+           title = paste0("Normal distribution percentiles for a ",as.numeric(input$dist_signselect)," significance level (two-sided): ",
                           round(qnorm(as.numeric(input$dist_signselect)/2), digits = 3)," & ",
                           round(qnorm(1-as.numeric(input$dist_signselect)/2), digits = 3))) +
       theme_bw() +
       theme(axis.text = element_text(size=12))
+    }
+    else if(input$dist_hypselect=="Larger than"){
+      ggplot(NULL, aes(c(-4,4))) + 
+        geom_area(stat = "function", fun = dnorm, fill = "grey30", 
+                  xlim = c(-4,qnorm(1-(as.numeric(input$dist_signselect)))), color = "black") +
+        geom_area(stat = "function", fun = dnorm, fill = "#d3d3d3",
+                  xlim = c(qnorm(1-(as.numeric(input$dist_signselect))),4), color = "black") +
+        geom_vline(xintercept = qnorm(1-as.numeric(input$dist_signselect)), color = "#d3d3d3", linetype = "dashed",
+                   size=1.5) +
+        geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
+                   size=1.5) +
+        annotate("segment", x = -3.99, xend = qnorm(1-as.numeric(input$dist_signselect)), 
+                 y = dnorm(qnorm(as.numeric(input$dist_signselect)))/2, yend = dnorm(-qnorm(as.numeric(input$dist_signselect)))/2, arrow = arrow(ends='both'),
+                 size = 1.5, color = "#d3d3d3") +
+        annotate("text", x=0, hjust = 1, 
+                 y=dnorm(qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="#d3d3d3", fontface = "bold") +
+        labs(x = "", y = "Density",
+             title = paste0("Normal distribution percentile for a ",as.numeric(input$dist_signselect)," significance level (larger than): ",
+                            round(qnorm(1-as.numeric(input$dist_signselect)), digits = 3))) +
+        theme_bw() +
+        theme(axis.text = element_text(size=12))
+    }
+    else if(input$dist_hypselect=="Smaller than"){
+      ggplot(NULL, aes(c(-4,4))) + 
+        geom_area(stat = "function", fun = dnorm, fill = "#d3d3d3", 
+                  xlim = c(-4,qnorm((as.numeric(input$dist_signselect)))), color = "black") +
+        geom_area(stat = "function", fun = dnorm, fill = "grey30",
+                  xlim = c(qnorm((as.numeric(input$dist_signselect))),4), color = "black") +
+        geom_vline(xintercept = qnorm(as.numeric(input$dist_signselect)), color = "#d3d3d3", linetype = "dashed",
+                   size=1.5) +
+        geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
+                   size=1.5) +
+        annotate("segment", x = 3.99, xend = qnorm(as.numeric(input$dist_signselect)),
+                 y = dnorm(qnorm(as.numeric(input$dist_signselect)))/2, yend = dnorm(-qnorm(as.numeric(input$dist_signselect)))/2, arrow = arrow(ends='both'),
+                 size = 1.5, color = "#d3d3d3") +
+        annotate("text", x=0, hjust = 0, 
+                 y=dnorm(qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="#d3d3d3", fontface = "bold") +
+        labs(x = "", y = "Density",
+             title = paste0("Normal distribution percentile for a ",as.numeric(input$dist_signselect)," significance level (smaller than): ",
+                            round(qnorm(as.numeric(input$dist_signselect)), digits = 3))) +
+        theme_bw() +
+        theme(axis.text = element_text(size=12))
+    }
+      
+  }else if(input$dist_distselect=="t"){
+    if(input$dist_hypselect=="Two-sided"){
+      
     }
     else if(input$dist_hypselect=="Larger than"){
       ggplot(NULL, aes(c(-4,4))) + 
@@ -196,7 +247,7 @@ observeEvent(input$dist_show,{
         # scale_x_continuous(limits = c(-4,4),
         #                    breaks = seq(-4,4,1)) +
         labs(x = "", y = "Density",
-             title = paste0("Normal distribution with percentile for a ",as.numeric(input$dist_signselect)," significance level (larger than): ",
+             title = paste0("t-distribution with percentile for a ",as.numeric(input$dist_signselect)," significance level (larger than): ",
                             round(qnorm(1-as.numeric(input$dist_signselect)), digits = 3))) +
         theme_bw() +
         theme(axis.text = element_text(size=12))
@@ -214,14 +265,11 @@ observeEvent(input$dist_show,{
         # scale_x_continuous(limits = c(-4,4),
         #                    breaks = seq(-4,4,1)) +
         labs(x = "", y = "Density",
-             title = paste0("Normal distribution with percentile for a ",as.numeric(input$dist_signselect)," significance level (smaller than): ",
+             title = paste0("t-distribution with percentile for a ",as.numeric(input$dist_signselect)," significance level (smaller than): ",
                             round(qnorm(as.numeric(input$dist_signselect)), digits = 3))) +
         theme_bw() +
         theme(axis.text = element_text(size=12))
     }
-      
-  }else if(input$dist_distselect=="t"){
-  
     
   }else if(input$dist_distselect=="Chi-squared"){
     
@@ -236,7 +284,7 @@ observeEvent(input$dist_show,{
 observeEvent(input$sim, {
   
   rho <- runif(n=1,
-               min=0,
+               min=-1,
                max=1)
   
   vals$data <- as.data.frame(mvrnorm(n=10,
@@ -267,7 +315,7 @@ observeEvent(input$solution,{
   
   t <- round((res*sqrt(10-2))/(sqrt(1-res^2)),digits=3)
   
-  p_val <- round(1 - pt(t, 8, lower.tail = T),digits = 3)
+  p_val <- format(round(2 * pt(abs(t), 8, lower.tail = F),digits = 3), nsmall = 3)
   
   output$result <- renderText(
     paste0("The correlation coefficient is: ",res,", and its t-value is: ",t,".\n
