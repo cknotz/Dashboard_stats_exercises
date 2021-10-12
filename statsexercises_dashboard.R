@@ -48,16 +48,13 @@ ui <- dashboardPage(
                                 freedom, where applicable) as well as the location of critical values for
                                 your chosen level of significance.</p>")),
                        box(width=NULL,title = "Controls",collapsible = F,solidHeader = F,
-                           pickerInput(inputId = "dist_distselect",
+                           selectInput(inputId = "dist_distselect",
                                        label = "Select a distribution",
                                        choices = c("Normal","t","Chi-squared")),
-                           pickerInput(inputId = "dist_signselect",
+                           selectInput(inputId = "dist_signselect",
                                        label = "Select a level of significance",
                                        choices = c(0.1,0.05,0.025,0.01,0.005)),
-                           numericInput(inputId = "dist_valselect",
-                                        label = "Enter your test statistic",
-                                        value = NULL),
-                           pickerInput(inputId = "dist_hypselect",
+                           selectInput(inputId = "dist_hypselect",
                                        label = "Select type of hypothesis",
                                        choices = c("Two-sided","Larger than","Smaller than")),
                            numericInput(inputId = "dist_dfselect",
@@ -65,10 +62,9 @@ ui <- dashboardPage(
                                         value = 1,
                                         min = 1,
                                         step = 1),
-                           actionBttn(inputId = "dist_show",
-                                      label = "Show graph",
-                                      style = "material-flat",
-                                      color = "success")
+                           numericInput(inputId = "dist_valselect",
+                                        label = "Enter your test statistic (optional)",
+                                        value = NULL)
                            )),
                 column(width = 8,
                        box(width = NULL,title = "", collapsible = F,solidHeader = T,
@@ -148,15 +144,14 @@ ui <- dashboardPage(
 server <- function(input,output,session){
   
   vals <- reactiveValues()
-  
+
   
 # Statistical distributions
-  
-observeEvent(input$dist_show,{
   output$distplot <- renderPlot({
   
   if(input$dist_distselect=="Normal"){
-    
+    disable(id = "dist_dfselect")
+    enable(id = "dist_hypselect")
     if(input$dist_hypselect=="Two-sided"){
     ggplot(NULL, aes(c(-4,4))) + 
       geom_area(stat = "function", fun = dnorm, fill = "#d3d3d3",
@@ -176,7 +171,7 @@ observeEvent(input$dist_show,{
       geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
                  size=1.5) +
       labs(x = "", y = "Density",
-           title = paste0("Normal distribution percentiles for a ",as.numeric(input$dist_signselect)," significance level (two-sided): ",
+           title = paste0("Normal distribution critical values for a ",as.numeric(input$dist_signselect)," significance level (two-sided): ",
                           round(qnorm(as.numeric(input$dist_signselect)/2), digits = 3)," & ",
                           round(qnorm(1-as.numeric(input$dist_signselect)/2), digits = 3))) +
       theme_bw() +
@@ -198,7 +193,7 @@ observeEvent(input$dist_show,{
         annotate("text", x=0, hjust = 1, 
                  y=dnorm(qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="#d3d3d3", fontface = "bold") +
         labs(x = "", y = "Density",
-             title = paste0("Normal distribution percentile for a ",as.numeric(input$dist_signselect)," significance level (larger than): ",
+             title = paste0("Normal distribution critical value for a ",as.numeric(input$dist_signselect)," significance level (larger than): ",
                             round(qnorm(1-as.numeric(input$dist_signselect)), digits = 3))) +
         theme_bw() +
         theme(axis.text = element_text(size=12))
@@ -219,13 +214,15 @@ observeEvent(input$dist_show,{
         annotate("text", x=0, hjust = 0, 
                  y=dnorm(qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="#d3d3d3", fontface = "bold") +
         labs(x = "", y = "Density",
-             title = paste0("Normal distribution percentile for a ",as.numeric(input$dist_signselect)," significance level (smaller than): ",
+             title = paste0("Normal distribution critical value for a ",as.numeric(input$dist_signselect)," significance level (smaller than): ",
                             round(qnorm(as.numeric(input$dist_signselect)), digits = 3))) +
         theme_bw() +
         theme(axis.text = element_text(size=12))
     }
       
   }else if(input$dist_distselect=="t"){
+    enable(id = "dist_dfselect")
+    enable(id = "dist_hypselect")
     if(input$dist_hypselect=="Two-sided"){
       
       ggplot(NULL, aes(c(-4,4))) + 
@@ -254,7 +251,7 @@ observeEvent(input$dist_show,{
         geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
                    size=1.5) +
         labs(x = "", y = "Density",
-             title = paste0("t-distribution percentiles for a ",as.numeric(input$dist_signselect)," significance level (two-sided; df = ",as.numeric(input$dist_dfselect),"): ",
+             title = paste0("t-distribution critical values for a ",as.numeric(input$dist_signselect)," significance level (two-sided; df = ",as.numeric(input$dist_dfselect),"): ",
                             round(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), digits = 3)," & ",
                             round(qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), digits = 3))) +
         theme_bw() +
@@ -282,45 +279,71 @@ observeEvent(input$dist_show,{
         geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
                    size=1.5) +
         labs(x = "", y = "Density",
-             title = paste0("t-distribution percentile for a ",as.numeric(input$dist_signselect)," significance level (larger than; df = ",as.numeric(input$dist_dfselect),"): ",
+             title = paste0("t-distribution critical value for a ",as.numeric(input$dist_signselect)," significance level (larger than; df = ",as.numeric(input$dist_dfselect),"): ",
                             round(qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), digits = 3))) +
         theme_bw() +
         theme(axis.text = element_text(size=12))
     }
     else if(input$dist_hypselect=="Smaller than"){
       ggplot(NULL, aes(c(-4,4))) + 
-        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "grey30",
-                  xlim = c((qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))-5,
-                           qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), color = "black") +
         geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#d3d3d3",
-                  xlim = c(qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
+                  xlim = c((qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))-5,
+                           qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), color = "black") +
+        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "grey30",
+                  xlim = c(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
                            qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))+5), color = "black") +
-        annotate("segment", x = (qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))-4.99,
-                 xend = qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
+        annotate("segment", x = (qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))+4.99,
+                 xend = qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
                  y = dt(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)),
                  yend = dt(-qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)), arrow = arrow(ends='both'),
                  size = 1.5, color = "#d3d3d3") +
-        annotate("text", x=0, hjust=1,
+        annotate("text", x=0, hjust=0,
                  y=dt(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect))+0.015,
                  label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="#d3d3d3", fontface = "bold") +
-        geom_vline(xintercept = qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), 
+        geom_vline(xintercept = qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), 
                    color = "#d3d3d3", linetype = "dashed",
                    size=1.5) +
         geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
                    size=1.5) +
         labs(x = "", y = "Density",
-             title = paste0("t-distribution percentile for a ",as.numeric(input$dist_signselect)," significance level (larger than; df = ",as.numeric(input$dist_dfselect),"): ",
-                            round(qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), digits = 3))) +
+             title = paste0("t-distribution critical value for a ",as.numeric(input$dist_signselect)," significance level (smaller than; df = ",as.numeric(input$dist_dfselect),"): ",
+                            round(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), digits = 3))) +
         theme_bw() +
         theme(axis.text = element_text(size=12))
     }
     
   }else if(input$dist_distselect=="Chi-squared"){
+    enable(id = "dist_dfselect")
+    disable(id = "dist_hypselect")
     
+    ggplot(NULL, aes(c(0,5))) + 
+      geom_area(stat = "function", fun = dchisq, fill = "grey30", color = "black",
+                xlim = c(0, qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), 
+                args = list(df=as.numeric(input$dist_dfselect))) +
+      geom_area(stat = "function", fun = dchisq, fill = "#d3d3d3", color = "black",
+                xlim = c(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), 
+                                                                            qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))+.5*qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), 
+                args = list(df=as.numeric(input$dist_dfselect))) +
+      geom_vline(xintercept = qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), color = "#d3d3d3", linetype = "dashed", size = 1.25) +
+      geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
+                 size=1.5) +
+      annotate("segment", arrow = arrow(ends = "both"), size = 1.5, color = "#d3d3d3",
+               x = 0, xend = qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
+               y = dchisq(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect)),
+               yend = dchisq(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect))) +
+      # annotate("text", color = "#d3d3d3", fontface = "bold",
+      #          y = dchisq(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect)) + dchisq(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect)),
+      #          x = qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))/2,
+      #          label = paste0(100*(1-as.numeric(input$dist_signselect))," % of data")) +
+      labs(y = "Density",
+           caption = paste0("Gray arrow indicates ",100*(1-as.numeric(input$dist_signselect))," % of data"),
+           title = paste0("Critical value = ",round(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),digits = 3),
+                          " for df=",as.numeric(input$dist_dfselect)," and a ",as.numeric(input$dist_signselect)," level of confidence")) +
+      xlab(~ paste(chi ^ 2, "-value")) +
+      theme_bw() +
+      theme(axis.text = element_text(size=14))
   }
   })
-  
-})  
   
   
   
