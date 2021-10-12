@@ -55,15 +55,15 @@ ui <- dashboardPage(
                                        label = "Select a level of significance",
                                        choices = c(0.1,0.05,0.025,0.01,0.005)),
                            numericInput(inputId = "dist_valselect",
-                                        label = "Enbter your test statistic",
+                                        label = "Enter your test statistic",
                                         value = NULL),
                            pickerInput(inputId = "dist_hypselect",
                                        label = "Select type of hypothesis",
                                        choices = c("Two-sided","Larger than","Smaller than")),
                            numericInput(inputId = "dist_dfselect",
                                         label = "Enter your degrees of freedom",
-                                        value = NULL,
-                                        min = 0,
+                                        value = 1,
+                                        min = 1,
                                         step = 1),
                            actionBttn(inputId = "dist_show",
                                       label = "Show graph",
@@ -153,9 +153,6 @@ server <- function(input,output,session){
 # Statistical distributions
   
 observeEvent(input$dist_show,{
-  print(input$dist_signselect)
-  
-  
   output$distplot <- renderPlot({
   
   if(input$dist_distselect=="Normal"){
@@ -178,8 +175,6 @@ observeEvent(input$dist_show,{
                  size=1.5) +
       geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
                  size=1.5) +
-      # scale_x_continuous(limits = c(-4,4),
-      #                    breaks = seq(-4,4,1)) +
       labs(x = "", y = "Density",
            title = paste0("Normal distribution percentiles for a ",as.numeric(input$dist_signselect)," significance level (two-sided): ",
                           round(qnorm(as.numeric(input$dist_signselect)/2), digits = 3)," & ",
@@ -233,6 +228,39 @@ observeEvent(input$dist_show,{
   }else if(input$dist_distselect=="t"){
     if(input$dist_hypselect=="Two-sided"){
       
+      print((qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)))-5)
+      
+      ggplot(NULL, aes(c(-4,4))) + 
+        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#d3d3d3",
+                  xlim = c((qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)))-5,
+                           qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect))), color = "black") +
+        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "grey30",
+                  xlim = c(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
+                           qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect))), color = "black") +
+        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#d3d3d3",
+                  xlim = c(qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
+                           qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect))+5), color = "black") +
+        annotate("segment", x = qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), 
+                 xend = qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
+                 y = dt(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)),
+                 yend = dt(-qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)), arrow = arrow(ends='both'),
+                 size = 1.5, color = "#d3d3d3") +
+        annotate("text", x=0, y=dt(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect))+0.015,
+                 label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="#d3d3d3", fontface = "bold") +
+        geom_vline(xintercept = qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
+                   color = "#d3d3d3", linetype = "dashed",
+                   size=1.5) +
+        geom_vline(xintercept = qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), 
+                   color = "#d3d3d3", linetype = "dashed",
+                   size=1.5) +
+        geom_vline(xintercept = as.numeric(input$dist_valselect), color = "red", linetype = "dashed",
+                   size=1.5) +
+        labs(x = "", y = "Density",
+             title = paste0("t-distribution percentiles for a ",as.numeric(input$dist_signselect)," significance level (two-sided): ",
+                            round(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), digits = 3)," & ",
+                            round(qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), digits = 3))) +
+        theme_bw() +
+        theme(axis.text = element_text(size=12))
     }
     else if(input$dist_hypselect=="Larger than"){
       ggplot(NULL, aes(c(-4,4))) + 
