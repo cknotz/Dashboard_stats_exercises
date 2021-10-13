@@ -17,27 +17,74 @@ library(MASS)
 
 
 ui <- dashboardPage(
-  dashboardHeader(title="Statistics Exercises"),
-  dashboardSidebar(collapsed = T,
+  dashboardHeader(title="Practice Statistics!"),
+  dashboardSidebar(collapsed = F,
     sidebarMenu(
-      menuItem("Start",tabName = "start"),
+      menuItem("Start",tabName = "start", selected = T),
       menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
-      menuItem("Measures of spread",tabName = "spread", selected = T),
+      menuItem("Measures of spread",tabName = "spread"),
       menuItem("Statistical distributions", tabName = "dist"),
       menuItem("The Central Limit Theorem", tabName = "clt"),
       menuItem("Confidence intervals", tabName = "ci"),
       menuItem("Chi-squared test",tabName = "chi"),
       menuItem("Difference of means test",tabName = "ttest"),
-      menuItem("Correlation",tabName = "corr")
-      #menuItem("Linear regression",tabName = "ols")
+      menuItem("Correlation",tabName = "corr"),
+      menuItem("Contact & feedback",tabName = "contact")
     )
   ),
   dashboardBody(
     shinyjs::useShinyjs(),
     shinyDashboardThemes(theme="grey_light"),
     tabItems(
-      tabItem(tabName = "start"),
+      tabItem(tabName = "start",
+      ###############
+              fluidRow(
+                column(width = 12,
+                       box(width = NULL, title = "The age of data", collapsible = T, collapsed = T,
+                           solidHeader = T,
+                           HTML("<p><strong>Being able to use statistical methods is an extremely powerful skill.</strong>
+                                This is true whether one wants to work in academic research or the 'real world'. In academic
+                                research, statistical methods are used to evaluate the results of experiments or analyze survey
+                                data. Many important questions such as whether or not there is a 'gender wage gap' or if there
+                                is discrimination and bias against immigrants or minorities are answered with experiments and
+                                statistical analyses.</p>
+                                <p>Outside of the academic 'ivory tower', the internet is creating an ever increasing amount of
+                                data about human behavior than wants to be analyzed and used. Data science and machine learning methods,
+                                which build to a large extent on statistical methods, are now used by many businesses. And NGOs active in the
+                                aid and development sector are increasingly relying on data scientists to do and evalute their
+                                project work (e.g., <a target='_blank' href='https://correlaid.org/'>correlaid.org</a> or
+                                <a target='_blank' href='https://data.org/'>data.org</a>)</p>
+                                <p>Unfortunately, statistics is also something many students (especially in the social sciences)
+                                are not exactly looking forward to engaging with. Some may see statistics as irrelevant to them, but
+                                many others are simply afraid of the math. Many students, again especially in the social sciences,
+                                see themselves as 'not a math' person, an attitude that might stem from bad experiences in school.</p>")),
+                       box(width = NULL, solidHeader = T, collapsible = T, collapsed = T,
+                           title = "Statistics can be learned",
+                                HTML("<p><strong>Statistics can be learned and mastered, even by people who see themselves as 'not a math person'.</strong>
+                                The idea that one is just bad at math is wrong (according to <a target = '_blank'
+                                href='https://www.aft.org/sites/default/files/periodicals/willingham.pdf'>cognitive scientists</a>!).
+                                But what many people might need more of is practice using math and statistical procedures. Statistics
+                                textbooks are typically focused on explaining the basic ideas behind the various statistics and 
+                                methods &mdash; the <i>conceptual</i> side of things. Many of course also include some hands-on exercises,
+                                but often not more than 10 or so per topic. In statistics courses, teachers likewise emphasize conceptual
+                                understanding and often even leave out all equations, in the hope that this helps the 'not a math person'
+                                students.</p>
+                                <p>To be clear, developing a sound conceptual understanding is important &mdash; but it is equally important
+                                to practice actually 'doing the math', at least for the easier methods. An initually rough conceptual understanding
+                                of a particular method gets deeper once one crunches the numbers a few times. Equations that seemed impenetrable
+                                and perhaps even scary become manageable and intuitive. And a deep understanding of some of the easier concepts
+                                is really important if one is to understand the more difficult ones (once more, ask the congnitive scientists!).</p>")),
+                       box(width = NULL, solidHeader = T, collapsible = T, collapsed = T,
+                           title = "The purpose of this application",
+                                HTML("<p><strong>And this is the purpose of this application: To let you practice</strong> beginner-level statistical
+                                methods by hand. It will give you brief instructions and then keeping spitting out new numbers for
+                                you to crunch until you feel that you really understand a given technique. In addition, it features a module
+                                to simulate the logic behind the Central Limit Theorem and confidence intervals. Finally, you can visualize 
+                                central statistical distributions, which can help you to understand how to interpret the results of statistical
+                                tests.</p>")
+              ))
+              )),
       ###############
       
       ###############
@@ -57,8 +104,9 @@ ui <- dashboardPage(
                                 <p>These statistics are used in many more advanced procedures,
                                 so a thorough understanding of them is essential. Fortunately,
                                 they are also easy to understand.</p>
-                                <p>This module allows you to calculate the mean and median
-                                of random sets of numbers. (Why not also the mode? Because it is not really difficult:
+                                <p>This module allows you to generate some numbers to practice
+                                calculating the the mean and median. (Why not also the mode? 
+                                Because it is not really difficult:
                                 The mode is simply the most frequent value observed in a set of data.)")),
                        box(width = NULL, title = "Controls", collapsible = T, collapsed = F,
                            solidHeader = F,
@@ -75,10 +123,10 @@ ui <- dashboardPage(
                                                size = "xs")))),
                 column(width = 8,
                        box(width = NULL, title = "Data", collapsible = F, solidHeader = F,
-                           HTML("<p>If you click on the green button on the left, you 
-                           will get a set of numbers. Can you calculate the mean and 
-                                median of this set of numbers?</p>"),
-                           br(),
+                           # HTML("<p>If you click on the green button on the left, you 
+                           # will get a set of numbers. Can you calculate the mean and 
+                           #      median of this set of numbers?</p>"),
+                           # br(),
                            textOutput("centvals")),
                        box(width = NULL, title = "Solution", collapsible = F, solidHeader = F,
                            uiOutput("cent_sol")),
@@ -95,7 +143,7 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 4,
                        box(width = NULL, title = "Measures of spread",
-                           collapsible = T, collapsed = T, solidHeader = F,
+                           collapsible = T, collapsed = F, solidHeader = F,
                            HTML("<p>Measures of spread are statistics that we use
                                 to see how spread out or 'dispersed' our data are.</p>
                                 <p>The two most important ones of these are the <strong>variance</strong>
@@ -107,10 +155,10 @@ ui <- dashboardPage(
                                 of what the variance and standard deviation are and how they are
                                 calculated.</p>
                                 <p>This module allows you to practice this. As in the other modules,
-                                you create a set of numbers with the green button and can call up the 
-                                correct result with the orange button. A detailed solution is also 
+                                you can create a set of numbers, calculate the variance and standard deviation,
+                                and then let the computer show you the correct result. A detailed solution is also 
                                 available if you want.</p>")),
-                       box(width = NULL, title = "Controls", collapsible = T, collapsed = F,
+                       box(width = NULL, title = "Controls", collapsible = T, collapsed = T,
                            solidHeader = F,
                            actionBttn(inputId = "spread_sim",
                                       label = "Give me some data!",
@@ -125,16 +173,16 @@ ui <- dashboardPage(
                                                size = "xs")))),
                 column(width = 8,
                        box(width = NULL, title = "Data", collapsible = F, solidHeader = F,
-                           HTML("<p>If you click on the green button on the left, you 
-                           will get a set of numbers. Can you calculate the variance and 
-                                standard deviation of this set of numbers?</p>"),
-                           br(),
+                           # HTML("<p>If you click on the green button on the left, you 
+                           # will get a set of numbers. Can you calculate the variance and 
+                           #      standard deviation of this set of numbers?</p>"),
+                           # br(),
                            textOutput("spreadvals")),
                        box(width = NULL, title = "Solution", collapsible = F,
                            solidHeader = F,
                            uiOutput("spread_sol")),
                        box(width = NULL, title = "Detailed solution", collapsible = T,
-                           collapsed = F, solidHeader = F,
+                           collapsed = T, solidHeader = F,
                            uiOutput("spread_sol_det1"),
                            tableOutput("spread_sol_det2"),
                            uiOutput("spread_sol_det3")))
@@ -439,7 +487,7 @@ cent <- isolate(vals$cent)
   
 output$cent_sol_det <- renderUI({
   HTML(paste0("<p>Calculating the mean ('average') should be easy: You calculate the sum
-              of all the values in X and then divide by the overall number of values (9):</p>",
+              of all the values in X and then divide the result by the overall number of values (9):</p>",
               paste0(cent, collapse = " + ")," = ",sum(cent),
               br(),br(),
               sum(cent),"/9 = ",round(sum(cent)/9, digits = 1),br(),br(),
@@ -509,7 +557,8 @@ output$spread_sol_det1 <- renderUI({
 
 output$spread_sol_det2 <- renderTable({
   spreadmat
-}, rownames = T, include.colnames = F, width = "100%",hover = T,
+}, rownames = T, include.colnames = F, 
+width = "100%",hover = T,digits = 1,
 add.to.row = list(pos = list(0),
                   command = " <tr> <th> </th><th>X</th><th>X&#772;</th><th>(X<sub>i</sub> - X&#772;)</th><th>(X<sub>i</sub> - X&#772;)<sup>2</sup></th> </tr>"))
 
