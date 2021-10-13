@@ -22,15 +22,15 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Start",tabName = "start"),
       menuItem("Mathematical notation", tabName = "math"),
-      menuItem("Measures of central tendency",tabName = "cent"),
+      menuItem("Measures of central tendency",tabName = "cent", selected = T),
       menuItem("Measures of spread",tabName = "spread"),
       menuItem("Statistical distributions", tabName = "dist"),
       menuItem("The Central Limit Theorem", tabName = "clt"),
       menuItem("Confidence intervals", tabName = "ci"),
       menuItem("Chi-squared test",tabName = "chi"),
-      menuItem("Difference of means test",tabName = "ttest", selected = T),
-      menuItem("Correlation",tabName = "corr"),
-      menuItem("Linear regression",tabName = "ols")
+      menuItem("Difference of means test",tabName = "ttest"),
+      menuItem("Correlation",tabName = "corr")
+      #menuItem("Linear regression",tabName = "ols")
     )
   ),
   dashboardBody(
@@ -41,6 +41,54 @@ ui <- dashboardPage(
       ###############
       
       ###############
+      
+      tabItem(tabName = "cent",
+      ##############
+              fluidRow(
+                column(width = 4,
+                       box(width = NULL, title = "Measures of central tendency",
+                           collapsible = T, collapsed = F, solidHeader = F,
+                           HTML("<p>Measures of central tendency are statistics used 
+                                to describe where most of the values of a variable 
+                                are located.</p>
+                                <p>The <strong>mean</strong> or 'average' is probably the
+                                most familiar, but there are also the <strong>median</strong>
+                                and the <strong>mode</strong>.</p>
+                                <p>These statistics are used in many more advanced procedures,
+                                so a thorough understanding of them is essential. Fortunately,
+                                they are also easy to understand.</p>
+                                <p>This module allows you to calculate the mean and median
+                                of random sets of numbers. (Why not also the mode? Because it is not really difficult:
+                                The mode is simply the most frequent value observed in a set of data.)")),
+                       box(width = NULL, title = "Controls", collapsible = T, collapsed = F,
+                           solidHeader = F,
+                           actionBttn(inputId = "cent_sim",
+                                      label = "Give me some data!",
+                                      style="material-flat",
+                                      color="success",
+                                      size = "xs"),
+                           br(),br(),
+                           disabled(actionBttn(inputId = "cent_solution",
+                                               label = "Show me the solution!",
+                                               style = "material-flat",
+                                               color = "warning",
+                                               size = "xs")))),
+                column(width = 8,
+                       box(width = NULL, title = "Data", collapsible = F, solidHeader = F,
+                           HTML("<p>If you click on the green button on the left, you 
+                           will get a set of numbers. Can you identify the mean and 
+                                median of this set of numbers?</p>"),
+                           br(),
+                           textOutput("centvals")),
+                       box(width = NULL, title = "Solution", collapsible = F, solidHeader = F,
+                           uiOutput("cent_sol")),
+                       box(width = NULL, title = "Detailed solution", collapsible = T, solidHeader = F,
+                           collapsed = T,
+                           uiOutput("cent_sol_det")))
+              )
+      
+              ),
+      ##############
       
       tabItem(tabName = "clt",
       ###############      
@@ -54,7 +102,7 @@ ui <- dashboardPage(
                                 challenging.</p>
                                 <p>This module allows you to approach the Central
                                 Limit Theorem via a simulation (of the ideological
-                                left-right self-placement of a population of 125 individuals).</p>
+                                left-right self-placement of a fictional population of 125 individuals).</p>
                                 <p>Specifically, you can simulate drawing samples
                                 from a hypothetical population and calculating a 
                                 sample mean. You can adjust the number of samples
@@ -207,7 +255,18 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 4,
                        box(width = NULL, title = "Difference-of-means t-test",
-                           collapsible = T, collapsed = F, solidHeader = F),
+                           collapsible = T, collapsed = F, solidHeader = F,
+                           HTML("<p>We use the difference-of-means test when we want to
+                                see if two groups are significantly different in some 
+                                numeric attribute &mdash; for example, if men and women differ
+                                significantly in how much they earn (the notorious 'gender wage gap').</p>
+                                <p>When we do a difference-of-means test, we can test different hypotheses: 
+                                a) the two group means are <strong>different</strong>; b) the mean of one group is 
+                                <strong>larger</strong> than that of the other; and c) the mean of one
+                                group is <strong>smaller</strong> than that of the other group.</p>
+                                <p>You can generate a scenario by clicking on the green button below. To see the
+                                result, click on the orange button. If you want a detailed step-by-step solution,
+                                you can expand the box below by clicking on the '+' sign.</p>")),
                        box(width = NULL, collapsible = T, collapsed = F,
                            solidHeader = F, title = "Controls",
                            actionBttn(inputId = "tt_sim",
@@ -227,9 +286,10 @@ ui <- dashboardPage(
                            ),
                        box(width = NULL, title = "The result in brief", collapsible = F, 
                            solidHeader = F,
-                           textOutput("tt_result_brief")))
+                           uiOutput("tt_result_brief")))
               )
               ),
+      ###############
       
       tabItem(tabName = "corr",
       ###############        
@@ -267,16 +327,16 @@ ui <- dashboardPage(
                                         style = "material-flat",
                                         color = "warning",
                                         size = "xs"))
-              ),
-              box(width = NULL,title = "Result",collapsible = F,solidHeader = F,
-                  textOutput(outputId = "result")
-                  )
+              )
               ),
               column(width=8,
               box(width=NULL,title = "Data",collapsible = F,solidHeader = F,
                   column(3,tableOutput(outputId = "tab")),
                   column(9,plotOutput(outputId = "plot"))
-                  )
+                  ),
+              box(width = NULL,title = "Result",collapsible = F,solidHeader = F,
+                  textOutput(outputId = "result")
+              )
               )),
               fluidRow(
                 box(width = 12,title = "The detailed solution",collapsible = T,
@@ -304,7 +364,51 @@ ui <- dashboardPage(
 server <- function(input,output,session){
   
   vals <- reactiveValues()
+  
+  
+# Central tendency - Data
+observeEvent(input$cent_sim,{
+  enable("cent_solution")
+output$centvals <- renderText({
+  
+  set.seed(NULL)
+  vals$cent <- sample(seq(1,50,1),
+                      size = 9)
+  
+  paste0("X = (",paste0(vals$cent,collapse = "; "),")")
+  
+})
+})
 
+# Central tendency - Solution
+observeEvent(input$cent_solution,{
+  
+cent <- isolate(vals$cent)
+  
+output$cent_sol_det <- renderUI({
+  HTML(paste0("<p>Calculating the mean ('average') should be easy: You calculate the sum
+              of all the values in X and then divide by the overall number of values (9):</p>",
+              paste0(cent, collapse = " + ")," = ",sum(cent),
+              br(),br(),
+              sum(cent),"/9 = ",round(sum(cent)/9, digits = 1),br(),br(),
+              "<p>Identifying the median is a bit more interesting: You first have to arrange all the values
+              from lowest to highest:</p>",
+              br(),
+              "(",paste0(sort(cent), collapse = "; "),")",
+              br(),br(),
+              "<p>Then you identify the value in the middle &mdash; the one that divides the data in half.
+              In this case, this is: ",paste0(median(cent)),".</p>
+              <p><strong>Note:</strong> We are working here with an <i>uneven</i> number of values, 9! If we would have an
+              even number such as 10 or 6, we would take the two middle values and calculate the average of these
+              two (see also Kellstedt & Whitten 2018, 133).</p>"))
+})
+
+output$cent_sol <- renderUI({
+  HTML(paste0("<p>The mean of X is: ",round(mean(cent), digits = 1),".</p>
+              <p>The median of X is: ",median(cent),".</p>"))
+})
+  
+})
   
 # Central Limit Theorem - population data
 set.seed(42)
@@ -700,14 +804,17 @@ tt_pval_sm <- pt(tt_tval, df = tt_df,
 tt_pval_la <- pt(tt_tval, df = tt_df,
                  lower.tail = F)
   
-  output$tt_result_brief <- renderText({
-    paste0("The difference between the two group means is: ",vals$mat[1,2]," - ",vals$mat[2,2]," = ",round(ttdiff,digits = 1),".\n
-           The standard error of this difference is: ",round(tt_se, digits = 3),".\n
-           The corresponding p-value for a two-tailed test (the group means are different) is: ",format(round(tt_pval, digits=3), nsmall = 3),".\n
-           If we would instead do a one-sided test if the mean in Group 1 is smaller than the mean in Group 2, the
-           p-value would be: ",format(round(tt_pval_sm, digits=3), nsmall = 3),".\n
-           And if we would test the hypothesis that the mean in Group 1 is larger than the mean in Group 2, the 
-           corresponding one-sided p-value would be: ",format(round(tt_pval_la, digits=3), nsmall = 3))
+  output$tt_result_brief <- renderUI({
+    HTML(paste0("The difference between the two group means is: ",vals$mat[1,2]," - ",vals$mat[2,2]," = ",round(ttdiff,digits = 1),".\n
+           The standard error of this difference is: ",round(tt_se, digits = 3),", and the t-value is accordingly ",format(round(tt_tval,digits = 2),nsmall=2),".",br(),br(),
+           "The corresponding p-value for a two-tailed test (whether or not the two group means are equal or not) is: ",
+           format(round(tt_pval, digits=3), nsmall = 3)," (df = ",tt_df,").",br(),br(),
+           "If we would instead do a one-sided test if the mean in Group 1 is ",strong("smaller")," than the mean in Group 2, the
+           p-value would be: ",format(round(tt_pval_sm, digits=3), nsmall = 3),".",br(),br(),
+           "And if we would test the opposite hypothesis that the mean in Group 1 is really ",strong("larger")," than the mean in Group 2, the 
+           corresponding one-sided p-value would be: ",format(round(tt_pval_la, digits=3), nsmall = 3),".",br(),br(),
+           "To see more clearly where these p-values come from and what we do when we test 'in different directions', you can
+           plug the values you get here into the 'Statistical distributions' module and play with the type of hypothesis."))
   })
 })
   
@@ -743,16 +850,16 @@ observeEvent(input$cor_sim, {
 observeEvent(input$cor_solution,{
 
 # Simple solution
-  res <- isolate(round(cor(vals$data$X,vals$data$Y,
-                           method = "pearson"),digits=2))
-  
-  t <- round((res*sqrt(10-2))/(sqrt(1-res^2)),digits=3)
-  
-  p_val <- format(round(2 * pt(abs(t), 8, lower.tail = F),digits = 3), nsmall = 3)
-  
-  output$result <- renderText(
-    paste0("The correlation coefficient is: ",res,", and its t-value is: ",t,".\n
-            The corresponding p-value is: ",p_val))
+res <- isolate(round(cor(vals$data$X,vals$data$Y,
+                         method = "pearson"),digits=2))
+
+t <- round((res*sqrt(10-2))/(sqrt(1-res^2)),digits=3)
+
+p_val <- format(round(2 * pt(abs(t), 8, lower.tail = F),digits = 3), nsmall = 3)
+
+output$result <- renderText(
+  paste0("The correlation coefficient is: ",res,", and its t-value is: ",t,".\n
+          The corresponding p-value (two-sided) is: ",p_val))
   
   
 # Detailed solution  
