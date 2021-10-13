@@ -22,8 +22,8 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Start",tabName = "start"),
       menuItem("Mathematical notation", tabName = "math"),
-      menuItem("Measures of central tendency",tabName = "cent", selected = T),
-      menuItem("Measures of spread",tabName = "spread"),
+      menuItem("Measures of central tendency",tabName = "cent"),
+      menuItem("Measures of spread",tabName = "spread", selected = T),
       menuItem("Statistical distributions", tabName = "dist"),
       menuItem("The Central Limit Theorem", tabName = "clt"),
       menuItem("Confidence intervals", tabName = "ci"),
@@ -76,7 +76,7 @@ ui <- dashboardPage(
                 column(width = 8,
                        box(width = NULL, title = "Data", collapsible = F, solidHeader = F,
                            HTML("<p>If you click on the green button on the left, you 
-                           will get a set of numbers. Can you identify the mean and 
+                           will get a set of numbers. Can you calculate the mean and 
                                 median of this set of numbers?</p>"),
                            br(),
                            textOutput("centvals")),
@@ -89,6 +89,58 @@ ui <- dashboardPage(
       
               ),
       ##############
+      
+      tabItem(tabName = "spread",
+      ##############        
+              fluidRow(
+                column(width = 4,
+                       box(width = NULL, title = "Measures of spread",
+                           collapsible = T, collapsed = T, solidHeader = F,
+                           HTML("<p>Measures of spread are statistics that we use
+                                to see how spread out or 'dispersed' our data are.</p>
+                                <p>The two most important ones of these are the <strong>variance</strong>
+                                and the <strong>standard deviation</strong>. These two statistics are not only
+                                important when we want to describe our data, they are also
+                                key ingredients in many of the more advanced procedures 
+                                (e.g., the covariance and correlation, or confidence intervals).
+                                It is therefore very important that you get a solid understanding 
+                                of what the variance and standard deviation are and how they are
+                                calculated.</p>
+                                <p>This module allows you to practice this. As in the other modules,
+                                you create a set of numbers with the green button and can call up the 
+                                correct result with the orange button. A detailed solution is also 
+                                available if you want.</p>")),
+                       box(width = NULL, title = "Controls", collapsible = T, collapsed = F,
+                           solidHeader = F,
+                           actionBttn(inputId = "spread_sim",
+                                      label = "Give me some data!",
+                                      style="material-flat",
+                                      color="success",
+                                      size = "xs"),
+                           br(),br(),
+                           disabled(actionBttn(inputId = "spread_solution",
+                                               label = "Show me the solution!",
+                                               style = "material-flat",
+                                               color = "warning",
+                                               size = "xs")))),
+                column(width = 8,
+                       box(width = NULL, title = "Data", collapsible = F, solidHeader = F,
+                           HTML("<p>If you click on the green button on the left, you 
+                           will get a set of numbers. Can you calculate the variance and 
+                                standard deviation of this set of numbers?</p>"),
+                           br(),
+                           textOutput("spreadvals")),
+                       box(width = NULL, title = "Solution", collapsible = F,
+                           solidHeader = F,
+                           uiOutput("spread_sol")),
+                       box(width = NULL, title = "Detailed solution", collapsible = T,
+                           collapsed = F, solidHeader = F,
+                           uiOutput("spread_sol_det1"),
+                           tableOutput("spread_sol_det2"),
+                           uiOutput("spread_sol_det3")))
+              )
+              ),
+      #############
       
       tabItem(tabName = "clt",
       ###############      
@@ -409,6 +461,76 @@ output$cent_sol <- renderUI({
 })
   
 })
+
+
+# Measures of spread - Data
+observeEvent(input$spread_sim,{
+  enable("spread_solution")
+  
+  output$spreadvals <- renderText({
+    set.seed(NULL)
+    vals$spread <- sample(seq(1,50,1),
+                          size = 10)
+    paste0("X = (",paste0(vals$spread,collapse = "; "),")")
+  })
+  
+  
+})
+
+# Measures of spread - Solution
+observeEvent(input$spread_solution,{
+  spread <- isolate(vals$spread)
+  
+  spreadmat <- data.frame(X = spread,
+                          meanX = rep(mean(spread),length(spread)))
+  
+  spreadmat %>% 
+    mutate(diff = X - meanX,
+           diff_squared = diff^2) -> spreadmat
+  
+  sumdiffsq <- sum(spreadmat$diff_squared)
+  spread_var <- sumdiffsq/(length(spread)-1)
+  
+output$spread_sol <- renderUI({
+  HTML(paste0("<p>The variance is: ",round(var(spread), digits = 1),".</p>
+              <p>The standard deviation is: ",round(sd(spread), digits = 1),".</p>"))
+  
+})
+
+output$spread_sol_det1 <- renderUI({
+  withMathJax(helpText("We start by calculating the variance of X. The formula is as follows: 
+                       $$s^2 = \\frac{\\sum_{i=1}^N (X_i - \\bar{X})^2}{N-1}$$
+                       In human language: We calculate the mean of X, and then we calculate the 
+                       difference of each value in X from this mean. Then we square each of the
+                       resulting numbers. Finally, we add them all up and then divide the
+                       result by N-1. The calculation is a bit tedious and easier to follow
+                       when it is presented in a table:"))
+})
+
+output$spread_sol_det2 <- renderTable({
+  spreadmat
+}, rownames = T, include.colnames = F, width = "100%",hover = T,
+add.to.row = list(pos = list(0),
+                  command = " <tr> <th> </th><th>X</th><th>X&#772;</th><th>(X<sub>i</sub> - X&#772;)</th><th>(X<sub>i</sub> - X&#772;)<sup>2</sup></th> </tr>"))
+
+output$spread_sol_det3 <- renderUI({
+  HTML(paste0("<p>If we now calculate the sum of all the values in the last table column
+              (the one furthest to the right), we get the sum of the squared differences
+              from the mean: ",round(sumdiffsq,digits=1),".</p>
+              <p>Then we divide this by 9 (the number of values in X minus 1).
+              The result is the <strong>variance</strong>: ",round(spread_var, digits=1),"</p>
+              <p>You should now also see that the variance is <i>the average
+              squared deviation from the mean</i> in the data. Obviously, this number is difficult
+              to interpret in a meaningful way &mdash; what are 'squared differences'?</p>
+              <p>But we can take the square root (&radic;) of the variance to get to the
+              <i>average deviation from the mean</i>: the <strong>standard deviation</strong>. 
+              This statistic is much more intuitive to interpret.</p>
+              <p>In our case, this is: <math><msqrt><mn>",paste0(round(spread_var, digits=1)),"</mn></msqrt></math> = ",round(sd(spread),digits=1),"</p>"))
+})
+  
+})
+
+
   
 # Central Limit Theorem - population data
 set.seed(42)
