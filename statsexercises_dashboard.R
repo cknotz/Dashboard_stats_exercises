@@ -20,8 +20,8 @@ ui <- dashboardPage(
   dashboardHeader(title="Practice Statistics!"),
   dashboardSidebar(collapsed = F,
     sidebarMenu(
-      menuItem("Start",tabName = "start", selected = T),
-      menuItem("Mathematical notation", tabName = "math"),
+      menuItem("Start",tabName = "start"),
+      menuItem("Mathematical notation", tabName = "math", selected = T),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
       menuItem("Statistical distributions", tabName = "dist"),
@@ -88,6 +88,33 @@ ui <- dashboardPage(
       ###############
       
       ###############
+      
+      tabItem(tabName = "math",
+      ###############
+              fluidRow(
+                column(width = 6,
+                       box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
+                           title = HTML("&Sigma;"),
+                           HTML("<p>The symbol &Sigma; is the Greek letter 'Sigma' &mdash; or the Greek
+                                large S. In mathematical equations, it stands for 'Sum'.</p>
+                                <p>For example, assume we have a set of numbers such as (3, 7, 8, 5). Let's call this
+                                set of numbers X.</p>
+                                <p>&Sigma;(X) would simply be the sum of all the numbers in X:</p>
+                                <p>&Sigma;X = 3 + 7 + 8 + 5 = 23</p>")),
+                       box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
+                           title = HTML("X&#772;")),
+                       box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
+                           title = HTML("&#177;"))),
+                column(width = 6,
+                       box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
+                           title = HTML("&radic;")),
+                       box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
+                           title = HTML("Y&#770;")),
+                       box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
+                           title = "|x|"))
+              )
+              ),
+      ##############
       
       tabItem(tabName = "cent",
       ##############
