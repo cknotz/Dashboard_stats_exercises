@@ -100,18 +100,41 @@ ui <- dashboardPage(
                                 <p>For example, assume we have a set of numbers such as (3, 7, 8, 5). Let's call this
                                 set of numbers X.</p>
                                 <p>&Sigma;(X) would simply be the sum of all the numbers in X:</p>
-                                <p>&Sigma;X = 3 + 7 + 8 + 5 = 23</p>")),
+                                <p>&Sigma;(X) = 3 + 7 + 8 + 5 = 23</p>")),
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
-                           title = HTML("X&#772;")),
+                           title = HTML("X&#772;"),
+                           HTML("<p>A little horizontal bar usually indicates that we are talking about 
+                           the <i>mean</i>. For example, X&#772; ('X bar') would be the mean of a variable X.</p>")),
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
-                           title = HTML("&#177;"))),
+                           title = HTML("&#177;"),
+                           HTML("<p>The &#177; is the 'plus-minus' symbol. As its name suggests, it means that we
+                                first add two numbers and then subtract them. This produces two results.</p>
+                                <p>For example:</p>
+                                <p>3 &#177; 2 </p>
+                                <p>= 3 + 2 = 5</p>
+                                <p> & </p>
+                                <p>= 3 - 2 = 1</p>"))),
                 column(width = 6,
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
-                           title = HTML("&radic;")),
+                           title = HTML("&radic;"),
+                           HTML("<p>You probably know this from high school: The square root symbol &radic;, which simply
+                                reverses a 'squaring' of a number &mdash; a multiplication of a number with itself.</p>
+                                <p>To illustrate:</p>
+                                <p>2 x 2 = 2<sup>2</sup> = 4</p>
+                                <p></p>
+                                <p>The square root is the same in reverse: </p>
+                                <p><span style='white-space: nowrap; font-size:larger'>&radic;<span style='text-decoration:overline;'>&nbsp;4&nbsp;</span></span> = 2</p>")),
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
-                           title = HTML("Y&#770;")),
+                           title = HTML("Y&#770;"),
+                           HTML("<p>A little hat symbol on top of a letter usually indicates that we are dealing with
+                                an <i>estimate</i> &mdash; a number whose value we do not know for sure and can only
+                                estimate (using statistics).</p>
+                                <p>Y&#770; ('Y hat') is the estimated value of Y.</p>")),
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
-                           title = "|x|"))
+                           title = "|x|",
+                           HTML("<p>The two vertical bars indicate an <i>absolute value</i> of a number, irrespective
+                           of whether this number is positive or negative.</p>
+                                <p>For example, |-2| = 2 and |2| = 2</p>")))
               )
               ),
       ##############
