@@ -127,14 +127,14 @@ ui <- dashboardPage(
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
                            title = HTML("Y&#770;"),
                            HTML("<p>A little hat symbol on top of a letter usually indicates that we are dealing with
-                                an <i>estimate</i> &mdash; a number whose value we do not know for sure and can only
-                                estimate (using statistics).</p>
+                                an <i>estimated value</i> (e.g., a prediction from a statistical model).</p>
                                 <p>Y&#770; ('Y hat') is the estimated value of Y.</p>")),
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
                            title = "|x|",
-                           HTML("<p>The two vertical bars indicate an <i>absolute value</i> of a number, irrespective
+                           HTML("<p>Two vertical bars indicate that we are talking about the <i>absolute value</i> of a number &mdash; which
+                           is simply the number we are dealing with, irrespective
                            of whether this number is positive or negative.</p>
-                                <p>For example, |-2| = 2 and |2| = 2</p>")))
+                                <p>For example: |-2| = 2 and |2| = 2</p>")))
               )
               ),
       ##############
