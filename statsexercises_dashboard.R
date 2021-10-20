@@ -21,11 +21,11 @@ ui <- dashboardPage(
   dashboardSidebar(collapsed = F,
     sidebarMenu(
       menuItem("Start",tabName = "start"),
-      menuItem("Mathematical notation", tabName = "math", selected = T),
+      menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
       menuItem("Statistical distributions", tabName = "dist"),
-      menuItem("The Central Limit Theorem", tabName = "clt"),
+      menuItem("The Central Limit Theorem", tabName = "clt", selected = T),
       menuItem("Confidence intervals", tabName = "ci"),
       menuItem("Chi-squared test",tabName = "chi"),
       menuItem("Difference of means test",tabName = "ttest"),
@@ -252,7 +252,7 @@ ui <- dashboardPage(
                                 challenging.</p>
                                 <p>This module allows you to approach the Central
                                 Limit Theorem via a simulation (of the ideological
-                                left-right self-placement of a fictional population of 125 individuals).</p>
+                                left-right self-placement of a fictional population).</p>
                                 <p>Specifically, you can simulate drawing samples
                                 from a hypothetical population and calculating a 
                                 sample mean. You can adjust the number of samples
@@ -261,6 +261,9 @@ ui <- dashboardPage(
                                 changes.</p>")),
                        box(width = NULL, title = "Controls",
                            collapsible = T, solidHeader = F, collapsed = T,
+                           actionButton("button_pop",
+                                        "Create (new) population data"),
+                           br(),br(),
                            sliderInput("clt_size",
                                        "Size of each sample:",
                                        min = 5,
@@ -271,9 +274,10 @@ ui <- dashboardPage(
                              inputId = "clt_samples",
                              label = "Number of samples:", 
                              choices = c(1, 10, 100, 1000, 10000, 100000),
+                             selected = 100,
                              grid = T),
                            actionButton("button_clt",
-                                        "Simulate")
+                                        "Simulate drawing samples")
                            )),
                 column(width = 8,
                        box(width = NULL, title = "", collapsible = F, solidHeader = F,
@@ -313,8 +317,8 @@ ui <- dashboardPage(
                                        ticks = F),
                            sliderInput("ci_diff",
                                        "Move location of true population mean",
-                                       min = -25,
-                                       max = 25,
+                                       min = -50,
+                                       max = 50,
                                        value = 0,
                                        step = 1,
                                        ticks = F),
@@ -632,14 +636,27 @@ output$spread_sol_det3 <- renderUI({
 
   
 # Central Limit Theorem - population data
-set.seed(42)
-vals$cltpop <- 10*sample(seq(1,10,1),
-                 125,
-                 replace = T,
-                 prob = c(.02,.20,.29,.13,.10,.09,.09,.04,.03,0.01))  
+lambda <- sample(seq(1,10,1),
+                 1,
+                 replace = F)
 
+pois <- 10*rpois(100,lambda)
+
+vals$cltpop <- sample(pois[which(pois<=100)], 2000, replace = T)
+
+
+observeEvent(input$button_pop,{
 # "True" population - plot
 output$clt_popplot <- renderPlot({
+  
+  lambda <- sample(seq(1,10,1),
+                   1,
+                   replace = F)
+  
+  pois <- 10*rpois(100,lambda)
+  
+  vals$cltpop <- sample(pois[which(pois<=100)], 2000, replace = T)
+  
   
   vals$cltdata <- data.frame(pop = vals$cltpop,
                      idno = seq(1,length(vals$cltpop),1))
@@ -654,12 +671,12 @@ output$clt_popplot <- renderPlot({
                        limits = c(5,105)) +
     labs(x = "Left-right self-placement",
          y = "Frequency",
-         title = "The 'true' population (N=125) with our target: the population mean",
-         caption = paste0("The orange line indicates the 'true' mean: ",round(mean(vals$cltpop), digits = 2))) +
+         title = "The 'true' population with our target: the population mean",
+         caption = paste0("The orange line indicates the 'true' population mean: ",round(mean(vals$cltpop), digits = 2))) +
     theme_bw() +
     theme(aspect.ratio=1/8)
 })
-
+})
   
 # Simulation graph, CLT
 observeEvent(input$button_clt,{
@@ -706,14 +723,22 @@ observeEvent(input$button_clt,{
   })
 })
 
-
 # Simulation graph, CI
+
+set.seed(42)
+vals$cipop <- 10*sample(seq(1,10,1),
+                 125,
+                 replace = T,
+                 prob = c(.02,.20,.29,.13,.10,.09,.09,.04,.03,0.01))
+
 observeEvent(input$ci_size,{
+  
+  
   
   # Simulate repeat sampling
   vals$means <- sapply(seq(1,2500,1),
                   function(x){
-                    sample <- sample(vals$cltpop,
+                    sample <- sample(vals$cipop,
                                      size = input$ci_size,
                                      replace = F)
                     return(mean(sample))
