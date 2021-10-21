@@ -117,8 +117,8 @@ ui <- dashboardPage(
                 column(width = 6,
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
                            title = HTML("&radic;"),
-                           HTML("<p>You probably know this from high school: The square root symbol &radic;, which simply
-                                reverses a 'squaring' of a number &mdash; a multiplication of a number with itself.</p>
+                           HTML("<p>You probably know the square root symbol (&radic;) from high school. You can think of it as the opposite of
+                                'squaring' of a number.</p>
                                 <p>To illustrate:</p>
                                 <p>2 x 2 = 2<sup>2</sup> = 4</p>
                                 <p></p>
@@ -131,10 +131,8 @@ ui <- dashboardPage(
                                 <p>Y&#770; ('Y hat') is the estimated value of Y.</p>")),
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
                            title = "|x|",
-                           HTML("<p>Two vertical bars indicate that we are talking about the <i>absolute value</i> of a number &mdash; which
-                           is simply the number we are dealing with, irrespective
-                           of whether this number is positive or negative.</p>
-                                <p>For example: |-2| = 2 and |2| = 2</p>")))
+                           HTML("<p>Two vertical bars indicate that we are talking about the <i>absolute value</i> of a number.</p>
+                                <p>For example: |-2| = 2 and |2| = 2.</p>")))
               )
               ),
       ##############
