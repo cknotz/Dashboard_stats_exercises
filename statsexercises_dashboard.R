@@ -41,9 +41,9 @@ ui <- dashboardPage(
       ###############
               fluidRow(
                 column(width = 12,
-                       box(width = NULL, title = "We live in the age of data", collapsible = T, collapsed = T,
+                       box(width = NULL, title = "The age of data", collapsible = T, collapsed = T,
                            solidHeader = T,
-                           HTML("<p><strong>Being able to use statistical methods is an extremely powerful skill.</strong>
+                           HTML("<p><strong>We live in an age of data.</strong>
                                 Many important societal questions such as whether or not there is a 'gender wage gap' or if there
                                 is discrimination and bias against immigrants or minorities are nowadays answered with experiments and
                                 statistical analyses. </p>
@@ -52,7 +52,7 @@ ui <- dashboardPage(
                                 which build to a large extent on statistical methods, are now routinely used by many businesses, and NGOs active in the
                                 aid and development sector are also increasingly relying on data scientists to do and evalute their
                                 project work (e.g., <a target='_blank' href='https://correlaid.org/'>correlaid.org</a> or
-                                <a target='_blank' href='https://data.org/'>data.org</a>)</p>
+                                <a target='_blank' href='https://data.org/'>data.org</a>). <strong>Clearly, being able to use statistical methods is an extremely powerful skill &mdash; now and in the future.</strong></p>
                                 <p>Unfortunately, statistics is also something many students (especially in the social sciences)
                                 are not exactly looking forward to engaging with. Some may see statistics as irrelevant to them, but
                                 many others are simply afraid of the math. Many students, again especially in the social sciences,
@@ -117,8 +117,8 @@ ui <- dashboardPage(
                 column(width = 6,
                        box(width = NULL, collapsible = T, collapsed = T, solidHeader = F,
                            title = HTML("&radic;"),
-                           HTML("<p>You probably know the square root symbol (&radic;) from high school. You can think of it as the opposite of
-                                'squaring' of a number.</p>
+                           HTML("<p>You probably know the square root symbol (&radic;) from high school: It is, simply put, the opposite of
+                                the square of a number (a number multiplied with itself).</p>
                                 <p>To illustrate:</p>
                                 <p>2 x 2 = 2<sup>2</sup> = 4</p>
                                 <p></p>
