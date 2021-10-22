@@ -18,16 +18,16 @@ library(MASS)
 
 ui <- dashboardPage(
   dashboardHeader(title="Practice Statistics!"),
-  dashboardSidebar(collapsed = F,
+  dashboardSidebar(collapsed = T,
     sidebarMenu(
-      menuItem("Start",tabName = "start", selected = T),
+      menuItem("Start",tabName = "start"),
       menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
       menuItem("Statistical distributions", tabName = "dist"),
       menuItem("The Central Limit Theorem", tabName = "clt"),
       menuItem("Confidence intervals", tabName = "ci"),
-      menuItem("Chi-squared test",tabName = "chi"),
+      menuItem("Chi-squared test",tabName = "chi", selected = T),
       menuItem("Difference of means test",tabName = "ttest"),
       menuItem("Correlation",tabName = "corr"),
       menuItem("Contact & feedback",tabName = "contact")
@@ -35,7 +35,7 @@ ui <- dashboardPage(
   ),
   dashboardBody(
     shinyjs::useShinyjs(),
-    shinyDashboardThemes(theme="grey_light"),
+    shinyDashboardThemes(theme="grey_dark"),
     tabItems(
       tabItem(tabName = "start",
       ###############
@@ -422,7 +422,7 @@ ui <- dashboardPage(
                        box(width = NULL, collapsible = T, collapsed = F,
                            solidHeader = F, title = "Controls",
                            actionBttn(inputId = "tt_sim",
-                                      label = "Give me some Data!",
+                                      label = "Give me some data!",
                                       style="material-flat",
                                       color="success",
                                       size = "xs"),
@@ -442,6 +442,46 @@ ui <- dashboardPage(
               )
               ),
       ###############
+      
+      tabItem(tabName = "chi",
+      ##############        
+              fluidRow(
+                column(width = 4,
+                       box(width = NULL, solidHeader = F, collapsible = T, collapsed = F,
+                           title = HTML("The &#x1D6D8;<sup>2</sup> test"),
+                           HTML("<p>The &#x1D6D8;<sup>2</sup> ('chi-squared') test is a statistical
+                                test for relationships between two categorical variables. The underlying logic
+                                of this test &mdash; comparing the observed patterns in a cross-table with 
+                                a hypothetical one &mdash; can be difficult to grasp at first, but calculating
+                                a few example tests by hand can really help with this.</p>
+                                <p>As in the other panels, you can let the computer generate some random
+                                example data for you to work with. You can then reveal a brief and a detailed
+                                step-by-step solution.</p>")),
+                       box(width = NULL, solidHeader = F, collapsible = T, collapsed = F,
+                           title = "Controls",
+                           actionBttn(inputId = "chi_sim",
+                                      label = "Give me some data!",
+                                      style="material-flat",
+                                      color="danger",
+                                      size = "xs"),
+                           br(),br(),
+                           disabled(actionBttn(inputId = "chi_solution",
+                                               label = "Show me the solution!",
+                                               style = "material-flat",
+                                               color = "warning",
+                                               size = "xs")))),
+                column(width = 8,
+                       box(width = NULL, solidHeader = F, collapsible = F, 
+                           title = "Data",
+                           tableOutput("chitab")),
+                       box(width = NULL, solidHeader = F, collapsible = F,
+                           title = "Result",
+                           uiOutput("chires_brief")),
+                       box(width = NULL, solidHeader = F, collapsible = T, collapsed = T, 
+                           title = "Detailed solution"))
+              )
+              ),
+      ##############
       
       tabItem(tabName = "corr",
       ###############        
@@ -1061,7 +1101,58 @@ tt_pval_la <- pt(tt_tval, df = tt_df,
            plug the values you get here into the 'Statistical distributions' module and play with the type of hypothesis."))
   })
 })
+
+
+# Chi-squared test
+observeEvent(input$chi_sim,{
+  set.seed(NULL)
+  enable("chi_solution")
   
+# Generate data (based on: https://gsverhoeven.github.io/post/simulating-fake-data/)
+rho <- runif(n=1,min = -.5,max = .5)
+
+nobs <- sample(250:750,
+               1)
+
+m_1 <- runif(n=1,min = .3, max = .7)
+m_2 <- runif(n=1,min = .3, max = .7)
+  
+cov.mat <- matrix(c(1,rho,rho,1),
+                  nrow = 2)
+
+vals$dfdat <- data.frame(MASS::mvrnorm(n=nobs,
+                               mu = c(0,0),
+                               Sigma = cov.mat))
+
+vals$dfdat$B1 <- ifelse(vals$dfdat$X1 <qnorm(m_1),1,0)
+vals$dfdat$B2 <- ifelse(vals$dfdat$X2 <qnorm(m_2),1,0)
+
+dftab <- table(vals$dfdat$B1,vals$dfdat$B2)
+rownames(dftab) <- c("Prefers chocolate","Prefers vanilla")
+colnames(dftab) <- c("Morning person","Night person")
+dftab <- addmargins(dftab)
+
+
+# Generate table
+output$chitab <- renderTable({
+  as.data.frame.matrix(dftab)
+},rownames = T, digits = 0)
+
+})
+
+observeEvent(input$chi_solution,{
+chires <- chisq.test(table(vals$dfdat$B1,vals$dfdat$B2),
+                     correct = F)
+
+
+output$chires_brief <- renderUI({
+  HTML(paste0("The &#x1D6D8;<sup>2</sup> value is ",format(round(chires$statistic, digits = 3),nsmall = 3),". At 1 degree
+              of freedom, this corresponds to a <i>p</i>-value of ",format(round(chires$p.value,digits=3),nsmall = 3),"."))
+})
+
+})
+
+
 # Correlation coefficient
 observeEvent(input$cor_sim, {
   
