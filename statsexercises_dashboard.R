@@ -27,7 +27,8 @@ theme_darkgray <- function(){
           axis.text = element_text(colour = "#d3d3d3"),
           axis.title = element_text(color = "#d3d3d3"),
           plot.caption = element_text(color="#d3d3d3"),
-          plot.title = element_text(color = "#d3d3d3")
+          plot.title = element_text(color = "#d3d3d3"),
+          legend.text = element_text(color = "#d3d3d3")
       
     )
 }
@@ -848,25 +849,25 @@ observeEvent(input$ci_size,{
           ggplot(mapping = aes(x=means,fill=within)) +
           geom_bar(stat = "count",
                    width = 1) +
-          scale_fill_manual(values = c("orange","gray30"),
+          scale_fill_manual(values = c("#b34e24","#d3d3d3"),
                             labels = c(paste0("Outer ",round(200*(1-pnorm(as.numeric(input$ci_level))),digits = 1),"%")
                                        ,paste0("Inner ",100-round(200*(1-pnorm(as.numeric(input$ci_level))),digits = 1),"%"))) +
           geom_vline(xintercept = 34.1,
                      color = "#1b9e77", size = 1.25, linetype = "dashed") +
           geom_vline(xintercept = mean(sims$means),
-                     color = "gray", size = 1.25) +
+                     color = "grey15", size = 1.25) +
           scale_x_continuous(limits = c(5,105),
                              breaks = seq(10,100,10)) +
           labs(x = "Left-right self-placement",
                y = "Number of samples",
                caption = paste0("The gray solid line indicates the POSSIBLE true population mean: ",round(mean(sims$means), digits = 2),
                                 "\n The green dashed line indicates the MEASURED sample mean: 34.1")) +
-          theme_bw() +
+          theme_darkgray() +
           theme(legend.title = element_blank(),
                 legend.position = "bottom")
         
         if(input$show_ci=="TRUE"){
-          g +geom_errorbarh(size = 1, height = 10, aes(y=30,
+          g +geom_errorbarh(size = 1, height = 10, color = "#1b9e77", aes(y=30,
                                 xmin = 34.1 - as.numeric(input$ci_level)*(sd(sims$means)/sqrt(length(input$ci_size))),
                                 xmax = 34.1 + as.numeric(input$ci_level)*(sd(sims$means)/sqrt(length(input$ci_size)))
           ))
