@@ -715,6 +715,7 @@ output$spread_sol_det3 <- renderUI({
 
   
 # Central Limit Theorem - population data
+set.seed(NULL)
 lambda <- sample(seq(1,10,1),
                  1,
                  replace = F)
@@ -727,7 +728,7 @@ vals$cltpop <- sample(pois[which(pois<=100)], 2000, replace = T)
 observeEvent(input$button_pop,{
 # "True" population - plot
 output$clt_popplot <- renderPlot({
-  
+  set.seed(NULL)
   lambda <- sample(seq(1,10,1),
                    1,
                    replace = F)
@@ -744,16 +745,17 @@ output$clt_popplot <- renderPlot({
     group_by(pop) %>% 
     summarize(n = n()) %>% 
     ggplot(aes(x=pop,y=n)) +
-    geom_bar(stat = "identity") +
-    geom_vline(xintercept = mean(vals$cltpop), color = "#d95f02", size = 1.25) +
+    geom_bar(stat = "identity", fill = "#d3d3d3") +
+    geom_vline(xintercept = mean(vals$cltpop), color = "#b34e24", size = 1.25) +
     scale_x_continuous(breaks = seq(10,100,10),
                        limits = c(5,105)) +
     labs(x = "Left-right self-placement",
          y = "Frequency",
          title = "The 'true' population with our target: the population mean",
          caption = paste0("The orange line indicates the 'true' population mean: ",round(mean(vals$cltpop), digits = 2))) +
-    theme_bw() +
-    theme(aspect.ratio=1/8)
+    theme_darkgray()
+  # +
+  #   theme(aspect.ratio=1/8)
 })
 })
   
@@ -784,16 +786,16 @@ observeEvent(input$button_clt,{
     p <- sims %>%
       ggplot(mapping = aes(x=means)) +
       geom_bar(stat = "count",
-               width = 1) +
+               width = 1, fill = "#d3d3d3") +
       geom_vline(xintercept = mean(vals$cltpop),
-                 color = "#d95f02", size = 1.25) +
+                 color = "#b34e24", size = 1.25) +
       ylab("Number of samples") +
       xlab("Sample mean(s)") +
       labs(title = "Our measurement(s) of the population mean: Dark gray line(s)",
            caption = paste0("The orange line indicates the 'true' mean: ",round(mean(vals$cltpop), digits = 2))) +
       scale_x_continuous(limits = c(5,105),
                          breaks = seq(10,100,10)) +
-      theme_bw()
+      theme_darkgray()
     
     if(input$clt_samples<30){
       p <- p + scale_y_continuous(breaks = function(x) seq(ceiling(x[1]), floor(x[2]), by = 1))
