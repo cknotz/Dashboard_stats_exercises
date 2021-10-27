@@ -527,11 +527,8 @@ ui <- dashboardPage(
                   column(9,plotOutput(outputId = "plot"))
                   ),
               box(width = NULL,title = "Result",collapsible = F,solidHeader = F,
-                  textOutput(outputId = "result")
-              )
-              )),
-              fluidRow(
-                box(width = 12,title = "The detailed solution",collapsible = T,
+                  textOutput(outputId = "result")),
+              box(width = NULL,title = "The detailed solution",collapsible = T,
                     collapsed = T,solidHeader = F,
                     uiOutput("cor_detail1"),
                     uiOutput("cor_detail2"),
@@ -544,14 +541,12 @@ ui <- dashboardPage(
                     uiOutput("cor_detail7"),
                     uiOutput("cor_detail8"),
                     uiOutput("cor_detail9"),
-                    uiOutput("cor_detail10")
-                    )
-                
+                    uiOutput("cor_detail10"))
               )
     )
       ###############
   )
-))
+)))
 
 server <- function(input,output,session){
   
