@@ -35,13 +35,13 @@ theme_darkgray <- function(){
 
 ui <- dashboardPage(
   dashboardHeader(title="Practice Statistics!"),
-  dashboardSidebar(collapsed = T,
+  dashboardSidebar(collapsed = F,
     sidebarMenu(
-      menuItem("Start",tabName = "start"),
+      menuItem("Start",tabName = "start", selected = T),
       menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
-      menuItem("Statistical distributions", tabName = "dist", selected = T),
+      menuItem("Statistical distributions", tabName = "dist"),
       menuItem("The Central Limit Theorem", tabName = "clt"),
       menuItem("Confidence intervals", tabName = "ci"),
       menuItem("Chi-squared test",tabName = "chi"),
@@ -200,7 +200,7 @@ ui <- dashboardPage(
                            actionBttn(inputId = "cent_sim",
                                       label = "Give me some data!",
                                       style="material-flat",
-                                      color="success",
+                                      color="danger",
                                       size = "xs"),
                            br(),br(),
                            disabled(actionBttn(inputId = "cent_solution",
@@ -245,12 +245,12 @@ ui <- dashboardPage(
                                 you can create a set of numbers, calculate the variance and standard deviation,
                                 and then let the computer show you the correct result. A detailed solution is also 
                                 available if you want.</p>")),
-                       box(width = NULL, title = "Controls", collapsible = T, collapsed = T,
+                       box(width = NULL, title = "Controls", collapsible = T, collapsed = F,
                            solidHeader = F,
                            actionBttn(inputId = "spread_sim",
                                       label = "Give me some data!",
                                       style="material-flat",
-                                      color="success",
+                                      color="danger",
                                       size = "xs"),
                            br(),br(),
                            disabled(actionBttn(inputId = "spread_solution",
@@ -353,7 +353,7 @@ ui <- dashboardPage(
                                        value = 18,
                                        ticks = F),
                            sliderInput("ci_diff",
-                                       "Move location of true population mean",
+                                       "Move location of potential true population mean",
                                        min = -50,
                                        max = 50,
                                        value = 0,
@@ -389,7 +389,7 @@ ui <- dashboardPage(
                                 population mean is located. As you move the slider, 
                                 ask yourself: If the 'true' population mean were located
                                 at this point, would it be likely or unlikely that we
-                                measured our given sample mean (given the chosen confidence level)?</p>
+                                measured our given sample mean (given the sample size and chosen confidence level)?</p>
                                 <p>If you then let the graph show the confidence interval, 
                                 you should notice that this interval corresponds to
                                 those possible true population means where you said they are
@@ -408,7 +408,7 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 4,
                        box(width = NULL, title = "Statistical distributions",
-                           collapsible = T,solidHeader = F, collapsed = F,
+                           collapsible = T,solidHeader = F, collapsed = T,
                            HTML("<p>When you do statistical tests, you always work with different
                                 statistical distributions: the normal distribution, the <i>t</i>-distribution,
                                 or the &chi;&sup2;-distribution.</p>
@@ -420,7 +420,7 @@ ui <- dashboardPage(
                                 <p>If you like, you can also enter a test value (from a t- or chi-squared test)
                                 into the box below. This indicates where your test result is relative to the 
                                 distribution - which should you help you make sense of your test result.</p>")),
-                       box(width=NULL,title = "Controls",collapsible = T,solidHeader = F, collapsed = T,
+                       box(width=NULL,title = "Controls",collapsible = T,solidHeader = F, collapsed = F,
                            selectInput(inputId = "dist_distselect",
                                        label = "Select a distribution",
                                        choices = c("Normal","t","Chi-squared")),
@@ -471,7 +471,7 @@ ui <- dashboardPage(
                            actionBttn(inputId = "tt_sim",
                                       label = "Give me some data!",
                                       style="material-flat",
-                                      color="success",
+                                      color="danger",
                                       size = "xs"),
                            br(),br(),
                            disabled(actionBttn(inputId = "tt_solution",
@@ -554,11 +554,11 @@ ui <- dashboardPage(
                          <p>If you want a more detailed step-by-step explanation, you can expand the box below 
                          by clicking on the 'plus' symbol on the right. See also the explanation in 
                          Kellstedt & Whitten.</p>")),
-                box(width=NULL,title = "Controls",collapsible = T,solidHeader = F, collapsed = T,
+                box(width=NULL,title = "Controls",collapsible = T,solidHeader = F, collapsed = F,
                     actionBttn(inputId = "cor_sim",
                                label = "Give me some data!",
                                style="material-flat",
-                               color="success",
+                               color="danger",
                                size = "xs"),
                     br(),br(),
                     disabled(actionBttn(inputId = "cor_solution",
@@ -590,9 +590,23 @@ ui <- dashboardPage(
                     uiOutput("cor_detail9"),
                     uiOutput("cor_detail10"))
               )
-    )
+    )),
       ###############
-  )
+    
+      tabItem(tabName = "contact",
+      ##############
+              fluidRow(
+                column(width = 12,
+                       box(width = NULL, title = "Questions & Feedback",
+                           collapsible = F, solidHeader = T,
+                           HTML("<p>I hope you find this dashboard useful to practice and therefore
+                                better understand statistics and the theory behind it.</p>
+                                <p>Should you have any questions or suggestions for further improvement,
+                                please feel free to reach out to me by e-mail (<a href='mailto:carlo.knotz@uis.no' style='color:orange;'>carlo.knotz@uis.no</a>).</p>"))
+              ))
+              )
+      ##############
+  
 )))
 
 server <- function(input,output,session){
@@ -1222,9 +1236,9 @@ observeEvent(input$cor_sim, {
   
   output$plot <- renderPlot({
     ggplot(vals$data,aes(x=X,y=Y)) +
-      geom_point() +
-      geom_smooth(method='lm',se=F,color="gray",linetype="dashed") +
-      theme_bw()
+      geom_point(color = "#d3d3d3", size = 5, shape = 4, stroke = 2) +
+      geom_smooth(method='lm',se=F,color="#b34e24",linetype="dashed") + #
+      theme_darkgray()
   })
  
 })
