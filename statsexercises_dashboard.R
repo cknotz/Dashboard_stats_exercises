@@ -181,7 +181,7 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 4,
                        box(width = NULL, title = "Measures of central tendency",
-                           collapsible = T, collapsed = F, solidHeader = F,
+                           collapsible = T, collapsed = T, solidHeader = F,
                            HTML("<p>Measures of central tendency are statistics used 
                                 to describe where most of the values of a variable 
                                 are located.</p>
@@ -209,7 +209,7 @@ ui <- dashboardPage(
                                                color = "warning",
                                                size = "xs")))),
                 column(width = 8,
-                       box(width = NULL, title = "Data", collapsible = F, solidHeader = F,
+                       box(width = NULL, title = "Can you calculate the mean and median?", collapsible = F, solidHeader = F,
                            # HTML("<p>If you click on the green button on the left, you 
                            # will get a set of numbers. Can you calculate the mean and 
                            #      median of this set of numbers?</p>"),
@@ -230,7 +230,7 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 4,
                        box(width = NULL, title = "Measures of spread",
-                           collapsible = T, collapsed = F, solidHeader = F,
+                           collapsible = T, collapsed = T, solidHeader = F,
                            HTML("<p>Measures of spread are statistics that we use
                                 to see how spread out or 'dispersed' our data are.</p>
                                 <p>The two most important ones of these are the <strong>variance</strong>
@@ -259,7 +259,7 @@ ui <- dashboardPage(
                                                color = "warning",
                                                size = "xs")))),
                 column(width = 8,
-                       box(width = NULL, title = "Data", collapsible = F, solidHeader = F,
+                       box(width = NULL, title = "Can you calculate the variance & standard deviation?", collapsible = F, solidHeader = F,
                            # HTML("<p>If you click on the green button on the left, you 
                            # will get a set of numbers. Can you calculate the variance and 
                            #      standard deviation of this set of numbers?</p>"),
@@ -317,7 +317,7 @@ ui <- dashboardPage(
                                         "Simulate drawing samples")
                            )),
                 column(width = 8,
-                       box(width = NULL, title = "", collapsible = F, solidHeader = F,
+                       box(width = NULL, title = "Simulate repeated sampling from a population", collapsible = F, solidHeader = F,
                            plotOutput("clt_popplot",
                                       height = "200px"),
                            plotOutput("clt_distPlot")
@@ -454,7 +454,7 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 4,
                        box(width = NULL, title = "Difference-of-means t-test",
-                           collapsible = T, collapsed = F, solidHeader = F,
+                           collapsible = T, collapsed = T, solidHeader = F,
                            HTML("<p>We use the difference-of-means test when we want to
                                 see if two groups are significantly different in some 
                                 numeric attribute &mdash; for example, if men and women differ
@@ -480,7 +480,7 @@ ui <- dashboardPage(
                                                color = "warning",
                                                size = "xs")))),
                 column(width = 8,
-                       box(width = 0, title = "Data", collapsible = F, solidHeader = F,
+                       box(width = 0, title = "Is there a significant difference?", collapsible = F, solidHeader = F,
                            tableOutput("tt_table")
                            ),
                        box(width = NULL, title = "The result in brief", collapsible = F, 
@@ -494,7 +494,7 @@ ui <- dashboardPage(
       ##############        
               fluidRow(
                 column(width = 4,
-                       box(width = NULL, solidHeader = F, collapsible = T, collapsed = F,
+                       box(width = NULL, solidHeader = F, collapsible = T, collapsed = T,
                            title = HTML("The &#x1D6D8;<sup>2</sup> test"),
                            HTML("<p>The &#x1D6D8;<sup>2</sup> ('chi-squared') test is a statistical
                                 test for relationships between two categorical variables. The underlying logic
@@ -519,7 +519,7 @@ ui <- dashboardPage(
                                                size = "xs")))),
                 column(width = 8,
                        box(width = NULL, solidHeader = F, collapsible = F, 
-                           title = "Data",
+                           title = "Is there a significant relationship in the data?",
                            tableOutput("chitab")),
                        box(width = NULL, solidHeader = F, collapsible = F,
                            title = "Result",
@@ -535,7 +535,7 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 4,
                 box(width=NULL,title = "Correlation coefficient",collapsible = T,
-                    solidHeader = F, collapsed = F,
+                    solidHeader = F, collapsed = T,
                     HTML("<p>The correlation coefficient is a measure of how strongly
                          two metric (or continuous, linear) variables are associated
                          with each other. In this exercise, you calculate some correlation
@@ -569,7 +569,7 @@ ui <- dashboardPage(
               )
               ),
               column(width=8,
-              box(width=NULL,title = "Data",collapsible = F,solidHeader = F,
+              box(width=NULL,title = "Is there a significant correlation?",collapsible = F,solidHeader = F,
                   column(3,tableOutput(outputId = "tab")),
                   column(9,plotOutput(outputId = "plot"))
                   ),
@@ -602,7 +602,12 @@ ui <- dashboardPage(
                            HTML("<p>I hope you find this dashboard useful to practice and therefore
                                 better understand statistics and the theory behind it.</p>
                                 <p>Should you have any questions or suggestions for further improvement,
-                                please feel free to reach out to me by e-mail (<a href='mailto:carlo.knotz@uis.no' style='color:orange;'>carlo.knotz@uis.no</a>).</p>"))
+                                please feel free to reach out to me by e-mail (<a href='mailto:carlo.knotz@uis.no' style='color:orange;'>carlo.knotz@uis.no</a>).</p>")),
+                       box(width = NULL, title = "Want to contribute?",
+                           collapsible = F, solidheader = T,
+                           HTML("<p>If you feel that this application lacks some functionality or could be improved
+                                in some way (which it probably can!), you can access and 'fork' the code on GitHub
+                                (<a href='' target='_blank'>LINK TO GITHUB REPO WHEN READY</a>).</p>"))
               ))
               )
       ##############
