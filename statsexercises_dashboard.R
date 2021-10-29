@@ -35,9 +35,9 @@ theme_darkgray <- function(){
 
 ui <- dashboardPage(
   dashboardHeader(title="Practice Statistics!"),
-  dashboardSidebar(collapsed = F,
+  dashboardSidebar(collapsed = T,
     sidebarMenu(
-      menuItem("Start",tabName = "start", selected = T),
+      menuItem("Start",tabName = "start"),
       menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
@@ -45,7 +45,7 @@ ui <- dashboardPage(
       menuItem("The Central Limit Theorem", tabName = "clt"),
       menuItem("Confidence intervals", tabName = "ci"),
       menuItem("Chi-squared test",tabName = "chi"),
-      menuItem("Difference of means test",tabName = "ttest"),
+      menuItem("Difference of means test",tabName = "ttest", selected = T),
       menuItem("Correlation",tabName = "corr"),
       menuItem("Contact & feedback",tabName = "contact")
     )
@@ -299,7 +299,8 @@ ui <- dashboardPage(
                        box(width = NULL, title = "Controls",
                            collapsible = T, solidHeader = F, collapsed = F,
                            actionButton("button_pop",
-                                        "Create (new) population data"),
+                                        "Create population data", 
+                                        class = "btn-secondary"),
                            br(),br(),
                            sliderInput("clt_size",
                                        "Size of each sample:",
@@ -483,9 +484,13 @@ ui <- dashboardPage(
                        box(width = 0, title = "Is there a significant difference?", collapsible = F, solidHeader = F,
                            tableOutput("tt_table")
                            ),
-                       box(width = NULL, title = "The result in brief", collapsible = F, 
+                       box(width = NULL, title = "The result in brief", collapsible = T, 
                            solidHeader = F,
-                           uiOutput("tt_result_brief")))
+                           uiOutput("tt_result_brief")),
+                       box(width = NULL, title = "Detailed solution", collapsible = T, collapsed = F,
+                           solidHeader = T,
+                           uiOutput("tt_result_det"))
+                       )
               )
               ),
       ###############
@@ -699,13 +704,13 @@ output$spread_sol <- renderUI({
 })
 
 output$spread_sol_det1 <- renderUI({
-  withMathJax(helpText("We start by calculating the variance of X. The formula is as follows: 
+  withMathJax("We start by calculating the variance of X. The formula is as follows: 
                        $$s^2 = \\frac{\\sum_{i=1}^N (X_i - \\bar{X})^2}{N-1}$$
                        In human language: We calculate the mean of X, and then we calculate the 
                        difference of each value in X from this mean. Then we square each of the
                        resulting numbers. Finally, we add them all up and then divide the
                        result by N-1. The calculation is a bit tedious and easier to follow
-                       when it is presented in a table:"))
+                       when it is presented in a table:")
 })
 
 output$spread_sol_det2 <- renderTable({
@@ -746,6 +751,7 @@ vals$cltpop <- sample(pois[which(pois<=100)], 2000, replace = T)
 
 
 observeEvent(input$button_pop,{
+  
 # "True" population - plot
 output$clt_popplot <- renderPlot({
   set.seed(NULL)
@@ -1122,8 +1128,8 @@ sd_2 <- sd_1 + round(runif(1),digits = 1)
 format(sd_1, nsmall = 1)
 format(sd_2, nsmall = 1)
 
-vals$mat <- matrix(data = c(n_1,n_2,m_1,m_2,sd_1,sd_2),
-              nrow = 2,byrow = F)
+vals$mat <- isolate(matrix(data = c(n_1,n_2,m_1,m_2,sd_1,sd_2),
+              nrow = 2,byrow = F))
 colnames(vals$mat) <- c("Observations","Mean","Standard deviation")
 rownames(vals$mat) <- c("Group 1", "Group 2")
 
@@ -1133,7 +1139,6 @@ output$tt_table <- renderTable({
 
 })
 
-# t-test - solution, brief
 observeEvent(input$tt_solution,{
   
 # Calculation
@@ -1153,8 +1158,9 @@ tt_pval_sm <- pt(tt_tval, df = tt_df,
 
 tt_pval_la <- pt(tt_tval, df = tt_df,
                  lower.tail = F)
-  
-  output$tt_result_brief <- renderUI({
+
+# Brief solution  
+output$tt_result_brief <- renderUI({
     HTML(paste0("The difference between the two group means is: ",vals$mat[1,2]," - ",vals$mat[2,2]," = ",round(ttdiff,digits = 1),".\n
            The standard error of this difference is: ",round(tt_se, digits = 3),", and the t-value is accordingly ",format(round(tt_tval,digits = 2),nsmall=2),".",br(),br(),
            "The corresponding p-value for a two-tailed test (whether or not the two group means are equal or not) is: ",
@@ -1162,11 +1168,56 @@ tt_pval_la <- pt(tt_tval, df = tt_df,
            "If we would instead do a one-sided test if the mean in Group 1 is ",strong("smaller")," than the mean in Group 2, the
            p-value would be: ",format(round(tt_pval_sm, digits=3), nsmall = 3),".",br(),br(),
            "And if we would test the opposite hypothesis that the mean in Group 1 is really ",strong("larger")," than the mean in Group 2, the 
-           corresponding one-sided p-value would be: ",format(round(tt_pval_la, digits=3), nsmall = 3),".",br(),br(),
-           "To see more clearly where these p-values come from and what we do when we test 'in different directions', you can
-           plug the values you get here into the 'Statistical distributions' module and play with the type of hypothesis."))
+           corresponding one-sided p-value would be: ",format(round(tt_pval_la, digits=3), nsmall = 3),"."))
   })
+
+# Detailed solution
+output$tt_result_det <- renderUI({
+  withMathJax(paste0("The first step in calculating a difference-of-means t-test is very simple: We calculate the
+              difference between the two group means: ",vals$mat[1,2]," - ",vals$mat[2,2]," = ",round(ttdiff,digits = 1),"$$ $$",
+                     "Once we have done that simple first step, things get (a bit) more serious. We now need to
+                     calculate the standard error of this difference - our measurement of how much 'noise' is in the data. 
+                     The standard error is calculated with this impressive-looking formula (which is actually less complicated that it might
+                     seem at first): $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{\\left(\\frac{(N_{Y_1}-1)\\times s^2_{Y_1} + (N_{Y_2}-1)\\times s^2_{Y_2}}{N_{Y_1} + N_{Y_2}-2} \\right)} \\times \\sqrt{\\left(\\frac{1}{N_{Y_1}} + \\frac{1}{N_{Y_2}} \\right)}$$
+                     All we do is just plug in the numbers we have into the formula: 
+                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{\\left(\\frac{(",as.numeric(vals$mat[1,1]),"-1)\\times ",as.numeric(vals$mat[1,3]),"^2 + (",as.numeric(vals$mat[2,1]),"-1)\\times ",as.numeric(vals$mat[2,3]),"^2}{",as.numeric(vals$mat[1,1])," + ",as.numeric(vals$mat[2,1]),"-2} \\right)} \\times \\sqrt{\\left(\\frac{1}{",as.numeric(vals$mat[1,1]),"} + \\frac{1}{",as.numeric(vals$mat[2,1]),"} \\right)}$$
+                     And then we do the math, step by step (ideally with a calculator, of course):
+                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{\\left(\\frac{",format((as.numeric(vals$mat[1,1])-1)*as.numeric(vals$mat[1,3])^2,nsmall = 2)," + ",format((as.numeric(vals$mat[2,1])-1)*as.numeric(vals$mat[2,3])^2,nsmall=2),"}{",as.numeric(vals$mat[1,1])+as.numeric(vals$mat[2,1])-2,"} \\right)} \\times \\sqrt{\\left(",format(round(1/as.numeric(vals$mat[1,1]),digits=4),nsmall=4)," + ",format(round(1/as.numeric(vals$mat[2,1]),digits=4),nsmall=4)," \\right)}$$
+                     ...and on we go...
+                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{",format(((as.numeric(vals$mat[1,1])-1)*as.numeric(vals$mat[1,3])^2 + (as.numeric(vals$mat[2,1])-1)*as.numeric(vals$mat[2,3])^2)/(as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2),nsmall=2),"} \\times \\sqrt{",format(1/as.numeric(vals$mat[1,1]) + 1/as.numeric(vals$mat[2,1]),nsmall=4),"}$$
+                     ...until finally:
+                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = ",format(sqrt(((as.numeric(vals$mat[1,1])-1)*as.numeric(vals$mat[1,3])^2 + (as.numeric(vals$mat[2,1])-1)*as.numeric(vals$mat[2,3])^2)/(as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2)) * sqrt(1/as.numeric(vals$mat[1,1]) + 1/as.numeric(vals$mat[2,1])),nsmall=4),"$$
+                    Now we have both the difference (the 'signal') and its standard error (the 'noise'), and we can calculate the t-statistic as the ratio of the two:
+                     $$t = \\frac{",ttdiff,"}{",format(tt_se,nsmall=4),"} = ",format(round(ttdiff/tt_se,digits=2),nsmall=2),"$$
+                     Finally, we need to determine the degrees of freeom, which is simply the total number of observations minus 2:
+                     $$df = N_{Y_1} + N_{Y_2} - 2 = ",as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2,"$$
+                     This completes the boring math part. And now comes the last (and perhaps most challenging part): We have to decide if the test is significant! The first thing
+                     we need to do here is to decide what type of hypothesis we want to test. Are we simply interested in whether the two means are
+                     different, or is the hypothesis that one mean is larger or smaller than the other (normally, this depends on the theory we test)?
+                     We look at these one after the other.
+                     $$$$
+                     First, we consider whether or not we can conclude that the means are different - the 'equal or not' or 'two-sided' hypothesis. 
+                     You can note down the number of degrees of freedom and the t-statistic on a piece of paper and navigate to the 'Statistical distributions' panel. There,
+                     select the t-distribution, and the two-sided hypothesis, adjust the degrees of freedom, and enter the t-statistic in the field at the bottom of the Controls-panel. 
+                     Finally, select a significance level.
+                     Does your t-statistic fall within the light-gray shaded area, or does it fall into the orange areas (or even further out)?
+                     If it is in the gray area, this means the test is not significant - we cannot say with certainty that the true difference is not really 0. If, however, 
+                     your t-statistic is in the orange areas or further away from 0, then the test is significant - we can say that the true difference is probably not 0.
+                     $$$$
+                     The logic is similar if we do one-sided ('larger-than' or 'smaller-than') hypothesis tests. The difference is only that we then
+                     consider only if our t-statistic is significantly higher ('larger-than') or lower ('smaller-than'). If you go back to the 'Statistical distributions' panel 
+                     and play with the hypothesis option, you should see the direction of the test logic changing.
+                     $$$$
+                     Finally, we can translate the t-statistic into p-values (as shown above). You should be able to see the p-values for the 
+                     different hypotheses reflected in what you see when you look at the t-distribution. For example, if your p-value for the 
+                     'larger-than' hypothesis is very low (the test is significant), you can conclude that the mean of Group 1 is clearly larger than
+                     the mean for Group 2. And this means, logically, that the difference is clearly not smaller - accordingly, you get a very high p-value
+                     for the 'smaller-than' hypothesis."))
 })
+})
+
+
+
 
 
 # Chi-squared test
@@ -1265,9 +1316,9 @@ output$result <- renderText(
   
 # Detailed solution  
 output$cor_detail1 <- renderUI({
-  withMathJax(helpText("The first step is to calculate the
+  withMathJax("The first step is to calculate the
                           covariance between X and Y. The formula to calculate the
-                          covariance is the following: $$cov_{X,Y} = \\frac{\\sum_{i=1}^n (X_i - \\bar X)(Y_i - \\bar Y)}{n}$$"))
+                          covariance is the following: $$cov_{X,Y} = \\frac{\\sum_{i=1}^n (X_i - \\bar X)(Y_i - \\bar Y)}{n}$$")
 })
 
 output$cor_detail2 <- renderUI({
@@ -1341,11 +1392,11 @@ output$cor_detail6 <- renderUI({
 })
 
 output$cor_detail7 <- renderUI({
-  withMathJax(helpText("Now we have the covariance - but we actually want the correlation! To 
+  withMathJax("Now we have the covariance - but we actually want the correlation! To 
                        calculate the correlation coefficient (r), we take the covariance and divide
                        it by the square root of the product of the variances of the two variables 
                        (we will not go in detail over how the variance is calculated):
-                       $$r = \\frac{cov_{X,Y}}{\\sqrt{var_X \\times var_Y}}$$"))
+                       $$r = \\frac{cov_{X,Y}}{\\sqrt{var_X \\times var_Y}}$$")
 })
 
 output$cor_detail8 <- renderUI({
