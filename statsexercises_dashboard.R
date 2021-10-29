@@ -531,7 +531,12 @@ ui <- dashboardPage(
                            title = "Solution",
                            uiOutput("chires_brief")),
                        box(width = NULL, solidHeader = F, collapsible = T, collapsed = T, 
-                           title = "Detailed solution"))
+                           title = "Detailed solution",
+                           uiOutput("chires_det1"),
+                           tableOutput("chiprob"),
+                           uiOutput("chires_det2"),
+                           tableOutput("extab_calc"),
+                           uiOutput("chicalc")))
               )
               ),
       ##############
@@ -1263,14 +1268,107 @@ output$chitab <- renderTable({
 })
 
 observeEvent(input$chi_solution,{
-chires <- chisq.test(table(vals$dfdat$B1,vals$dfdat$B2),
+
+  # Chi-squared test
+chires <- chisq.test(table(vals$dfdat$B1,vals$dfdat$B2), 
                      correct = F)
 
-
+# Brief solution
 output$chires_brief <- renderUI({
-  HTML(paste0("The &#x1D6D8;<sup>2</sup> value is ",format(round(chires$statistic, digits = 3),nsmall = 3),". At 1 degree
-              of freedom, this corresponds to a <i>p</i>-value of ",format(round(chires$p.value,digits=3),nsmall = 3),"."))
+  HTML(paste0("The &#x1D6D8;<sup>2</sup> value is ",chival,". At 1 degree 
+              of freedom, this corresponds to a <i>p</i>-value of ",format(round(pchisq(chival,df=1,lower.tail=F),digits=3),nsmall=3),"."))
 })
+
+# Detailed solution
+output$chires_det1 <- renderUI({
+  HTML(paste0("<p>As you know, the &#x1D6D8;<sup>2</sup> test is in essence nothing more than a test
+              if the distribution we observe in our table is significantly different from one that we
+              would <strong>expect</strong> if there was in reality no relationship between the two
+              variables. In other words: Do our observed frequences differ significantly from those
+              we would expect if there was no relationship in the data?</p>
+              We have, of course, the observed frequences &mdash; now we need to calculate the expected
+              frequencies. To do so, we first translate our frequency table into one that shows
+              column percentages:"))
+})
+
+# Prob table
+chitab <- table(vals$dfdat$B1,vals$dfdat$B2)
+chitab <- cbind(chitab,chitab[,1]+chitab[,2]) # adding column sum
+
+chiprob <- 100*prop.table(chitab,2)
+chiprob <- addmargins(chiprob,1)
+rownames(chiprob) <- c("Prefers chocolate","Prefers vanilla","Sum")
+colnames(chiprob) <- c("Morning person","Night person","Sum")
+
+
+output$chiprob <- renderTable({
+  as.data.frame.matrix(chiprob)
+},rownames = T, digits = 1)
+
+output$chires_det2 <- renderUI({
+  HTML(paste0("<p>Once we have this, we focus on the third column ('Sum') in this new table. This column
+       shows the <i>baseline</i> probabilities of preferring chocolate or vanilla in our sample. 
+       <strong>Important:</strong> If there was no relationship in our data, then we would expect that everyone's
+       probability to prefer either taste simply corresponds to this baseline. For example,
+       both morning and night persons should have the same ",round(chiprob[1,3],digits=1),"% probability of preferring
+       chocolate</p>
+              <p>Now that we know the baseline probabilities for each of the two categories in the rows, we can use
+              these to calculate our expected frequencies. To do so, we take first the overall number of night persons
+              and multiply it by the two baseline probabilities (which we first converted to a range between 0 and 1) for liking chocolate and vanilla. Then we do the same
+              with the overall number of morning persons. The table below shows this calculation:</p>"))
+})
+
+# E calculation table
+baseprobs <- chiprob[,3]/100
+chifreq <- c(chitab[1,1]+chitab[2,1],chitab[1,2]+chitab[2,2])
+
+exfreq <- data.frame(morn = c(paste0(round(baseprobs[1],digits = 3)," x ",chifreq[1]," = ",round(baseprobs[1]*chifreq[1],digits = 1)),
+                          paste0(round(baseprobs[2],digits = 3)," x ",chifreq[1]," = ",round(baseprobs[2]*chifreq[1],digits = 1))),
+                 nigh = c(paste0(round(baseprobs[1],digits = 3)," x ",chifreq[2]," = ",round(baseprobs[1]*chifreq[2],digits = 1)),
+                          paste0(round(baseprobs[2],digits = 3)," x ",chifreq[2]," = ",round(baseprobs[2]*chifreq[2],digits = 1))))
+row.names(exfreq) <- c("Prefers chocolate","Prefers vanilla")
+
+
+output$extab_calc <- renderTable({
+  exfreq
+}, rownames = T, include.colnames = F,
+add.to.row = list(pos = list(0),
+                  command = " <tr> <th> </th><th> Morning person </th><th> Night person </th> </tr>"))
+
+
+# Calculating chi-square value
+output$chicalc <- renderUI({
+  withMathJax(paste0("Almost done with the tedious part! Next, we can calculate the test statistic using
+                     the following formula:
+                     $$\\chi^2 = \\sum\\frac{(O - E)^2}{E}$$
+                     which means nothing more than we go over each of the cells in the table, subtract the
+                     observed ('O') from the expected ('E') frequency, square the result, and divide it by E.
+                     Then we sum up all the resulting numbers. In this case, this means:
+                     $$\\chi^2 = \\frac{(",chitab[1,1]," - ",round(baseprobs[1]*chifreq[1],digits = 1),")^2}{",round(baseprobs[1]*chifreq[1],digits = 1),"} + 
+                     \\frac{(",chitab[1,2]," - ",round(baseprobs[1]*chifreq[2],digits = 1),")^2}{",round(baseprobs[1]*chifreq[2],digits = 1),"} + 
+                     \\frac{(",chitab[2,1]," - ",round(baseprobs[2]*chifreq[1],digits = 1),")^2}{",round(baseprobs[2]*chifreq[1],digits = 1),"} + 
+                     \\frac{(",chitab[2,2]," - ",round(baseprobs[2]*chifreq[2],digits = 1),")^2}{",round(baseprobs[2]*chifreq[2],digits = 1),"}$$
+                     ...some number-crunching later...
+                     $$\\chi^2 = ",round((chitab[1,1] - round(baseprobs[1]*chifreq[1],digits = 1))^2/round(baseprobs[1]*chifreq[1],digits = 1),digits=3)," + 
+                     ",round((chitab[1,2]-round(baseprobs[1]*chifreq[2],digits = 1))^2/round(baseprobs[1]*chifreq[2],digits = 1),digits=3)," + 
+                     ",round((chitab[2,1]-round(baseprobs[2]*chifreq[1],digits = 1))^2/round(baseprobs[2]*chifreq[1],digits = 1), digits = 3)," +
+                     ",round((chitab[2,2]-round(baseprobs[2]*chifreq[2],digits = 1))^2/round(baseprobs[2]*chifreq[2],digits = 1), digits = 3),"$$
+                     ...and finally:
+                     $$\\chi^2 = ",round((chitab[1,1] - round(baseprobs[1]*chifreq[1],digits = 1))^2/round(baseprobs[1]*chifreq[1],digits = 1),digits=3)+
+                       round((chitab[1,2]-round(baseprobs[1]*chifreq[2],digits = 1))^2/round(baseprobs[1]*chifreq[2],digits = 1),digits=3)+
+                       round((chitab[2,1]-round(baseprobs[2]*chifreq[1],digits = 1))^2/round(baseprobs[2]*chifreq[1],digits = 1), digits = 3)+
+                       round((chitab[2,2]-round(baseprobs[2]*chifreq[2],digits = 1))^2/round(baseprobs[2]*chifreq[2],digits = 1), digits = 3),"$$
+                     We can now either compare this value to the critical value for 1 degree of freedom and a given level of significance in the
+                     'Statistical distributions' panel. If our test score is higher (in the orange area or even further out), then we conclude 
+                     that there is a statistically significant relationship in the data. Alternatively,
+                     we can let R compute a p-value, which in this case is ",format(round(pchisq(chival,df=1,lower.tail=F),digits=3),nsmall = 3),"."))
+})
+
+# For use above
+chival <- round((chitab[1,1] - round(baseprobs[1]*chifreq[1],digits = 1))^2/round(baseprobs[1]*chifreq[1],digits = 1),digits=3)+
+  round((chitab[1,2]-round(baseprobs[1]*chifreq[2],digits = 1))^2/round(baseprobs[1]*chifreq[2],digits = 1),digits=3)+
+  round((chitab[2,1]-round(baseprobs[2]*chifreq[1],digits = 1))^2/round(baseprobs[2]*chifreq[1],digits = 1), digits = 3)+
+  round((chitab[2,2]-round(baseprobs[2]*chifreq[2],digits = 1))^2/round(baseprobs[2]*chifreq[2],digits = 1), digits = 3)
 
 })
 
