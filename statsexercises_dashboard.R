@@ -35,9 +35,9 @@ theme_darkgray <- function(){
 
 ui <- dashboardPage(
   dashboardHeader(title="Practice Statistics!"),
-  dashboardSidebar(collapsed = T,
+  dashboardSidebar(collapsed = F,
     sidebarMenu(
-      menuItem("Start",tabName = "start"),
+      menuItem("Start",tabName = "start", selected = T),
       menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
@@ -45,7 +45,7 @@ ui <- dashboardPage(
       menuItem("The Central Limit Theorem", tabName = "clt"),
       menuItem("Confidence intervals", tabName = "ci"),
       menuItem("Chi-squared test",tabName = "chi"),
-      menuItem("Difference of means test",tabName = "ttest", selected = T),
+      menuItem("Difference of means test",tabName = "ttest"),
       menuItem("Correlation",tabName = "corr"),
       menuItem("Contact & feedback",tabName = "contact")
     )
@@ -382,6 +382,8 @@ ui <- dashboardPage(
                                                      lib = "glyphicon")))
                            )),
                 column(width = 8,
+                       plotOutput("ci_plot"),
+                       br(),
                        box(width = NULL, title = "Making sense of what you see", collapsible = T, solidHeader = T,
                            collapsed = T,
                            HTML("<p>If you move the slider on the left ('Move location of population mean')
@@ -397,8 +399,7 @@ ui <- dashboardPage(
                                 plausible given our sample mean and the sampling distribution. In other words,
                                 you should notice that the confidence interval includes the 
                                 <strong>range of potential 'true' population values
-                                that are plausible, given the sample size and level of confidence.</strong></p>")),
-                       plotOutput("ci_plot"))
+                                that are plausible, given the sample size and level of confidence.</strong></p>")))
               )
               ),
       
@@ -484,10 +485,10 @@ ui <- dashboardPage(
                        box(width = 0, title = "Is there a significant difference?", collapsible = F, solidHeader = F,
                            tableOutput("tt_table")
                            ),
-                       box(width = NULL, title = "The result in brief", collapsible = T, 
+                       box(width = NULL, title = "Solution", collapsible = T, 
                            solidHeader = F,
                            uiOutput("tt_result_brief")),
-                       box(width = NULL, title = "Detailed solution", collapsible = T, collapsed = F,
+                       box(width = NULL, title = "Detailed solution", collapsible = T, collapsed = T,
                            solidHeader = T,
                            uiOutput("tt_result_det"))
                        )
@@ -527,7 +528,7 @@ ui <- dashboardPage(
                            title = "Is there a significant relationship in the data?",
                            tableOutput("chitab")),
                        box(width = NULL, solidHeader = F, collapsible = F,
-                           title = "Result",
+                           title = "Solution",
                            uiOutput("chires_brief")),
                        box(width = NULL, solidHeader = F, collapsible = T, collapsed = T, 
                            title = "Detailed solution"))
@@ -578,7 +579,7 @@ ui <- dashboardPage(
                   column(3,tableOutput(outputId = "tab")),
                   column(9,plotOutput(outputId = "plot"))
                   ),
-              box(width = NULL,title = "Result",collapsible = F,solidHeader = F,
+              box(width = NULL,title = "Solution",collapsible = F,solidHeader = F,
                   textOutput(outputId = "result")),
               box(width = NULL,title = "The detailed solution",collapsible = T,
                     collapsed = T,solidHeader = F,
@@ -1139,6 +1140,7 @@ output$tt_table <- renderTable({
 
 })
 
+# t-test - solution
 observeEvent(input$tt_solution,{
   
 # Calculation
@@ -1223,9 +1225,6 @@ output$tt_result_det <- renderUI({
 })
 
 
-
-
-
 # Chi-squared test
 observeEvent(input$chi_sim,{
   set.seed(NULL)
@@ -1298,7 +1297,7 @@ observeEvent(input$cor_sim, {
   
   output$plot <- renderPlot({
     ggplot(vals$data,aes(x=X,y=Y)) +
-      geom_point(color = "#d3d3d3", size = 5, shape = 4, stroke = 2) +
+      geom_point(color = "#d3d3d3", size = 3, shape = 4, stroke = 2) +
       geom_smooth(method='lm',se=F,color="#b34e24",linetype="dashed") + #
       theme_darkgray()
   })
