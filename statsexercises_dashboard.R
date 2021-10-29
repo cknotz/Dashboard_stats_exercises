@@ -811,7 +811,7 @@ observeEvent(input$button_clt,{
                  color = "#b34e24", size = 1.25) +
       ylab("Number of samples") +
       xlab("Sample mean(s)") +
-      labs(title = "Our measurement(s) of the population mean: Dark gray line(s)",
+      labs(title = "Our measurement(s) of the population mean: Light gray line(s)",
            caption = paste0("The orange line indicates the 'true' mean: ",round(mean(vals$cltpop), digits = 2))) +
       scale_x_continuous(limits = c(5,105),
                          breaks = seq(10,100,10)) +
