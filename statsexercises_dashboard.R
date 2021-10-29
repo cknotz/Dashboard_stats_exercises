@@ -1142,6 +1142,16 @@ output$tt_table <- renderTable({
 observeEvent(input$tt_solution,{
   
 # Calculation
+  
+t_m1 <- as.numeric(vals$mat[1,2])
+t_m2 <- as.numeric(vals$mat[2,2])
+  
+t_n1 <- as.numeric(vals$mat[1,1])
+t_n2 <- as.numeric(vals$mat[2,1])
+
+t_sd1 <- as.numeric(vals$mat[1,3])
+t_sd2 <- as.numeric(vals$mat[2,3])
+
 ttdiff <- as.numeric(vals$mat[1,2]) - as.numeric(vals$mat[2,2]) # difference
   
 tt_se <- sqrt(((as.numeric(vals$mat[1,1])-1)*as.numeric(vals$mat[1,3])^2 + (as.numeric(vals$mat[2,1])-1)*as.numeric(vals$mat[2,3])^2)/(as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2)) * sqrt((1/as.numeric(vals$mat[1,1])) + (1/as.numeric(vals$mat[2,1])))
@@ -1161,7 +1171,7 @@ tt_pval_la <- pt(tt_tval, df = tt_df,
 
 # Brief solution  
 output$tt_result_brief <- renderUI({
-    HTML(paste0("The difference between the two group means is: ",vals$mat[1,2]," - ",vals$mat[2,2]," = ",round(ttdiff,digits = 1),".\n
+    HTML(paste0("The difference between the two group means is: ",t_m1," - ",t_m2," = ",round(ttdiff,digits = 1),".\n
            The standard error of this difference is: ",round(tt_se, digits = 3),", and the t-value is accordingly ",format(round(tt_tval,digits = 2),nsmall=2),".",br(),br(),
            "The corresponding p-value for a two-tailed test (whether or not the two group means are equal or not) is: ",
            format(round(tt_pval, digits=3), nsmall = 3)," (df = ",tt_df,").",br(),br(),
@@ -1174,45 +1184,41 @@ output$tt_result_brief <- renderUI({
 # Detailed solution
 output$tt_result_det <- renderUI({
   withMathJax(paste0("The first step in calculating a difference-of-means t-test is very simple: We calculate the
-              difference between the two group means: ",vals$mat[1,2]," - ",vals$mat[2,2]," = ",round(ttdiff,digits = 1),"$$ $$",
+              difference between the two group means: ",t_m1," - ",t_m2," = ",round(ttdiff,digits = 1),"$$ $$",
                      "Once we have done that simple first step, things get (a bit) more serious. We now need to
                      calculate the standard error of this difference - our measurement of how much 'noise' is in the data. 
                      The standard error is calculated with this impressive-looking formula (which is actually less complicated that it might
                      seem at first): $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{\\left(\\frac{(N_{Y_1}-1)\\times s^2_{Y_1} + (N_{Y_2}-1)\\times s^2_{Y_2}}{N_{Y_1} + N_{Y_2}-2} \\right)} \\times \\sqrt{\\left(\\frac{1}{N_{Y_1}} + \\frac{1}{N_{Y_2}} \\right)}$$
                      All we do is just plug in the numbers we have into the formula: 
-                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{\\left(\\frac{(",as.numeric(vals$mat[1,1]),"-1)\\times ",as.numeric(vals$mat[1,3]),"^2 + (",as.numeric(vals$mat[2,1]),"-1)\\times ",as.numeric(vals$mat[2,3]),"^2}{",as.numeric(vals$mat[1,1])," + ",as.numeric(vals$mat[2,1]),"-2} \\right)} \\times \\sqrt{\\left(\\frac{1}{",as.numeric(vals$mat[1,1]),"} + \\frac{1}{",as.numeric(vals$mat[2,1]),"} \\right)}$$
+                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{\\left(\\frac{(",t_n1,"-1)\\times ",t_sd1,"^2 + (",t_n2,"-1)\\times ",t_sd2,"^2}{",t_n1," + ",t_n2,"-2} \\right)} \\times \\sqrt{\\left(\\frac{1}{",t_n1,"} + \\frac{1}{",t_n2,"} \\right)}$$
                      And then we do the math, step by step (ideally with a calculator, of course):
-                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{\\left(\\frac{",format((as.numeric(vals$mat[1,1])-1)*as.numeric(vals$mat[1,3])^2,nsmall = 2)," + ",format((as.numeric(vals$mat[2,1])-1)*as.numeric(vals$mat[2,3])^2,nsmall=2),"}{",as.numeric(vals$mat[1,1])+as.numeric(vals$mat[2,1])-2,"} \\right)} \\times \\sqrt{\\left(",format(round(1/as.numeric(vals$mat[1,1]),digits=4),nsmall=4)," + ",format(round(1/as.numeric(vals$mat[2,1]),digits=4),nsmall=4)," \\right)}$$
+                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{\\left(\\frac{",format((t_n1-1)*t_sd1^2,nsmall = 2)," + ",format((t_n2-1)*t_sd2^2,nsmall=2),"}{",t_n1+t_n2-2,"} \\right)} \\times \\sqrt{\\left(",format(round(1/t_n1,digits=4),nsmall=4)," + ",format(round(1/t_n2,digits=4),nsmall=4)," \\right)}$$
                      ...and on we go...
-                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{",format(((as.numeric(vals$mat[1,1])-1)*as.numeric(vals$mat[1,3])^2 + (as.numeric(vals$mat[2,1])-1)*as.numeric(vals$mat[2,3])^2)/(as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2),nsmall=2),"} \\times \\sqrt{",format(1/as.numeric(vals$mat[1,1]) + 1/as.numeric(vals$mat[2,1]),nsmall=4),"}$$
+                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = \\sqrt{",format(((t_n1-1)*t_sd1^2 + (t_n2-1)*t_sd2^2)/(t_n1 + t_n2 - 2),nsmall=2),"} \\times \\sqrt{",format(1/t_n1 + 1/t_n2,nsmall=4),"}$$
                      ...until finally:
-                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = ",format(sqrt(((as.numeric(vals$mat[1,1])-1)*as.numeric(vals$mat[1,3])^2 + (as.numeric(vals$mat[2,1])-1)*as.numeric(vals$mat[2,3])^2)/(as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2)) * sqrt(1/as.numeric(vals$mat[1,1]) + 1/as.numeric(vals$mat[2,1])),nsmall=4),"$$
+                     $$SE_{\\bar{Y}_1 - \\bar{Y}_2} = ",format(sqrt(((t_n1-1)*t_sd1^2 + (t_n2-1)*t_sd2^2)/(t_n1 + t_n2 - 2)) * sqrt(1/t_n1 + 1/t_n2),nsmall=4),"$$
                     Now we have both the difference (the 'signal') and its standard error (the 'noise'), and we can calculate the t-statistic as the ratio of the two:
                      $$t = \\frac{",ttdiff,"}{",format(tt_se,nsmall=4),"} = ",format(round(ttdiff/tt_se,digits=2),nsmall=2),"$$
                      Finally, we need to determine the degrees of freeom, which is simply the total number of observations minus 2:
-                     $$df = N_{Y_1} + N_{Y_2} - 2 = ",as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2,"$$
+                     $$df = N_{Y_1} + N_{Y_2} - 2 = ",t_n1 + t_n2 - 2,"$$
                      This completes the boring math part. And now comes the last (and perhaps most challenging part): We have to decide if the test is significant! The first thing
                      we need to do here is to decide what type of hypothesis we want to test. Are we simply interested in whether the two means are
                      different, or is the hypothesis that one mean is larger or smaller than the other (normally, this depends on the theory we test)?
-                     We look at these one after the other.
                      $$$$
                      First, we consider whether or not we can conclude that the means are different - the 'equal or not' or 'two-sided' hypothesis. 
                      You can note down the number of degrees of freedom and the t-statistic on a piece of paper and navigate to the 'Statistical distributions' panel. There,
                      select the t-distribution, and the two-sided hypothesis, adjust the degrees of freedom, and enter the t-statistic in the field at the bottom of the Controls-panel. 
                      Finally, select a significance level.
+                     $$$$
                      Does your t-statistic fall within the light-gray shaded area, or does it fall into the orange areas (or even further out)?
-                     If it is in the gray area, this means the test is not significant - we cannot say with certainty that the true difference is not really 0. If, however, 
-                     your t-statistic is in the orange areas or further away from 0, then the test is significant - we can say that the true difference is probably not 0.
+                     If it is in the gray area, this means the test is not significant - we cannot reject the Null hypothesis that the two means are really equal. If you now look at
+                     the brief solution, you should not that the p-value for the two-sided test is high. If, however, 
+                     your t-statistic is in the orange areas or further away from 0, then the test is significant - we can say that the true difference is probably not 0, and thus reject the Null hypothesis. This should
+                     correspond to a low p-value.
                      $$$$
                      The logic is similar if we do one-sided ('larger-than' or 'smaller-than') hypothesis tests. The difference is only that we then
                      consider only if our t-statistic is significantly higher ('larger-than') or lower ('smaller-than'). If you go back to the 'Statistical distributions' panel 
-                     and play with the hypothesis option, you should see the direction of the test logic changing.
-                     $$$$
-                     Finally, we can translate the t-statistic into p-values (as shown above). You should be able to see the p-values for the 
-                     different hypotheses reflected in what you see when you look at the t-distribution. For example, if your p-value for the 
-                     'larger-than' hypothesis is very low (the test is significant), you can conclude that the mean of Group 1 is clearly larger than
-                     the mean for Group 2. And this means, logically, that the difference is clearly not smaller - accordingly, you get a very high p-value
-                     for the 'smaller-than' hypothesis."))
+                     and play with the hypothesis option, you should see the direction of the test logic changing."))
 })
 })
 
