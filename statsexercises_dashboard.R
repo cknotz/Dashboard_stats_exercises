@@ -593,7 +593,7 @@ ui <- dashboardPage(
               box(width = NULL,title = "Solution",collapsible = F,solidHeader = F,
                   textOutput(outputId = "result")),
               box(width = NULL,title = "The detailed solution",collapsible = T,
-                    collapsed = T,solidHeader = F,
+                    collapsed = F,solidHeader = F,
                     uiOutput("cor_detail1"),
                     uiOutput("cor_detail2"),
                     uiOutput("cor_detail3"),
@@ -1428,7 +1428,7 @@ output$result <- renderText(
 output$cor_detail1 <- renderUI({
   withMathJax("The first step is to calculate the
                           covariance between X and Y. The formula to calculate the
-                          covariance is the following: $$cov_{X,Y} = \\frac{\\sum_{i=1}^n (X_i - \\bar X)(Y_i - \\bar Y)}{n}$$")
+                          covariance is the following: $$cov_{X,Y} = \\frac{\\sum_{i=1}^n (X_i - \\bar X)(Y_i - \\bar Y)}{n - 1}$$")
 })
 
 output$cor_detail2 <- renderUI({
@@ -1442,9 +1442,9 @@ output$cor_detail2 <- renderUI({
 output$cor_detail3 <- renderUI({
   HTML(paste0("<p>First we calculate the mean values for X and Y, which are:</p>
        
-       <p><strong>Mean of X: ",isolate(round(mean(vals$data$X),digits = 3)),"</strong></p>
+       <p><strong>X&#772; = ",isolate(round(mean(vals$data$X),digits = 3)),"</strong></p>
       
-       <p><strong>Mean of Y: ",isolate(round(mean(vals$data$Y),digits = 3)),"</strong></p>"))  
+       <p><strong>Y&#772; = ",isolate(round(mean(vals$data$Y),digits = 3)),"</strong></p>"))  
 })
 
 output$cor_detail4 <- renderUI({
@@ -1452,8 +1452,8 @@ output$cor_detail4 <- renderUI({
                   For example, for the first observation, we get the following results:</p>
               
               
-              <p><strong>Deviation from the mean of X: ",isolate(vals$data[1,c("X")])," - ",isolate(round(mean(vals$data$X),digits = 3)), " = ",isolate(round(vals$data[1,3] - round(mean(vals$data$X),digits = 3),digits=3)),"</strong></p>
-              <p><strong>Deviation from the mean of X: ",isolate(vals$data[1,c("Y")])," - ",isolate(round(mean(vals$data$Y),digits = 3)), " = ",isolate(round(vals$data[1,4] - round(mean(vals$data$Y),digits = 3),digits=3)),
+              <p><strong>X<sub>1</sub> - X&#772; = ",isolate(vals$data[1,c("X")])," - ",isolate(round(mean(vals$data$X),digits = 3)), " = ",isolate(round(vals$data[1,3] - round(mean(vals$data$X),digits = 3),digits=3)),"</strong></p>
+              <p><strong>Y<sub>1</sub> - Y&#772; =  ",isolate(vals$data[1,c("Y")])," - ",isolate(round(mean(vals$data$Y),digits = 3)), " = ",isolate(round(vals$data[1,4] - round(mean(vals$data$Y),digits = 3),digits=3)),
               "</strong></p>
               
               <p>The following table displays the deviations for each of the observations in our
@@ -1469,60 +1469,58 @@ vals$cordata <- vals$data
   vals$cordata$deviationX <- isolate(vals$cordata[,c("X")] - round(vals$cordata[,c("meanX")],3))
   vals$cordata$deviationY <- isolate(vals$cordata[,c("Y")] - round(vals$cordata[,c("meanY")],3))
     
-output$cor_tab1 <- renderTable(vals$cordata[,c("X","Y","meanX","meanY","deviationX","deviationY")],
-                             digits = 3,
-                             rownames = T)
+output$cor_tab1 <- renderTable(vals$cordata[,c("X","Y","meanX","meanY","deviationX","deviationY")],include.colnames = F, 
+                               width = "100%",hover = T,digits = 2,rownames = T,
+                               add.to.row = list(pos = list(0),
+                                                 command = " <tr> <th> </th><th>X</th><th>Y</th><th>X&#772;</th><th>Y&#772;</th><th>(X<sub>i</sub> - X&#772;)</th><th>(Y<sub>i</sub> - Y&#772;)</th></tr>"))
   
 output$cor_detail5 <- renderUI({
   HTML(paste0("<p>In the next step, we multiply the two deviation scores for each of the observations in our data.</p>
               
-              <p>We start again with the first observation:</p>
+              <p>For example, if we use again the data from our first observation:</p>
               
-              <p><strong>Deviation from X times Deviation from Y: ",isolate(round(vals$cordata[1,c("deviationX")],digits=3))," x ",isolate(round(vals$cordata[1,c("deviationY")],digits=3))," = ",round(round(vals$cordata[1,c("deviationX")],digits=3)*round(vals$cordata[1,c("deviationY")],digits=3),digits=3),"</strong></p>
+              <p><strong>(X<sub>1</sub> - X&#772;)&#215;(Y<sub>1</sub> - Y&#772;) = ",isolate(round(vals$cordata[1,c("deviationX")],digits=3))," &#215; ",isolate(round(vals$cordata[1,c("deviationY")],digits=3))," = ",round(round(vals$cordata[1,c("deviationX")],digits=3)*round(vals$cordata[1,c("deviationY")],digits=3),digits=3),"</strong></p>
               
-              <p>And, again, we show this for all observation in a table:</p>"))
+              <p>And, again, we show this for all observations in a table:</p>"))
 })
 
 vals$cordata$DevX_times_DevY <- round(vals$cordata[c("deviationX")],digits=3)*round(vals$cordata[c("deviationY")],digits=3)
 
 
-output$cor_tab2 <- renderTable(vals$cordata[,c("X","Y","meanX","meanY","deviationX","deviationY","DevX_times_DevY")],
-                               digits = 3,
-                               rownames = T)
+output$cor_tab2 <- renderTable(vals$cordata[,c("deviationX","deviationY","DevX_times_DevY")],
+                               include.colnames = F, digits = 2, rownames = T,width = "100%", hover = T,align = "c",
+                               add.to.row = list(pos = list(0),
+                                                 command = " <tr> <th> </th><th>(X<sub>i</sub> - X&#772;)</th><th>(Y<sub>i</sub> - Y&#772;)</th><th>(X<sub>i</sub> - X&#772;)&#215;(Y<sub>i</sub> - Y&#772;)</th></tr>"))
 
 output$cor_detail6 <- renderUI({
   HTML(paste0("<strong>Almost done!</strong> Now that we have the multiplied deviation scores, we simply
-              sum them up over all observations and then divide by the number of observations minus 1. <strong>Important:</strong> In the calculation here,
-              we divide by n-1 rather than n; this is because that is the way R computes it, and also because we are dealing here with a quite small sample of 10 observations.
-              In a larger dataset (several hundreds or thousands of observations, this should not make a difference but here it does).</p>
+              sum them up over all observations:</p>
               
-              <p><strong>The sum of all the scores (the rightmost column in the table above) is: ",round(sum(vals$cordata[,c("DevX_times_DevY")]),digits=3),"</strong></p>
+              <p><strong> &Sigma;[(X<sub>i</sub> - X&#772;)&#215;(Y<sub>i</sub> - Y&#772;)] = ",round(sum(vals$cordata[,c("DevX_times_DevY")]),digits=3),"</strong></p>
               
-              <p><strong>And this divided by the number of observations minus 1 - the covariance - is: ",round(round(sum(vals$cordata[,c("DevX_times_DevY")]),digits=3)/9,digits=3),"</strong></p>"))
+              <p>Finally, we divide by the number of observations minus 1 to get the <strong>covariance: ",round(round(sum(vals$cordata[,c("DevX_times_DevY")]),digits=3)/9,digits=3),"</strong></p>"))
 })
 
 output$cor_detail7 <- renderUI({
   withMathJax("Now we have the covariance - but we actually want the correlation! To 
                        calculate the correlation coefficient (r), we take the covariance and divide
-                       it by the square root of the product of the variances of the two variables 
-                       (we will not go in detail over how the variance is calculated):
-                       $$r = \\frac{cov_{X,Y}}{\\sqrt{var_X \\times var_Y}}$$")
+                       it by the square root of the product of the variances of the two variables:
+                       $$r = \\frac{cov_{X,Y}}{\\sqrt{var_X \\times var_Y}}$$
+              (The calculation of the variances is not shown here; in case you do not know or do not remember how the variance is calculated, take a look at the 'Measures of spread panel').")
 })
 
 output$cor_detail8 <- renderUI({
-  HTML(paste0("<p>In our example, <strong>the variance of X is: ",round(var(isolate(vals$cordata[,c("X")])),digits = 3),", and the variance of Y is: ",round(var(isolate(vals$cordata[,c("Y")])),digits = 3),"</strong></p>
+  HTML(paste0("<p>In our data, <strong>the variance of X is: ",round(var(isolate(vals$cordata[,c("X")])),digits = 3),", and the variance of Y is: ",round(var(isolate(vals$cordata[,c("Y")])),digits = 3),"</strong></p>
               
               <p>If we now plug these values into the equation above, we get:</p>"))
 })
 
 output$cor_detail9 <- renderUI({
-  HTML(paste0("<p><strong> r = <math><mfrac><mn>",round(round(sum(vals$cordata[,c("DevX_times_DevY")]),digits=3)/9,digits=3),"</mn><msqrt><mn>",round(var(isolate(vals$cordata[,c("X")])),digits = 3),"</mn><mo>*</mo><mn>",round(var(isolate(vals$cordata[,c("Y")])),digits = 3),"</mn></msqrt></mfrac></math> =",round(round(round(sum(vals$cordata[,c("DevX_times_DevY")]),digits=3)/9,digits=3)/(sqrt(round(var(isolate(vals$cordata[,c("X")])),digits = 3)*round(var(isolate(vals$cordata[,c("Y")])),digits = 3))),digits = 2),"</strong></p>"))
+  HTML(paste0("<p><strong> r = <math><mfrac><mn>",round(round(sum(vals$cordata[,c("DevX_times_DevY")]),digits=3)/9,digits=3),"</mn><msqrt><mn>",round(var(isolate(vals$cordata[,c("X")])),digits = 3),"</mn><mo>&#215;</mo><mn>",round(var(isolate(vals$cordata[,c("Y")])),digits = 3),"</mn></msqrt></mfrac></math> =",round(round(round(sum(vals$cordata[,c("DevX_times_DevY")]),digits=3)/9,digits=3)/(sqrt(round(var(isolate(vals$cordata[,c("X")])),digits = 3)*round(var(isolate(vals$cordata[,c("Y")])),digits = 3))),digits = 2),"</strong></p>"))
 })
 
 output$cor_detail10 <- renderUI({
-  HTML(paste0("<p>Now that we have the correlation coefficient, we also want to know: Did we get this result simply by random chance?
-       (Technically, the answer is of course yes - the computer generated some random numbers for us. But we will just pretend for now that we have
-       some real data with actual meaning in front of us.)</p>
+  HTML(paste0("<p>Now that we have the correlation coefficient, we also want to know: Is this significantly different from 0? Can we reject the null hypothesis?</p>
        
        To perform a formal test, we calculate the <strong>t-statistic</strong> for our correlation coefficient. The formula
        for this calculation looks as follows:</p>
@@ -1539,14 +1537,11 @@ output$cor_detail10 <- renderUI({
                                                                                                       method = "pearson"),digits=2)))^2)),digits = 3),"</mn></math></p>
               
         <p>R tells us that the corresponding <i>p</i>-value is ",p_val,". Can you confirm that this
-              value makes sense using the table of critical t-values in Appendix B of Kellstedt and Whitten (2013)? (Careful: Their table
-              shows only some selected t- and their corresponding p-values! T-values that are relatively low - i.e. below what is required for a p-value of 0.1 or lower - are not shown.)</p>"))
+              value makes sense using the 'Statistical distributions' panel?</p>"))
 })
 
 })
   
-
-
 }
 
 shinyApp(ui = ui, server = server)
