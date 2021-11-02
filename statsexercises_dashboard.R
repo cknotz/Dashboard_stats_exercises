@@ -593,7 +593,7 @@ ui <- dashboardPage(
               box(width = NULL,title = "Solution",collapsible = F,solidHeader = F,
                   textOutput(outputId = "result")),
               box(width = NULL,title = "The detailed solution",collapsible = T,
-                    collapsed = F,solidHeader = F,
+                    collapsed = T,solidHeader = F,
                     uiOutput("cor_detail1"),
                     uiOutput("cor_detail2"),
                     uiOutput("cor_detail3"),
