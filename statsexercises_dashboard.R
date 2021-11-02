@@ -1,6 +1,6 @@
 
-# Sandbox for Stats Exercises Dashboard
-#######################################
+# Stats Exercises Dashboard
+###########################
 
 # Carlo Knotz, UiS
 # Start date: Feb 22, 2021
@@ -623,8 +623,8 @@ ui <- dashboardPage(
                        box(width = NULL, title = "Want to contribute?",
                            collapsible = F, solidheader = T,
                            HTML("<p>If you feel that this application lacks some functionality or could be improved
-                                in some way (which it probably can!), you can access and 'fork' the code on GitHub
-                                (<a href='' target='_blank'>LINK TO GITHUB REPO WHEN READY</a>).</p>"))
+                                in some way (which it probably can!), you can access and 'fork' the code on
+                                <a href='https://github.com/cknotz/Dashboard_stats_exercises/blob/master/statsexercises_dashboard.R' target='_blank'>Github</a>.</p>"))
               ))
               )
       ##############
