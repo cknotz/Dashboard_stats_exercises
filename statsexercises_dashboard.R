@@ -37,12 +37,12 @@ ui <- dashboardPage(
   dashboardHeader(title="Practice Statistics!"),
   dashboardSidebar(collapsed = F,
     sidebarMenu(
-      menuItem("Start",tabName = "start", selected = T),
+      menuItem("Start",tabName = "start"),
       menuItem("Mathematical notation", tabName = "math"),
       menuItem("Measures of central tendency",tabName = "cent"),
       menuItem("Measures of spread",tabName = "spread"),
       menuItem("Statistical distributions", tabName = "dist"),
-      menuItem("The Central Limit Theorem", tabName = "clt"),
+      menuItem("The Central Limit Theorem", tabName = "clt", selected = T),
       menuItem("Confidence intervals", tabName = "ci"),
       menuItem("Chi-squared test",tabName = "chi"),
       menuItem("Difference of means test",tabName = "ttest"),
@@ -305,8 +305,8 @@ ui <- dashboardPage(
                            sliderInput("clt_size",
                                        "Size of each sample:",
                                        min = 5,
-                                       max = 125,
-                                       value = 18,
+                                       max = 100,
+                                       value = 20,
                                        ticks = F),
                            sliderTextInput(
                              inputId = "clt_samples",
@@ -314,8 +314,14 @@ ui <- dashboardPage(
                              choices = c(1, 10, 100, 1000, 10000, 100000),
                              selected = 100,
                              grid = T),
-                           actionButton("button_clt",
-                                        "Simulate drawing samples")
+                           disabled(actionButton("button_clt",
+                                        "Simulate drawing samples")),
+                           br(),br(),
+                           disabled(radioGroupButtons(inputId = "clt_reveal",
+                                             label = "Reveal population",
+                                             choices = c("No",
+                                                         "Yes"),
+                                             selected = "No"))
                            )),
                 column(width = 8,
                        box(width = NULL, title = "Simulate repeated sampling from a population", collapsible = F, solidHeader = F,
@@ -744,22 +750,11 @@ output$spread_sol_det3 <- renderUI({
 })
 
 
-  
 # Central Limit Theorem - population data
-set.seed(NULL)
-lambda <- sample(seq(1,10,1),
-                 1,
-                 replace = F)
-
-pois <- 10*rpois(100,lambda)
-
-vals$cltpop <- sample(pois[which(pois<=100)], 2000, replace = T)
-
-
 observeEvent(input$button_pop,{
+  enable("button_clt")
+  enable("clt_reveal")
   
-# "True" population - plot
-output$clt_popplot <- renderPlot({
   set.seed(NULL)
   lambda <- sample(seq(1,10,1),
                    1,
@@ -771,8 +766,12 @@ output$clt_popplot <- renderPlot({
   
   
   vals$cltdata <- data.frame(pop = vals$cltpop,
-                     idno = seq(1,length(vals$cltpop),1))
+                             idno = seq(1,length(vals$cltpop),1))
   
+# "True" population - plot
+output$clt_popplot <- renderPlot({
+  
+  if(input$clt_reveal=="Yes"){
   vals$cltdata %>% 
     group_by(pop) %>% 
     summarize(n = n()) %>% 
@@ -783,11 +782,20 @@ output$clt_popplot <- renderPlot({
                        limits = c(5,105)) +
     labs(x = "Left-right self-placement",
          y = "Frequency",
-         title = "The 'true' population with our target: the population mean",
+         title = "The 'true' population (N=2000) with our target: the population mean",
          caption = paste0("The orange line indicates the 'true' population mean: ",round(mean(vals$cltpop), digits = 2))) +
     theme_darkgray()
-  # +
-  #   theme(aspect.ratio=1/8)
+  }else{
+    ggplot(NULL, aes(c(-4,4))) +
+      geom_text(label = "?", color = "#d3d3d3",size = 40,
+                aes(y = 2, x = 0)) +
+      theme_darkgray() +
+      labs(title = "The true population data (still unknown!)") +
+      theme(axis.line = element_blank(),
+            axis.text = element_blank(),
+            panel.grid.major = element_blank(),
+            axis.title = element_blank())
+  }
 })
 })
   
@@ -819,12 +827,12 @@ observeEvent(input$button_clt,{
       ggplot(mapping = aes(x=means)) +
       geom_bar(stat = "count",
                width = 1, fill = "#d3d3d3") +
-      geom_vline(xintercept = mean(vals$cltpop),
-                 color = "#b34e24", size = 1.25) +
+      geom_vline(xintercept = mean(sims$means), 
+                 color = "#b34e24", size = 1.25, linetype = "dashed") +
       ylab("Number of samples") +
       xlab("Sample mean(s)") +
       labs(title = "Our measurement(s) of the population mean: Light gray line(s)",
-           caption = paste0("The orange line indicates the 'true' mean: ",round(mean(vals$cltpop), digits = 2))) +
+           caption = paste0("The orange dashed line indicates the average measurement: ",round(mean(sims$means), digits = 2))) +
       scale_x_continuous(limits = c(5,105),
                          breaks = seq(10,100,10)) +
       theme_darkgray()
@@ -837,7 +845,6 @@ observeEvent(input$button_clt,{
 })
 
 # Simulation graph, CI
-
 set.seed(42)
 vals$cipop <- 10*sample(seq(1,10,1),
                  125,
