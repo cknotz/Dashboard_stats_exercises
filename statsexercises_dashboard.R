@@ -4,6 +4,7 @@
 
 # Carlo Knotz, UiS
 # Start date: Feb 22, 2021
+# First complete version: Nov 3, 2021
 
 library(MASS)
   library(shiny)
