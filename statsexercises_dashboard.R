@@ -13,7 +13,7 @@ library(MASS)
   library(dashboardthemes)
   library(shinyjs)
   library(ggplot2)
-  library(tidyverse)
+  library(dplyr)
   library(xtable)
 
 # Matching color scheme for graphs
@@ -1389,7 +1389,7 @@ observeEvent(input$cor_sim, {
                min=-1,
                max=1)
   
-  vals$data <- as.data.frame(mvrnorm(n=10,
+  vals$data <- as.data.frame(MASS::mvrnorm(n=10,
                                 mu = c(0,0),
                                 Sigma = matrix(c(1,rho,rho,1),ncol = 2),
                                 empirical = T))
