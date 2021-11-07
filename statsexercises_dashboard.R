@@ -289,34 +289,33 @@ ui <- dashboardPage(
                            therefore obviously important &mdash; but can also be
                                 challenging.</p>
                                 <p>This module allows you to approach the Central
-                                Limit Theorem via a simulation (of the ideological
-                                left-right self-placement of a fictional population).</p>
-                                <p>Specifically, you can simulate drawing samples
-                                from a hypothetical population and calculating a 
-                                sample mean. You can adjust the number of samples
-                                that are drawn simultaneously and the size of each
-                                sample to see how the result (the sampling distribution)
-                                changes.</p>")),
+                                Limit Theorem via a simulation of a social science survey, in which you measure the ideological
+                                left-right self-placement of a fictional population.</p>
+                                <p>Specifically, you can simulate what happens when you 
+                                do a survey with a random sample of respondents, how the
+                                results vary when you repeat your survey 10, 100, 1000,
+                                10.000, or 100.000 times, and what happens when your
+                                survey sample gets bigger or smaller.</p>")),
                        box(width = NULL, title = "Controls",
                            collapsible = T, solidHeader = F, collapsed = F,
                            actionButton("button_pop",
-                                        "Create population data", 
+                                        "Create population", 
                                         class = "btn-secondary"),
                            br(),br(),
+                           sliderTextInput(
+                             inputId = "clt_samples",
+                             label = "Number of surveys done simultaneously:", 
+                             choices = c(1, 10, 100, 1000, 10000, 100000),
+                             selected = 1,
+                             grid = T),
                            sliderInput("clt_size",
-                                       "Size of each sample:",
+                                       "Size of each survey sample:",
                                        min = 5,
                                        max = 100,
                                        value = 20,
                                        ticks = F),
-                           sliderTextInput(
-                             inputId = "clt_samples",
-                             label = "Number of samples drawn simultaneously:", 
-                             choices = c(1, 10, 100, 1000, 10000, 100000),
-                             selected = 100,
-                             grid = T),
                            disabled(actionButton("button_clt",
-                                        "Simulate drawing samples")),
+                                        "Do your survey(s)")),
                            br(),br(),
                            disabled(radioGroupButtons(inputId = "clt_reveal",
                                              label = "Reveal population",
@@ -325,7 +324,7 @@ ui <- dashboardPage(
                                              selected = "No"))
                            )),
                 column(width = 8,
-                       box(width = NULL, title = "Simulate repeated sampling from a population", collapsible = F, solidHeader = F,
+                       box(width = NULL, title = "Simulate surveys with random respondent samples", collapsible = F, solidHeader = F,
                            plotOutput("clt_popplot",
                                       height = "200px"),
                            plotOutput("clt_distPlot")
