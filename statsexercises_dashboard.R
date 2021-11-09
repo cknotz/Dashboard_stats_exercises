@@ -1181,7 +1181,7 @@ observeEvent(input$p_valselect,{
 
 output$p_value <- renderText({
   if(input$p_dist=="Normal" & !is.na(input$p_valselect) & input$p_hyp=="Two-sided"){
-    paste0("Your p-value: ",format.pval(2 * stats::pnorm(q = input$p_valselect, lower.tail = F),
+    paste0("Your p-value: ",format.pval(2 * stats::pnorm(q = abs(input$p_valselect), lower.tail = F),
                 digits = 3,
                 eps = 0.001))
   }else if(input$p_dist=="Normal" & !is.na(input$p_valselect) & input$p_hyp=="Larger-than"){
@@ -1193,7 +1193,7 @@ output$p_value <- renderText({
                 digits = 3,
                 eps = 0.001))
   }else if(!is.na(input$p_valselect) & input$p_dist=="t" & input$p_hyp=="Two-sided"){
-    paste0("Your p-value: ",format.pval(2 * stats::pt(q = input$p_valselect, lower.tail = F,df=input$p_dfselect),
+    paste0("Your p-value: ",format.pval(2 * stats::pt(q = abs(input$p_valselect), lower.tail = F,df=input$p_dfselect),
                 digits = 3,
                 eps = 0.001))
   }else if(!is.na(input$p_valselect) & input$p_dist=="t" & input$p_hyp=="Larger-than"){
