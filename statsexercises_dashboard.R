@@ -45,6 +45,7 @@ ui <- dashboardPage(
       menuItem("Statistical distributions", tabName = "dist"),
       menuItem("The Central Limit Theorem", tabName = "clt"),
       menuItem("Confidence intervals", tabName = "ci"),
+      menuItem("p-value calculator", tabName = "p", selected = T),
       menuItem("Chi-squared test",tabName = "chi"),
       menuItem("Difference of means test",tabName = "ttest"),
       menuItem("Correlation",tabName = "corr"),
@@ -454,6 +455,46 @@ ui <- dashboardPage(
                            ))
               )
               
+              ),
+      ###############
+      
+      tabItem(tabName = "p",
+      ###############        
+              fluidRow(
+                column(width = 4,
+                       box(width = NULL, title = "p-values",
+                           collapsible = T, collapsed = F, solidHeader = F,
+                           HTML("<p>The <i>p</i>-value is the probability (p) of seeing the test result
+                                you got or an even stronger one if in fact the null hypothesis was true &mdash; if
+                                there was in reality no effect or difference.</p>
+                                <p>A low <i>p</i>-value indicates that it would be very unlikely that you got
+                                your test result if the null hypothesis was true. This indicates that the null hypothesis
+                                is probably not true. Typically, <strong>we reject the null hypothesis if the <i>p</i>-value is lower
+                                than 0.05.</strong></p>
+                                <p>On the other hand, a high <i>p</i>-value is a sign that your result is pretty
+                                much exactly the type of result you would expect to get if the null hypothesis was true.
+                                This is a sign that the null hypothesis is probably true and cannot be rejected.</p>"))),
+                column(width = 8,
+                       box(width = NULL, title = "Calculate the p-value for your test",
+                           collapsible = F, solidHeader = F,
+                           HTML("<p>Please choose a distribution, type of hypothesis, degrees of freedom 
+                                (for the <i>t</i>- and chi-squared distributions) and enter your test statistic.</p>"),
+                           selectInput(inputId = "p_dist",
+                                       label = "Select the distribution",
+                                       choices = c("Normal","t","Chi-squared")),
+                           selectInput(inputId = "p_hyp",
+                                       label = "Select the type of hypothesis",
+                                       choices = c("Two-sided","Larger-than","Smaller-than")),
+                           numericInput(inputId = "p_dfselect",
+                                        label = "Enter your degrees of freedom",
+                                        value = 3,
+                                        min = 1,
+                                        step = 1),
+                           numericInput(inputId = "p_valselect",
+                                        label = "Enter your test statistic",
+                                        value = NULL),
+                           verbatimTextOutput("p_value")))
+              )
               ),
       ###############
       
@@ -1121,7 +1162,58 @@ output$distplot <- renderPlot({
   }
   })
   
+# p-value calculator: Adjust UI to selected distribution
+observeEvent(input$p_dist,{
+  if(input$p_dist=="t"){
+    enable("p_dfselect")
+    enable("p_hyp")
+  }else if(input$p_dist=="Chi-squared"){
+    disable("p_hyp")
+    enable("p_dfselect")
+  }else {
+    disable("p_dfselect")
+    enable("p_hyp")
+  }
+})
   
+# p-value calculator: Calculate
+observeEvent(input$p_valselect,{
+
+output$p_value <- renderText({
+  if(input$p_dist=="Normal" & !is.na(input$p_valselect) & input$p_hyp=="Two-sided"){
+    paste0("Your p-value: ",format.pval(2 * stats::pnorm(q = input$p_valselect, lower.tail = F),
+                digits = 3,
+                eps = 0.001))
+  }else if(input$p_dist=="Normal" & !is.na(input$p_valselect) & input$p_hyp=="Larger-than"){
+    paste0("Your p-value: ",format.pval(stats::pnorm(q = input$p_valselect, lower.tail = F),
+                digits = 3,
+                eps = 0.001))
+  }else if(input$p_dist=="Normal" & !is.na(input$p_valselect) & input$p_hyp=="Smaller-than"){
+    paste0("Your p-value: ",format.pval(stats::pnorm(q = input$p_valselect, lower.tail = T),
+                digits = 3,
+                eps = 0.001))
+  }else if(!is.na(input$p_valselect) & input$p_dist=="t" & input$p_hyp=="Two-sided"){
+    paste0("Your p-value: ",format.pval(2 * stats::pt(q = input$p_valselect, lower.tail = F,df=input$p_dfselect),
+                digits = 3,
+                eps = 0.001))
+  }else if(!is.na(input$p_valselect) & input$p_dist=="t" & input$p_hyp=="Larger-than"){
+    paste0("Your p-value: ",format.pval(stats::pt(q = input$p_valselect, lower.tail = F, df=input$p_dfselect),
+                digits = 3,
+                eps = 0.001))
+  }else if(!is.na(input$p_valselect) & input$p_dist=="t" & input$p_hyp=="Smaller-than"){
+    paste0("Your p-value: ",format.pval(stats::pt(q = input$p_valselect, lower.tail = T, df=input$p_dfselect),
+                digits = 3,
+                eps = 0.001))
+  }else if(!is.na(input$p_valselect) & input$p_dist=="Chi-squared"){
+    paste0("Your p-value: ",format.pval(stats::pchisq(q=input$p_valselect,df=input$p_dfselect,lower.tail = F),
+                digits = 3,
+                eps = 0.001))
+  }
+
+
+})
+})
+
 # t-test - data
 observeEvent(input$tt_sim,{
   enable("tt_solution")
