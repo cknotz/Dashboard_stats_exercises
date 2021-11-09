@@ -45,7 +45,7 @@ ui <- dashboardPage(
       menuItem("Statistical distributions", tabName = "dist"),
       menuItem("The Central Limit Theorem", tabName = "clt"),
       menuItem("Confidence intervals", tabName = "ci"),
-      menuItem("p-value calculator", tabName = "p", selected = T),
+      menuItem("p-value calculator", tabName = "p"),
       menuItem("Chi-squared test",tabName = "chi"),
       menuItem("Difference of means test",tabName = "ttest"),
       menuItem("Correlation",tabName = "corr"),
@@ -1262,29 +1262,32 @@ ttdiff <- as.numeric(vals$mat[1,2]) - as.numeric(vals$mat[2,2]) # difference
   
 tt_se <- sqrt(((as.numeric(vals$mat[1,1])-1)*as.numeric(vals$mat[1,3])^2 + (as.numeric(vals$mat[2,1])-1)*as.numeric(vals$mat[2,3])^2)/(as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2)) * sqrt((1/as.numeric(vals$mat[1,1])) + (1/as.numeric(vals$mat[2,1])))
 
-tt_tval <- ttdiff/tt_se
+tt_tval <- round(ttdiff/tt_se, digits = 2)
 
 tt_df <- as.numeric(vals$mat[1,1]) + as.numeric(vals$mat[2,1]) - 2
 
-tt_pval <- 2*pt(abs(tt_tval), df = tt_df,
-                lower.tail = F)
+tt_pval <- format.pval(2*pt(abs(tt_tval), df = tt_df,
+                lower.tail = F),
+                digits = 3,eps = 0.001)
 
-tt_pval_sm <- pt(tt_tval, df = tt_df,
-                 lower.tail = T)
+tt_pval_sm <- format.pval(pt(tt_tval, df = tt_df,
+                 lower.tail = T),
+                 digits = 3,eps = 0.001)
 
-tt_pval_la <- pt(tt_tval, df = tt_df,
-                 lower.tail = F)
+tt_pval_la <- format.pval(pt(tt_tval, df = tt_df,
+                 lower.tail = F),
+                 digits = 3,eps = 0.001)
 
 # Brief solution  
 output$tt_result_brief <- renderUI({
     HTML(paste0("The difference between the two group means is: ",t_m1," - ",t_m2," = ",round(ttdiff,digits = 1),".\n
            The standard error of this difference is: ",round(tt_se, digits = 3),", and the t-value is accordingly ",format(round(tt_tval,digits = 2),nsmall=2),".",br(),br(),
            "The corresponding p-value for a two-tailed test (whether or not the two group means are equal or not) is: ",
-           format(round(tt_pval, digits=3), nsmall = 3)," (df = ",tt_df,").",br(),br(),
+           tt_pval," (df = ",tt_df,").",br(),br(),
            "If we would instead do a one-sided test if the mean in Group 1 is ",strong("smaller")," than the mean in Group 2, the
-           p-value would be: ",format(round(tt_pval_sm, digits=3), nsmall = 3),".",br(),br(),
+           p-value would be: ",tt_pval_sm,".",br(),br(),
            "And if we would test the opposite hypothesis that the mean in Group 1 is really ",strong("larger")," than the mean in Group 2, the 
-           corresponding one-sided p-value would be: ",format(round(tt_pval_la, digits=3), nsmall = 3),"."))
+           corresponding one-sided p-value would be: ",tt_pval_la,"."))
   })
 
 # Detailed solution
@@ -1311,6 +1314,9 @@ output$tt_result_det <- renderUI({
                      we need to do here is to decide what type of hypothesis we want to test. Are we simply interested in whether the two means are
                      different, or is the hypothesis that one mean is larger or smaller than the other (normally, this depends on the theory we test)?
                      $$$$
+                     We then look at the p-values we get. To get a better sense of the logic behind it, it can help to compare your test statistic
+                     to the t-distribution in the 'Statistical distributions' panel.
+                     $$$$
                      First, we consider whether or not we can conclude that the means are different - the 'equal or not' or 'two-sided' hypothesis. 
                      You can note down the number of degrees of freedom and the t-statistic on a piece of paper and navigate to the 'Statistical distributions' panel. There,
                      select the t-distribution, and the two-sided hypothesis, adjust the degrees of freedom, and enter the t-statistic in the field at the bottom of the Controls-panel. 
@@ -1318,13 +1324,13 @@ output$tt_result_det <- renderUI({
                      $$$$
                      Does your t-statistic fall within the light-gray shaded area, or does it fall into the orange areas (or even further out)?
                      If it is in the gray area, this means the test is not significant - we cannot reject the Null hypothesis that the two means are really equal. If you now look at
-                     the brief solution, you should not that the p-value for the two-sided test is high. If, however, 
+                     the brief solution, you should note that the p-value for the two-sided test is high. If, however, 
                      your t-statistic is in the orange areas or further away from 0, then the test is significant - we can say that the true difference is probably not 0, and thus reject the Null hypothesis. This should
                      correspond to a low p-value.
                      $$$$
                      The logic is similar if we do one-sided ('larger-than' or 'smaller-than') hypothesis tests. The difference is only that we then
                      consider only if our t-statistic is significantly higher ('larger-than') or lower ('smaller-than'). If you go back to the 'Statistical distributions' panel 
-                     and play with the hypothesis option, you should see the direction of the test logic changing."))
+                     and play with the hypothesis option, you should see the direction of the test logic changing. Can you see how this corresponds to different p-values you get?"))
 })
 })
 
@@ -1375,7 +1381,7 @@ chires <- chisq.test(table(vals$dfdat$B1,vals$dfdat$B2),
 # Brief solution
 output$chires_brief <- renderUI({
   HTML(paste0("The &#x1D6D8;<sup>2</sup> value is ",chival,". At 1 degree 
-              of freedom, this corresponds to a <i>p</i>-value of ",format(round(pchisq(chival,df=1,lower.tail=F),digits=3),nsmall=3),"."))
+              of freedom, this corresponds to a <i>p</i>-value of ",format.pval(pchisq(chival,df=1,lower.tail=F),digits=3,eps=0.001),"."))
 })
 
 # Detailed solution
@@ -1509,11 +1515,11 @@ res <- isolate(round(cor(vals$data$X,vals$data$Y,
 
 t <- round((res*sqrt(10-2))/(sqrt(1-res^2)),digits=3)
 
-p_val <- format(round(2 * pt(abs(t), 8, lower.tail = F),digits = 3), nsmall = 3)
+p_val <- format.pval(2 * pt(abs(t), 8, lower.tail = F),digits = 3,eps = 0.001)
 
 output$result <- renderText(
   paste0("The correlation coefficient is: ",res,", and its t-value is: ",t,".\n
-          The corresponding p-value (two-sided) is: ",p_val))
+          The corresponding p-value (two-sided,df=n-2=8) is: ",p_val))
   
   
 # Detailed solution  
