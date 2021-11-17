@@ -679,7 +679,7 @@ server <- function(input,output,session){
   
 # Central tendency - Data
 observeEvent(input$cent_sim,{
-  enable("cent_solution")
+  shinyjs::enable("cent_solution")
 output$centvals <- renderText({
   
   set.seed(NULL)
@@ -708,7 +708,7 @@ output$cent_sol_det <- renderUI({
               "(",paste0(sort(cent), collapse = "; "),")",
               br(),br(),
               "<p>Then you identify the value in the middle &mdash; the one that divides the data in half.
-              In this case, this is: ",paste0(median(cent)),".</p>
+              In this case, this is: ",paste0(stats::median(cent)),".</p>
               <p><strong>Note:</strong> We are working here with an <i>uneven</i> number of values, 9! If we would have an
               even number such as 10 or 6, we would take the two middle values and calculate the average of these
               two (see also Kellstedt & Whitten 2018, 133).</p>"))
@@ -716,7 +716,7 @@ output$cent_sol_det <- renderUI({
 
 output$cent_sol <- renderUI({
   HTML(paste0("<p>The mean of X is: ",round(mean(cent), digits = 1),".</p>
-              <p>The median of X is: ",median(cent),".</p>"))
+              <p>The median of X is: ",stats::median(cent),".</p>"))
 })
   
 })
@@ -724,7 +724,7 @@ output$cent_sol <- renderUI({
 
 # Measures of spread - Data
 observeEvent(input$spread_sim,{
-  enable("spread_solution")
+  shinyjs::enable("spread_solution")
   
   output$spreadvals <- renderText({
     set.seed(NULL)
@@ -751,8 +751,8 @@ observeEvent(input$spread_solution,{
   spread_var <- sumdiffsq/(length(spread)-1)
   
 output$spread_sol <- renderUI({
-  HTML(paste0("<p>The variance is: ",round(var(spread), digits = 1),".</p>
-              <p>The standard deviation is: ",round(sd(spread), digits = 1),".</p>"))
+  HTML(paste0("<p>The variance is: ",round(stats::var(spread), digits = 1),".</p>
+              <p>The standard deviation is: ",round(stats::sd(spread), digits = 1),".</p>"))
   
 })
 
@@ -793,15 +793,15 @@ output$spread_sol_det3 <- renderUI({
 
 # Central Limit Theorem - population data
 observeEvent(input$button_pop,{
-  enable("button_clt")
-  enable("clt_reveal")
+  shinyjs::enable("button_clt")
+  shinyjs::enable("clt_reveal")
   
   set.seed(NULL)
   lambda <- sample(seq(1,10,1),
                    1,
                    replace = F)
   
-  pois <- 10*rpois(100,lambda)
+  pois <- 10*stats::rpois(100,lambda)
   
   vals$cltpop <- sample(pois[which(pois<=100)], 2000, replace = T)
   
@@ -908,7 +908,7 @@ observeEvent(input$ci_size,{
   sims <- data.frame(means = vals$means-10,
                      draws = seq(1,length(vals$means),1))
   
-  sims_sd <- sd(sims$means)
+  sims_sd <- stats::sd(sims$means)
   sims_mean <- mean(sims$means)
   
   
@@ -929,8 +929,8 @@ observeEvent(input$ci_size,{
           geom_bar(stat = "count",
                    width = 1) +
           scale_fill_manual(values = c("#b34e24","#d3d3d3"),
-                            labels = c(paste0("Outer ",round(200*(1-pnorm(as.numeric(input$ci_level))),digits = 1),"%")
-                                       ,paste0("Inner ",100-round(200*(1-pnorm(as.numeric(input$ci_level))),digits = 1),"%"))) +
+                            labels = c(paste0("Outer ",round(200*(1-stats::pnorm(as.numeric(input$ci_level))),digits = 1),"%")
+                                       ,paste0("Inner ",100-round(200*(1-stats::pnorm(as.numeric(input$ci_level))),digits = 1),"%"))) +
           geom_vline(xintercept = 34.1,
                      color = "#1b9e77", size = 1.25, linetype = "dashed") +
           geom_vline(xintercept = mean(sims$means),
@@ -947,8 +947,8 @@ observeEvent(input$ci_size,{
         
         if(input$show_ci=="TRUE"){
           g +geom_errorbarh(size = 1, height = 10, color = "#1b9e77", aes(y=30,
-                                xmin = 34.1 - as.numeric(input$ci_level)*(sd(sims$means)/sqrt(length(input$ci_size))),
-                                xmax = 34.1 + as.numeric(input$ci_level)*(sd(sims$means)/sqrt(length(input$ci_size)))
+                                xmin = 34.1 - as.numeric(input$ci_level)*(stats::sd(sims$means)/sqrt(length(input$ci_size))),
+                                xmax = 34.1 + as.numeric(input$ci_level)*(stats::sd(sims$means)/sqrt(length(input$ci_size)))
           ))
         }else{
           g
@@ -964,197 +964,172 @@ observeEvent(input$ci_size,{
 output$distplot <- renderPlot({
   
   if(input$dist_distselect=="Normal"){
-    disable(id = "dist_dfselect")
-    enable(id = "dist_hypselect")
+    shinyjs::disable(id = "dist_dfselect")
+    shinyjs::enable(id = "dist_hypselect")
     if(input$dist_hypselect=="Two-sided"){
     ggplot(NULL, aes(c(-4,4))) + 
-      geom_area(stat = "function", fun = dnorm, fill = "#b34e24",
-                xlim = c(-4, qnorm(as.numeric(input$dist_signselect)/2)), color = "black") +
-      geom_area(stat = "function", fun = dnorm, fill = "#d3d3d3", 
-                xlim = c(qnorm(as.numeric(input$dist_signselect)/2),qnorm(1-(as.numeric(input$dist_signselect)/2))), color = "black") +
-      geom_area(stat = "function", fun = dnorm, fill = "#b34e24",
-                xlim = c(qnorm(1-(as.numeric(input$dist_signselect)/2)),4), color = "black") +
-      annotate("segment", x = qnorm(as.numeric(input$dist_signselect)/2), xend = qnorm(1-as.numeric(input$dist_signselect)/2), 
-               y = dnorm(qnorm(as.numeric(input$dist_signselect)/2)), yend = dnorm(-qnorm(as.numeric(input$dist_signselect)/2)), arrow = arrow(ends='both'),
+      geom_area(stat = "function", fun = stats::dnorm, fill = "#b34e24",
+                xlim = c(-4, stats::qnorm(as.numeric(input$dist_signselect)/2)), color = "black") +
+      geom_area(stat = "function", fun = stats::dnorm, fill = "#d3d3d3", 
+                xlim = c(stats::qnorm(as.numeric(input$dist_signselect)/2),stats::qnorm(1-(as.numeric(input$dist_signselect)/2))), color = "black") +
+      geom_area(stat = "function", fun = stats::dnorm, fill = "#b34e24",
+                xlim = c(stats::qnorm(1-(as.numeric(input$dist_signselect)/2)),4), color = "black") +
+      annotate("segment", x = stats::qnorm(as.numeric(input$dist_signselect)/2), xend = stats::qnorm(1-as.numeric(input$dist_signselect)/2), 
+               y = stats::dnorm(stats::qnorm(as.numeric(input$dist_signselect)/2)), yend = stats::dnorm(-stats::qnorm(as.numeric(input$dist_signselect)/2)), arrow = arrow(ends='both'),
                size = 1.5, color = "grey15") +
-      annotate("text", x=0, y=dnorm(qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), 
+      annotate("text", x=0, y=stats::dnorm(stats::qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), 
                color="grey15", fontface = "bold") +
-      # geom_vline(xintercept = qnorm(as.numeric(input$dist_signselect)/2), color = "#ff9900", linetype = "dashed",
-      #            size=1.5) +
-      # geom_vline(xintercept = qnorm(1-as.numeric(input$dist_signselect)/2), color = "#ff9900", linetype = "dashed",
-      #            size=1.5) +
       geom_vline(xintercept = as.numeric(input$dist_valselect), color = "black", linetype = "dashed",
                  size=1.5) +
       labs(x = "", y = "Density",
            title = paste0("Normal distribution critical values for a ",as.numeric(input$dist_signselect)," significance level (two-sided): ",
-                          round(qnorm(as.numeric(input$dist_signselect)/2), digits = 3)," & ",
-                          round(qnorm(1-as.numeric(input$dist_signselect)/2), digits = 3))) +
+                          round(stats::qnorm(as.numeric(input$dist_signselect)/2), digits = 3)," & ",
+                          round(stats::qnorm(1-as.numeric(input$dist_signselect)/2), digits = 3))) +
       theme_darkgray() +
       theme(axis.text = element_text(size=12))
     }
     else if(input$dist_hypselect=="Larger than"){
       ggplot(NULL, aes(c(-4,4))) + 
-        geom_area(stat = "function", fun = dnorm, fill = "#d3d3d3", 
-                  xlim = c(-4,qnorm(1-(as.numeric(input$dist_signselect)))), color = "black") +
-        geom_area(stat = "function", fun = dnorm, fill = "#b34e24",
-                  xlim = c(qnorm(1-(as.numeric(input$dist_signselect))),4), color = "black") +
-        # geom_vline(xintercept = qnorm(1-as.numeric(input$dist_signselect)), color = "#d3d3d3", linetype = "dashed",
-        #            size=1.5) +
+        geom_area(stat = "function", fun = stats::dnorm, fill = "#d3d3d3", 
+                  xlim = c(-4,stats::qnorm(1-(as.numeric(input$dist_signselect)))), color = "black") +
+        geom_area(stat = "function", fun = stats::dnorm, fill = "#b34e24",
+                  xlim = c(stats::qnorm(1-(as.numeric(input$dist_signselect))),4), color = "black") +
         geom_vline(xintercept = as.numeric(input$dist_valselect), color = "black", linetype = "dashed",
                    size=1.5) +
-        annotate("segment", x = -3.99, xend = qnorm(1-as.numeric(input$dist_signselect)), 
-                 y = dnorm(qnorm(as.numeric(input$dist_signselect)))/2, yend = dnorm(-qnorm(as.numeric(input$dist_signselect)))/2, arrow = arrow(ends='both'),
+        annotate("segment", x = -3.99, xend = stats::qnorm(1-as.numeric(input$dist_signselect)), 
+                 y = stats::dnorm(stats::qnorm(as.numeric(input$dist_signselect)))/2, yend = stats::dnorm(-stats::qnorm(as.numeric(input$dist_signselect)))/2, arrow = arrow(ends='both'),
                  size = 1.5, color = "grey15") +
         annotate("text", x=0, hjust = 1, 
-                 y=dnorm(qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), 
+                 y=stats::dnorm(stats::qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), 
                  color="grey15", fontface = "bold") +
         labs(x = "", y = "Density",
              title = paste0("Normal distribution critical value for a ",as.numeric(input$dist_signselect)," significance level (larger than): ",
-                            round(qnorm(1-as.numeric(input$dist_signselect)), digits = 3))) +
+                            round(stats::qnorm(1-as.numeric(input$dist_signselect)), digits = 3))) +
         theme_darkgray() +
         theme(axis.text = element_text(size=12))
     }
     else if(input$dist_hypselect=="Smaller than"){
       ggplot(NULL, aes(c(-4,4))) + 
-        geom_area(stat = "function", fun = dnorm, fill = "#b34e24", 
-                  xlim = c(-4,qnorm((as.numeric(input$dist_signselect)))), color = "black") +
-        geom_area(stat = "function", fun = dnorm, fill = "#d3d3d3",
-                  xlim = c(qnorm((as.numeric(input$dist_signselect))),4), color = "black") +
-        # geom_vline(xintercept = qnorm(as.numeric(input$dist_signselect)), color = "#d3d3d3", linetype = "dashed",
-        #            size=1.5) +
+        geom_area(stat = "function", fun = stats::dnorm, fill = "#b34e24", 
+                  xlim = c(-4,stats::qnorm((as.numeric(input$dist_signselect)))), color = "black") +
+        geom_area(stat = "function", fun = stats::dnorm, fill = "#d3d3d3",
+                  xlim = c(stats::qnorm((as.numeric(input$dist_signselect))),4), color = "black") +
         geom_vline(xintercept = as.numeric(input$dist_valselect), color = "black", linetype = "dashed",
                    size=1.5) +
-        annotate("segment", x = 3.99, xend = qnorm(as.numeric(input$dist_signselect)),
-                 y = dnorm(qnorm(as.numeric(input$dist_signselect)))/2, yend = dnorm(-qnorm(as.numeric(input$dist_signselect)))/2, arrow = arrow(ends='both'),
+        annotate("segment", x = 3.99, xend = stats::qnorm(as.numeric(input$dist_signselect)),
+                 y = stats::dnorm(stats::qnorm(as.numeric(input$dist_signselect)))/2, yend = stats::dnorm(-stats::qnorm(as.numeric(input$dist_signselect)))/2, arrow = arrow(ends='both'),
                  size = 1.5, color = "grey15") +
         annotate("text", x=0, hjust = 0, 
-                 y=dnorm(qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), 
+                 y=stats::dnorm(stats::qnorm(as.numeric(input$dist_signselect)/2))+.015,label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), 
                  color="grey15", fontface = "bold") +
         labs(x = "", y = "Density",
              title = paste0("Normal distribution critical value for a ",as.numeric(input$dist_signselect)," significance level (smaller than): ",
-                            round(qnorm(as.numeric(input$dist_signselect)), digits = 3))) +
+                            round(stats::qnorm(as.numeric(input$dist_signselect)), digits = 3))) +
         theme_darkgray() +
         theme(axis.text = element_text(size=12))
     }
       
   }else if(input$dist_distselect=="t"){
-    enable(id = "dist_dfselect")
-    enable(id = "dist_hypselect")
+    shinyjs::enable(id = "dist_dfselect")
+    shinyjs::enable(id = "dist_hypselect")
     if(input$dist_hypselect=="Two-sided"){
       
       ggplot(NULL, aes(c(-4,4))) + 
-        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#b34e24",
-                  xlim = c((qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)))-5,
-                           qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect))), color = "black") +
-        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#d3d3d3",
-                  xlim = c(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
-                           qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect))), color = "black") +
-        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#b34e24",
-                  xlim = c(qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
-                           qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect))+5), color = "black") +
-        annotate("segment", x = qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), 
-                 xend = qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
-                 y = dt(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)),
-                 yend = dt(-qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)), arrow = arrow(ends='both'),
+        geom_area(stat = "function", fun = stats::dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#b34e24",
+                  xlim = c((stats::qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)))-5,
+                           stats::qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect))), color = "black") +
+        geom_area(stat = "function", fun = stats::dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#d3d3d3",
+                  xlim = c(stats::qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
+                           stats::qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect))), color = "black") +
+        geom_area(stat = "function", fun = stats::dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#b34e24",
+                  xlim = c(stats::qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
+                           stats::qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect))+5), color = "black") +
+        annotate("segment", x = stats::qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), 
+                 xend = stats::qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
+                 y = stats::dt(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)),
+                 yend = stats::dt(-qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)), arrow = arrow(ends='both'),
                  size = 1.5, color = "grey15") +
-        annotate("text", x=0, y=dt(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect))+0.015,
+        annotate("text", x=0, y=stats::dt(stats::qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect))+0.015,
                  label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="grey15", fontface = "bold") +
-        # geom_vline(xintercept = qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)),
-        #            color = "#d3d3d3", linetype = "dashed",
-        #            size=1.5) +
-        # geom_vline(xintercept = qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), 
-        #            color = "#d3d3d3", linetype = "dashed",
-        #            size=1.5) +
         geom_vline(xintercept = as.numeric(input$dist_valselect), color = "black", linetype = "dashed",
                    size=1.5) +
         labs(x = "", y = "Density",
              title = paste0("t-distribution critical values for a ",as.numeric(input$dist_signselect)," significance level (two-sided; df = ",as.numeric(input$dist_dfselect),"): ",
-                            round(qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), digits = 3)," & ",
-                            round(qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), digits = 3))) +
+                            round(stats::qt(as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), digits = 3)," & ",
+                            round(stats::qt(1-as.numeric(input$dist_signselect)/2, df=as.numeric(input$dist_dfselect)), digits = 3))) +
         theme_darkgray() +
         theme(axis.text = element_text(size=12))
     }
     else if(input$dist_hypselect=="Larger than"){
       ggplot(NULL, aes(c(-4,4))) + 
-        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#d3d3d3",
-                  xlim = c((qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))-5,
-                           qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), color = "black") +
-        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#b34e24",
-                  xlim = c(qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
-                           qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))+5), color = "black") +
-        annotate("segment", x = (qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))-4.99,
-                 xend = qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
-                 y = dt(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)),
-                 yend = dt(-qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)), arrow = arrow(ends='both'),
+        geom_area(stat = "function", fun = stats::dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#d3d3d3",
+                  xlim = c((stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))-5,
+                           stats::qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), color = "black") +
+        geom_area(stat = "function", fun = stats::dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#b34e24",
+                  xlim = c(stats::qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
+                           stats::qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))+5), color = "black") +
+        annotate("segment", x = (stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))-4.99,
+                 xend = stats::qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
+                 y = stats::dt(stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)),
+                 yend = stats::dt(-stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)), arrow = arrow(ends='both'),
                  size = 1.5, color = "grey15") +
         annotate("text", x=0, hjust=1,
-                 y=dt(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect))+0.015,
+                 y=stats::dt(stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect))+0.015,
                  label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="grey15", fontface = "bold") +
-        # geom_vline(xintercept = qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), 
-        #            color = "#d3d3d3", linetype = "dashed",
-        #            size=1.5) +
         geom_vline(xintercept = as.numeric(input$dist_valselect), color = "black", linetype = "dashed",
                    size=1.5) +
         labs(x = "", y = "Density",
              title = paste0("t-distribution critical value for a ",as.numeric(input$dist_signselect)," significance level (larger than; df = ",as.numeric(input$dist_dfselect),"): ",
-                            round(qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), digits = 3))) +
+                            round(stats::qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), digits = 3))) +
         theme_darkgray() +
         theme(axis.text = element_text(size=12))
     }
     else if(input$dist_hypselect=="Smaller than"){
       ggplot(NULL, aes(c(-4,4))) + 
-        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#b34e24",
-                  xlim = c((qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))-5,
-                           qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), color = "black") +
-        geom_area(stat = "function", fun = dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#d3d3d3",
-                  xlim = c(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
-                           qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))+5), color = "black") +
-        annotate("segment", x = (qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))+4.99,
-                 xend = qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
-                 y = dt(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)),
-                 yend = dt(-qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)), arrow = arrow(ends='both'),
+        geom_area(stat = "function", fun = stats::dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#b34e24",
+                  xlim = c((stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))-5,
+                           stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), color = "black") +
+        geom_area(stat = "function", fun = stats::dt, args = list(df=as.numeric(input$dist_dfselect)), fill = "#d3d3d3",
+                  xlim = c(stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
+                           stats::qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))+5), color = "black") +
+        annotate("segment", x = (stats::qt(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)))+4.99,
+                 xend = stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
+                 y = stats::dt(stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)),
+                 yend = stats::dt(-stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect)), arrow = arrow(ends='both'),
                  size = 1.5, color = "grey15") +
         annotate("text", x=0, hjust=0,
-                 y=dt(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect))+0.015,
+                 y=stats::dt(stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df=as.numeric(input$dist_dfselect))+0.015,
                  label = paste0(100*(1-as.numeric(input$dist_signselect)),"% of data"), color="grey15", fontface = "bold") +
-        # geom_vline(xintercept = qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), 
-        #            color = "#d3d3d3", linetype = "dashed",
-        #            size=1.5) +
         geom_vline(xintercept = as.numeric(input$dist_valselect), color = "black", linetype = "dashed",
                    size=1.5) +
         labs(x = "", y = "Density",
              title = paste0("t-distribution critical value for a ",as.numeric(input$dist_signselect)," significance level (smaller than; df = ",as.numeric(input$dist_dfselect),"): ",
-                            round(qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), digits = 3))) +
+                            round(stats::qt(as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), digits = 3))) +
         theme_darkgray() +
         theme(axis.text = element_text(size=12))
     }
     
   }else if(input$dist_distselect=="Chi-squared"){
-    enable(id = "dist_dfselect")
-    disable(id = "dist_hypselect")
+    shinyjs::enable(id = "dist_dfselect")
+    shinyjs::disable(id = "dist_hypselect")
     
     ggplot(NULL, aes(c(0,5))) + 
-      geom_area(stat = "function", fun = dchisq, fill = "#d3d3d3", color = "black",
-                xlim = c(0, qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), 
+      geom_area(stat = "function", fun = stats::dchisq, fill = "#d3d3d3", color = "black",
+                xlim = c(0, stats::qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), 
                 args = list(df=as.numeric(input$dist_dfselect))) +
-      geom_area(stat = "function", fun = dchisq, fill = "#b34e24", color = "black",
-                xlim = c(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), 
-                                                                            qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))+.5*qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), 
+      geom_area(stat = "function", fun = stats::dchisq, fill = "#b34e24", color = "black",
+                xlim = c(stats::qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), 
+                         stats::qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))+.5*stats::qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))), 
                 args = list(df=as.numeric(input$dist_dfselect))) +
-      # geom_vline(xintercept = qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), color = "#d3d3d3", linetype = "dashed", size = 1.25) +
       geom_vline(xintercept = as.numeric(input$dist_valselect), color = "black", linetype = "dashed",
                  size=1.5) +
       annotate("segment", arrow = arrow(ends = "both"), size = 1.5, color = "grey15",
-               x = 0, xend = qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
-               y = dchisq(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect)),
-               yend = dchisq(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect))) +
-      # annotate("text", color = "#d3d3d3", fontface = "bold",
-      #          y = dchisq(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect)) + dchisq(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect)),
-      #          x = qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect))/2,
-      #          label = paste0(100*(1-as.numeric(input$dist_signselect))," % of data")) +
+               x = 0, xend = stats::qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),
+               y = stats::dchisq(stats::qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect)),
+               yend = stats::dchisq(stats::qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)), df = as.numeric(input$dist_dfselect))) +
       labs(y = "Density",
            caption = paste0("Gray arrow indicates ",100*(1-as.numeric(input$dist_signselect))," % of data"),
-           title = paste0("Critical value = ",round(qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),digits = 3),
+           title = paste0("Critical value = ",round(stats::qchisq(1-as.numeric(input$dist_signselect), df=as.numeric(input$dist_dfselect)),digits = 3),
                           " for df=",as.numeric(input$dist_dfselect)," and a ",as.numeric(input$dist_signselect)," level of confidence")) +
       xlab(~ paste(chi ^ 2, "-value")) +
       theme_darkgray() +
@@ -1165,14 +1140,14 @@ output$distplot <- renderPlot({
 # p-value calculator: Adjust UI to selected distribution
 observeEvent(input$p_dist,{
   if(input$p_dist=="t"){
-    enable("p_dfselect")
-    enable("p_hyp")
+    shinyjs::enable("p_dfselect")
+    shinyjs::enable("p_hyp")
   }else if(input$p_dist=="Chi-squared"){
-    disable("p_hyp")
-    enable("p_dfselect")
+    shinyjs::disable("p_hyp")
+    shinyjs::enable("p_dfselect")
   }else {
-    disable("p_dfselect")
-    enable("p_hyp")
+    shinyjs::disable("p_dfselect")
+    shinyjs::enable("p_hyp")
   }
 })
   
