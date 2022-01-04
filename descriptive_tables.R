@@ -3,6 +3,11 @@
 # Tables in R
 #############
 
+# If you haven't installed haven (to read .dta & .sav)
+if(!require(haven)){
+  install.packages("haven")
+}
+
 library(bst290)
 
 # mtcars
@@ -18,12 +23,12 @@ mtcars$cyl_f <- factor(mtcars$cyl)
 vars <- c("mpg","disp","hp")
 
 oppsumtabell(dataset = mtcars,
-       variables = c("cyl"))
+       variables = c("cyl_f"))
 
 # does not work, illustrates function checks
 oppsumtabell(dataset = mtcars, 
              variables = c("disp","mpg"),
-             export = T)
+             export = F)
 
 # Illustrates export function
 oppsumtabell(dataset = mtcars,
@@ -40,7 +45,7 @@ result
 
 # with a factor variable
 krysstabell(dataset = mtcars,
-            rowvar = "gear", colvar = "cyl_f",
+            rowvar = "gear", colvar = "cyl_c",
             export = F)
 
 
@@ -61,7 +66,7 @@ oppsum_grupp(dataset = mtcars,
 # to.data.frame(), with factor
 result <- oppsum_grupp(dataset = mtcars,
                     variable = "mpg",
-                    by.var = "cyl",
+                    by.var = "cyl_f",
                     export = F)
 result
 
@@ -76,6 +81,8 @@ essurvey::set_email("carlo.knotz@gmail.com")
 ess <- import_rounds(1)
 ess <- recode_missings(ess)
 ess <- ess[which(ess$cntry=="NO"),]
+
+ess <- sample_n(ess, size = 187)
 
 vars <- c("netuse","ppltrst")
 
@@ -99,6 +106,11 @@ oppsum_grupp(dataset = ess,
           by.var = "nwsptot",
           export = F)
 
+oppsum_grupp(dataset = ess,
+             variable = "netuse",
+             by.var = "gndr",
+             export = F)
+
 
 
 # CPDS
@@ -118,5 +130,14 @@ oppsum_grupp(dataset = cpds,
           variable = "womenpar",
           by.var = "country")
 
+# Test with factor
+cpds$poco <- as.factor(cpds$poco)
+
+oppsum_grupp(dataset = cpds,
+             variable = "womenpar",
+             by.var = "poco")
+
+oppsumtabell(dataset = cpds,
+             variables = "poco")
 
 
