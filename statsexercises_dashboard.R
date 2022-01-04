@@ -1457,7 +1457,7 @@ chival <- round((chitab[1,1] - round(baseprobs[1]*chifreq[1],digits = 1))^2/roun
 observeEvent(input$cor_sim, {
   
   set.seed(NULL)
-  rho <- runif(n=1,
+  rho <- stats::runif(n=1,
                min=-1,
                max=1)
   
@@ -1485,12 +1485,12 @@ observeEvent(input$cor_sim, {
 observeEvent(input$cor_solution,{
 
 # Simple solution
-res <- isolate(round(cor(vals$data$X,vals$data$Y,
+res <- isolate(round(stats::cor(vals$data$X,vals$data$Y,
                          method = "pearson"),digits=2))
 
 t <- round((res*sqrt(10-2))/(sqrt(1-res^2)),digits=3)
 
-p_val <- format.pval(2 * pt(abs(t), 8, lower.tail = F),digits = 3,eps = 0.001)
+p_val <- format.pval(2 * stats::pt(abs(t), 8, lower.tail = F),digits = 3,eps = 0.001)
 
 output$result <- renderText(
   paste0("The correlation coefficient is: ",res,", and its t-value is: ",t,".\n
@@ -1602,11 +1602,11 @@ output$cor_detail10 <- renderUI({
               
        <p>With our values plugged into the formula, we get:</p>
               
-       <p> <math> <msub><mi>t</mi><mi>r</mi></msub> <mo>=</mo>  <mfrac><mrow><mn>",isolate(round(cor(vals$cordata$X,vals$cordata$Y,
-                                                                                                 method = "pearson"),digits=2)),"</mn><msqrt><mn>10</mn><mo>-</mo><mn>2</mn></msqrt> </mrow> <mrow> <msqrt><mn>1</mn><mo>-</mo><msup><mn>",isolate(round(cor(vals$cordata$X,vals$cordata$Y,
+       <p> <math> <msub><mi>t</mi><mi>r</mi></msub> <mo>=</mo>  <mfrac><mrow><mn>",isolate(round(stats::cor(vals$cordata$X,vals$cordata$Y,
+                                                                                                 method = "pearson"),digits=2)),"</mn><msqrt><mn>10</mn><mo>-</mo><mn>2</mn></msqrt> </mrow> <mrow> <msqrt><mn>1</mn><mo>-</mo><msup><mn>",isolate(round(stats::cor(vals$cordata$X,vals$cordata$Y,
                                                                                                                                                                                                                                                             method = "pearson"),digits=2)),"</mn><mn>2</mn></sup></msqrt></mrow></mfrac> <mo>=</mo><mn>",
-              round(isolate(round(cor(vals$cordata$X,vals$cordata$Y,
-                                method = "pearson"),digits=2))*sqrt(10-2)/(sqrt(1-(isolate(round(cor(vals$cordata$X,vals$cordata$Y,
+              round(isolate(round(stats::cor(vals$cordata$X,vals$cordata$Y,
+                                method = "pearson"),digits=2))*sqrt(10-2)/(sqrt(1-(isolate(round(stats::cor(vals$cordata$X,vals$cordata$Y,
                                                                                                       method = "pearson"),digits=2)))^2)),digits = 3),"</mn></math></p>
               
         <p>R tells us that the corresponding <i>p</i>-value is ",p_val,". Can you confirm that this
