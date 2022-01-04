@@ -3,32 +3,39 @@
 # Tables in R
 #############
 
-# If you haven't installed haven (to read .dta & .sav)
+# If you haven't installed haven (to read .dta & .sav) or essurvey
 if(!require(haven)){
   install.packages("haven")
 }
+if(!require(essurvey)){
+  install.packages("essurvey")
+}
 
 library(bst290)
+library(essurvey)
 
 # mtcars
 ########
 
 data(mtcars)
 
-mtcars$cyl_c <- as.character(mtcars$cyl)
-mtcars$cyl_f <- factor(mtcars$cyl)
-
 # Summary table
 ###############
 vars <- c("mpg","disp","hp")
 
+# Basic example
+oppsumtabell(dataset = mtcars,
+             variables = c("cyl"))
+
+# Example with factor variable (plus warning message)
+mtcars$cyl_f <- factor(mtcars$cyl)
+
 oppsumtabell(dataset = mtcars,
        variables = c("cyl_f"))
 
-# does not work, illustrates function checks
+# Multiple variables
 oppsumtabell(dataset = mtcars, 
-             variables = c("disp","mpg"),
-             export = F)
+             variables = c("disp","mpg"))
 
 # Illustrates export function
 oppsumtabell(dataset = mtcars,
@@ -40,25 +47,55 @@ result <- oppsumtabell(dataset = mtcars,
        variables = vars)
 result
 
+# Catches error when students want to summarize a text variable
+mtcars$cyl_c <- as.character(mtcars$cyl)
+
+oppsumtabell(dataset = mtcars,
+             variables = "text")
+
+# Catches error when students use non-existing variables
+oppsumtabell(dataset = mtcars,
+             variables = "hadley")
+
+
 # Crosstable
 ############
 
+# Basic example
+krysstabell(dataset = mtcars,
+            rowvar = "gear", colvar = "cyl")
+
 # with a factor variable
 krysstabell(dataset = mtcars,
-            rowvar = "gear", colvar = "cyl_c",
-            export = F)
+            rowvar = "gear", colvar = "cyl_f")
+
+# with a character variable
+krysstabell(dataset = mtcars,
+            rowvar = "gear", colvar = "cyl_c")
 
 
-# Export
+# Export function
 krysstabell(dataset = mtcars,
             rowvar = "carb", colvar = "gear",
             export = T)
+
+# Catches error when students tabulate a variable by itself
+krysstabell(dataset = mtcars,
+            rowvar = "gear", colvar = "gear")
+
+# Catches error when variable(s) don't exist
+krysstabell(dataset = mtcars,
+            rowvar = "gear", colvar = "hadley")
+
+krysstabell(dataset = mtcars,
+            rowvar = "hadley", colvar = "gear")
+
 
 
 # Tabulate by
 #############
 
-# Simple
+# Basic
 oppsum_grupp(dataset = mtcars,
           variable = "drat",
           by.var = "gear")
@@ -70,11 +107,28 @@ result <- oppsum_grupp(dataset = mtcars,
                     export = F)
 result
 
+# Catches error when variable does not exist
+oppsum_grupp(dataset = mtcars,
+             variable = "hadley",
+             by.var = "gear")
+
+oppsum_grupp(dataset = mtcars,
+             variable = "drat",
+             by.var = "hadley")
+
+# Catches error when students use character variable
+oppsum_grupp(dataset = mtcars,
+             variable = "cyl_c",
+             by.var = "gear")
+
+# This works, however!
+oppsum_grupp(dataset = mtcars,
+             variable = "drat",
+             by.var = "cyl_c")
+
 
 # ESS
-#####
-
-library(essurvey)
+##### 
 
 essurvey::set_email("carlo.knotz@gmail.com")
 
@@ -86,30 +140,26 @@ ess <- sample_n(ess, size = 187)
 
 vars <- c("netuse","ppltrst")
 
+# Basic examples
 oppsumtabell(dataset = ess,
-             variables = vars,
-             export = F)
+             variables = vars)
 
 oppsumtabell(dataset = ess,
-             variables = c("netuse","gndr"),
-             export = F)
+             variables = c("netuse"))
 
 
 krysstabell(dataset = ess,
             rowvar = "vote",
-            colvar = "gndr",
-            export = F)
+            colvar = "gndr")
 
 
 oppsum_grupp(dataset = ess,
           variable = "netuse",
-          by.var = "nwsptot",
-          export = F)
+          by.var = "nwsptot")
 
 oppsum_grupp(dataset = ess,
              variable = "netuse",
-             by.var = "gndr",
-             export = F)
+             by.var = "gndr")
 
 
 
@@ -118,6 +168,7 @@ oppsum_grupp(dataset = ess,
 
 cpds <- haven::read_dta("https://www.cpds-data.org/images/Update2021/CPDS_1960-2019_Update_2021.dta")
 
+# Basic examples
 krysstabell(dataset = cpds,
             rowvar = "eu",
             colvar = "emu")
@@ -125,12 +176,12 @@ krysstabell(dataset = cpds,
 oppsumtabell(dataset = cpds,
              variables = c("gov_left1","gov_right1","womenpar"))
 
-
+# Asks to confirm when categories of by.var>=10
 oppsum_grupp(dataset = cpds,
           variable = "womenpar",
           by.var = "country")
 
-# Test with factor
+# With factor
 cpds$poco <- as.factor(cpds$poco)
 
 oppsum_grupp(dataset = cpds,
