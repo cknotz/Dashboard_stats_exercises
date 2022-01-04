@@ -82,7 +82,7 @@ ui <- dashboardPage(
       ###############
               fluidRow(
                 column(width = 12,
-                       box(width = NULL, title = "The age of data", collapsible = T, collapsed = T,
+                       box(width = NULL, title = "Why you need statistics skills", collapsible = T, collapsed = T,
                            solidHeader = T,
                            HTML("<p><strong>We live in an age of data.</strong>
                                 Many important societal questions such as whether or not there is a 'gender wage gap' or if there
@@ -120,7 +120,7 @@ ui <- dashboardPage(
                            title = "The purpose of this application",
                                 HTML("<p><strong>And this is the purpose of this application: To let you practice</strong> beginner-level statistical
                                 methods by hand. It will give you brief instructions and then keeping spitting out new numbers for
-                                you to crunch until you feel that you really understand a given technique. In addition, it features a module
+                                you to crunch until you feel that you really understand a given technique. In addition, it features a panel
                                 to simulate the logic behind the Central Limit Theorem and confidence intervals. Finally, you can visualize 
                                 central statistical distributions, which can help you to understand how to interpret the results of statistical
                                 tests.</p>")
@@ -193,7 +193,7 @@ ui <- dashboardPage(
                                 <p>These statistics are used in many more advanced procedures,
                                 so a thorough understanding of them is essential. Fortunately,
                                 they are also easy to understand.</p>
-                                <p>This module allows you to generate some numbers to practice
+                                <p>This panel allows you to generate some numbers to practice
                                 calculating the the mean and median. (Why not also the mode? 
                                 Because it is not really difficult:
                                 The mode is simply the most frequent value observed in a set of data.)")),
@@ -243,7 +243,7 @@ ui <- dashboardPage(
                                 It is therefore very important that you get a solid understanding 
                                 of what the variance and standard deviation are and how they are
                                 calculated.</p>
-                                <p>This module allows you to practice this. As in the other modules,
+                                <p>This panel allows you to practice this. As in the other panels,
                                 you can create a set of numbers, calculate the variance and standard deviation,
                                 and then let the computer show you the correct result. A detailed solution is also 
                                 available if you want.</p>")),
@@ -289,7 +289,7 @@ ui <- dashboardPage(
                            in most areas of applied statistics. Understanding it is
                            therefore obviously important &mdash; but can also be
                                 challenging.</p>
-                                <p>This module allows you to approach the Central
+                                <p>This panel allows you to approach the Central
                                 Limit Theorem via a simulation of a social science survey, in which you measure the ideological
                                 left-right self-placement of a fictional population.</p>
                                 <p>Specifically, you can simulate what happens when you 
@@ -344,7 +344,7 @@ ui <- dashboardPage(
                                 difficult to really understand &mdash; or, to put
                                 it differently, they are very easy to misunderstand
                                 and misinterpret.</p>
-                                <p>This module allows you to visualize a confidence
+                                <p>This panel allows you to visualize a confidence
                                 interval around a fixed sample mean (using simulated data
                                 about people's left-right self-placement) 
                                 and how the confidence interval is related to 
@@ -419,14 +419,13 @@ ui <- dashboardPage(
                        box(width = NULL, title = "Statistical distributions",
                            collapsible = T,solidHeader = F, collapsed = T,
                            HTML("<p>When you do statistical tests, you always work with different
-                                statistical distributions: the normal distribution, the <i>t</i>-distribution,
-                                or the &chi;&sup2;-distribution.</p>
+                                statistical distributions.</p>
                                 
-                                <p>Here you can visualize these three distributions (for different degrees of
-                                freedom, where applicable) as well as the location of critical values for
-                                your chosen level of significance.</p>
+                                <p>Here you can visualize three distributions that are used in many statistical tests: the normal distribution, the <i>t</i>-distribution,
+                                and the &chi;&sup2;-distribution. You can also see the location of critical values for
+                                your chosen level of significance and a given distribution.</p>
                                 
-                                <p>If you like, you can also enter a test value (from a t- or chi-squared test)
+                                <p>If you like, you can also enter a test value (e.g., from a t- or chi-squared test)
                                 into the box below. This indicates where your test result is relative to the 
                                 distribution - which should you help you make sense of your test result.</p>")),
                        box(width=NULL,title = "Controls",collapsible = T,solidHeader = F, collapsed = F,
@@ -1289,7 +1288,7 @@ output$tt_result_det <- renderUI({
                      we need to do here is to decide what type of hypothesis we want to test. Are we simply interested in whether the two means are
                      different, or is the hypothesis that one mean is larger or smaller than the other (normally, this depends on the theory we test)?
                      $$$$
-                     We then look at the p-values we get. To get a better sense of the logic behind it, it can help to compare your test statistic
+                     We then look at the p-values we get. To get a better sense of the logic behind it, it can also help to compare your test statistic
                      to the t-distribution in the 'Statistical distributions' panel.
                      $$$$
                      First, we consider whether or not we can conclude that the means are different - the 'equal or not' or 'two-sided' hypothesis. 
@@ -1298,14 +1297,14 @@ output$tt_result_det <- renderUI({
                      Finally, select a significance level.
                      $$$$
                      Does your t-statistic fall within the light-gray shaded area, or does it fall into the orange areas (or even further out)?
-                     If it is in the gray area, this means the test is not significant - we cannot reject the Null hypothesis that the two means are really equal. If you now look at
-                     the brief solution, you should note that the p-value for the two-sided test is high. If, however, 
-                     your t-statistic is in the orange areas or further away from 0, then the test is significant - we can say that the true difference is probably not 0, and thus reject the Null hypothesis. This should
-                     correspond to a low p-value.
+                     If it is in the gray area, this means the test is not significant - we cannot reject the Null hypothesis and the difference that we found probably only reflects random 'noise' but not a real difference between the two groups. In that case, the 
+                     p-value for the two-sided test should also be high (close to 1). If, however, 
+                     your t-statistic is in the orange areas in the graph or further away, then the test would be significant - then we can say that the true difference is probably not 0, and thus reject the Null hypothesis. This would also
+                     result in a low p-value (close to 0).
                      $$$$
                      The logic is similar if we do one-sided ('larger-than' or 'smaller-than') hypothesis tests. The difference is only that we then
-                     consider only if our t-statistic is significantly higher ('larger-than') or lower ('smaller-than'). If you go back to the 'Statistical distributions' panel 
-                     and play with the hypothesis option, you should see the direction of the test logic changing. Can you see how this corresponds to different p-values you get?"))
+                     consider only if our t-statistic is significantly higher ('larger-than') or lower ('smaller-than') than a single test statistic. If you go back to the 'Statistical distributions' panel 
+                     and play with the hypothesis option, you should see the direction of the test logic changing. Can you also see how this corresponds to different p-values you get?"))
 })
 })
 
@@ -1390,7 +1389,7 @@ output$chires_det2 <- renderUI({
        shows the <i>baseline</i> probabilities of preferring chocolate or vanilla in our sample. 
        <strong>Important:</strong> If there was no relationship in our data, then we would expect that everyone's
        probability to prefer either taste simply corresponds to this baseline. For example,
-       both morning and night persons should have the same ",round(chiprob[1,3],digits=1),"% probability of preferring
+       both morning and night persons should have the same ",round(chiprob[1,3],digits=1),"% baseline probability of preferring
        chocolate</p>
               <p>Now that we know the baseline probabilities for each of the two categories in the rows, we can use
               these to calculate our expected frequencies. To do so, we take first the overall number of night persons
@@ -1438,10 +1437,10 @@ output$chicalc <- renderUI({
                        round((chitab[1,2]-round(baseprobs[1]*chifreq[2],digits = 1))^2/round(baseprobs[1]*chifreq[2],digits = 1),digits=3)+
                        round((chitab[2,1]-round(baseprobs[2]*chifreq[1],digits = 1))^2/round(baseprobs[2]*chifreq[1],digits = 1), digits = 3)+
                        round((chitab[2,2]-round(baseprobs[2]*chifreq[2],digits = 1))^2/round(baseprobs[2]*chifreq[2],digits = 1), digits = 3),"$$
-                     We can now either compare this value to the critical value for 1 degree of freedom and a given level of significance in the
-                     'Statistical distributions' panel. If our test score is higher (in the orange area or even further out), then we conclude 
+                     Now that we have the result, how do we interpret it? There are two options. First, we can compare this value to the critical value for 1 degree of freedom and a given level of significance in the
+                     'Statistical distributions' panel. If our test score is higher than the critical value (i.e., if it falls into the orange area or even further out), then we conclude 
                      that there is a statistically significant relationship in the data. Alternatively,
-                     we can let R compute a p-value, which in this case is ",format(round(stats::pchisq(chival,df=1,lower.tail=F),digits=3),nsmall = 3),"."))
+                     we can compute a p-value (you can do this yourself in the 'p-value calculator' panel), which in this case is ",format(round(stats::pchisq(chival,df=1,lower.tail=F),digits=3),nsmall = 3),"."))
 })
 
 # For use above
@@ -1593,7 +1592,7 @@ output$cor_detail9 <- renderUI({
 })
 
 output$cor_detail10 <- renderUI({
-  HTML(paste0("<p>Now that we have the correlation coefficient, we also want to know: Is this significantly different from 0? Can we reject the null hypothesis?</p>
+  HTML(paste0("<p>Now that we have the correlation coefficient, we also want to know: Is this significantly different from 0? Can we really reject the null hypothesis?</p>
        
        To perform a formal test, we calculate the <strong>t-statistic</strong> for our correlation coefficient. The formula
        for this calculation looks as follows:</p>
@@ -1609,8 +1608,7 @@ output$cor_detail10 <- renderUI({
                                 method = "pearson"),digits=2))*sqrt(10-2)/(sqrt(1-(isolate(round(stats::cor(vals$cordata$X,vals$cordata$Y,
                                                                                                       method = "pearson"),digits=2)))^2)),digits = 3),"</mn></math></p>
               
-        <p>R tells us that the corresponding <i>p</i>-value is ",p_val,". Can you confirm that this
-              value makes sense using the 'Statistical distributions' panel?</p>"))
+        <p>R tells us that the corresponding <i>p</i>-value is ",p_val,". Does this correspond to what you get if you use the 'p-value calculator'? Is the result now statistically significant or not? What do you see if you use the 'Statistical distributions' panel?</p>"))
 })
 
 })
