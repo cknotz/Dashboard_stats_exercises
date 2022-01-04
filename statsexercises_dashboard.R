@@ -1313,16 +1313,16 @@ output$tt_result_det <- renderUI({
 # Chi-squared test
 observeEvent(input$chi_sim,{
   set.seed(NULL)
-  enable("chi_solution")
+  shinyjs::enable("chi_solution")
   
 # Generate data (based on: https://gsverhoeven.github.io/post/simulating-fake-data/)
-rho <- runif(n=1,min = -.5,max = .5)
+rho <- stats::runif(n=1,min = -.5,max = .5)
 
 nobs <- sample(250:750,
                1)
 
-m_1 <- runif(n=1,min = .3, max = .7)
-m_2 <- runif(n=1,min = .3, max = .7)
+m_1 <- stats::runif(n=1,min = .3, max = .7)
+m_2 <- stats::runif(n=1,min = .3, max = .7)
   
 cov.mat <- matrix(c(1,rho,rho,1),
                   nrow = 2)
@@ -1337,7 +1337,7 @@ vals$dfdat$B2 <- ifelse(vals$dfdat$X2 <qnorm(m_2),1,0)
 dftab <- table(vals$dfdat$B1,vals$dfdat$B2)
 rownames(dftab) <- c("Prefers chocolate","Prefers vanilla")
 colnames(dftab) <- c("Morning person","Night person")
-dftab <- addmargins(dftab)
+dftab <- stats::addmargins(dftab)
 
 
 # Generate table
@@ -1350,7 +1350,7 @@ output$chitab <- renderTable({
 observeEvent(input$chi_solution,{
 
   # Chi-squared test
-chires <- chisq.test(table(vals$dfdat$B1,vals$dfdat$B2), 
+chires <- stats::chisq.test(table(vals$dfdat$B1,vals$dfdat$B2), 
                      correct = F)
 
 # Brief solution
@@ -1376,7 +1376,7 @@ chitab <- table(vals$dfdat$B1,vals$dfdat$B2)
 chitab <- cbind(chitab,chitab[,1]+chitab[,2]) # adding column sum
 
 chiprob <- 100*prop.table(chitab,2)
-chiprob <- addmargins(chiprob,1)
+chiprob <- stats::addmargins(chiprob,1)
 rownames(chiprob) <- c("Prefers chocolate","Prefers vanilla","Sum")
 colnames(chiprob) <- c("Morning person","Night person","Sum")
 
@@ -1441,7 +1441,7 @@ output$chicalc <- renderUI({
                      We can now either compare this value to the critical value for 1 degree of freedom and a given level of significance in the
                      'Statistical distributions' panel. If our test score is higher (in the orange area or even further out), then we conclude 
                      that there is a statistically significant relationship in the data. Alternatively,
-                     we can let R compute a p-value, which in this case is ",format(round(pchisq(chival,df=1,lower.tail=F),digits=3),nsmall = 3),"."))
+                     we can let R compute a p-value, which in this case is ",format(round(stats::pchisq(chival,df=1,lower.tail=F),digits=3),nsmall = 3),"."))
 })
 
 # For use above
